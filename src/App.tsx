@@ -126,6 +126,8 @@ const feedSuggestedPrompts = [
   'Rooftop vibes with friends tonight?',
 ]
 
+const telegramBotLink = 'http://t.me/gigradar123_bot?start=hello'
+
 type ExploreAgentResult = {
   reply: string
   suggestedEventId: string | null
@@ -461,7 +463,7 @@ function ExploreScreen({
   onConsumePrefill: () => void
 }) {
   const event = events[1]
-  const [inputValue, setInputValue] = useState('any good jazz tonight near Tiong Bahru ?')
+  const [inputValue, setInputValue] = useState('')
   const [submittedPrompt, setSubmittedPrompt] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'done'>('idle')
   const [resultMode, setResultMode] = useState<'none' | 'hardcoded' | 'agent'>('none')
@@ -653,20 +655,36 @@ function ExploreScreen({
         </article>
       )}
 
-      <div className="chat-input">
-        <input
-          placeholder="Ask GigRadar..."
-          value={inputValue}
-          onChange={(event) => setInputValue(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') {
-              handleSend()
-            }
-          }}
-        />
-        <button type="button" onClick={handleSend}>
+      <div className="explore-actions">
+        <div className="chat-input">
+          <input
+            placeholder="Ask GigRadar..."
+            value={inputValue}
+            onChange={(event) => setInputValue(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                handleSend()
+              }
+            }}
+          />
+          <button type="button" onClick={handleSend}>
+            <Send size={16} />
+          </button>
+        </div>
+
+        <a
+          className="telegram-btn"
+          href={telegramBotLink}
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Open GigRadar Telegram bot"
+        >
+          <span className="telegram-btn-copy">
+            <strong>Continue in Telegram</strong>
+            <small>@gigradar123_bot</small>
+          </span>
           <Send size={16} />
-        </button>
+        </a>
       </div>
     </motion.div>
   )

@@ -213,6 +213,40 @@ body {
   color: #fff;
 }
 
+.telegram-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 0 16px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in oklab, var(--primary) 45%, var(--stroke));
+  background: color-mix(in oklab, var(--bg-elev) 76%, transparent);
+  color: var(--text);
+  text-decoration: none;
+  width: 100%;
+}
+
+.telegram-btn:hover {
+  border-color: color-mix(in oklab, var(--primary) 65%, var(--stroke));
+}
+
+.telegram-btn-copy {
+  display: grid;
+  gap: 2px;
+}
+
+.telegram-btn-copy strong {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.telegram-btn-copy small {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
 .section-title {
   font-size: 0.79rem;
   letter-spacing: 0.14em;
@@ -432,8 +466,20 @@ body {
 .chat-input button {
   border: 0;
   border-radius: 999px;
-  min-height: 40px;
+  width: 42px;
   min-width: 40px;
+}
+
+.explore-actions {
+  position: sticky;
+  bottom: 12px;
+  display: grid;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 18px;
+  background: color-mix(in oklab, var(--bg) 86%, transparent);
+  border: 1px solid color-mix(in oklab, var(--stroke) 65%, transparent);
+  backdrop-filter: blur(6px);
 }
 
 @keyframes typing-bounce {
