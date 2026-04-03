@@ -72,6 +72,7 @@ body {
 }
 
 .phone-shell {
+  position: relative;
   width: min(100%, 390px);
   height: min(94vh, 844px);
   border-radius: 32px;
@@ -132,6 +133,7 @@ body {
 }
 
 .screen {
+  position: relative;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -709,4 +711,1603 @@ body {
   .phone-shell {
     width: min(100%, 420px);
   }
+}
+
+/* ── Profile Tab (new design) ── */
+
+.profile-screen {
+  padding: 0 0 24px;
+  gap: 0;
+}
+
+.profile-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 14px 16px 0;
+}
+
+.profile-section {
+  padding: 32px 16px 28px;
+  display: grid;
+  gap: 32px;
+}
+
+/* Section title with rule */
+.section-title-rule {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.section-title-rule::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--stroke);
+}
+
+/* Hero — reference: broken ring, grayscale portrait, tight stack */
+.profile-hero-new {
+  --profile-accent: #e55b3c;
+  --profile-ring-gap: rgba(42, 42, 44, 0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 16px 22px;
+  gap: 2px;
+}
+
+.theme-light .profile-hero-new {
+  --profile-ring-gap: rgba(180, 182, 188, 0.95);
+}
+
+.profile-avatar-wrap {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+/*
+ * Circular XP / “experience” ring: --ring-fill is unitless 0–1 (set in ProfileTab).
+ * Accent runs clockwise from 12 o’clock; remainder is the track color.
+ */
+.profile-avatar-ring {
+  --ring-fill: 0.75;
+  width: 124px;
+  height: 124px;
+  border-radius: 50%;
+  padding: 3px;
+  background: conic-gradient(
+    var(--profile-accent) 0deg calc(var(--ring-fill) * 360deg),
+    var(--profile-ring-gap) calc(var(--ring-fill) * 360deg) 360deg
+  );
+  box-sizing: border-box;
+}
+
+.profile-avatar-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.profile-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(1) contrast(1.08);
+}
+
+.profile-rank-badge {
+  position: absolute;
+  bottom: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--profile-accent);
+  color: #fff;
+  font-size: 0.56rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  padding: 5px 14px;
+  border-radius: 5px;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.profile-username {
+  margin: 5px 0 0;
+  font-size: 1.72rem;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  text-align: center;
+  line-height: 1.1;
+}
+
+.profile-buzz {
+  margin: 2px 0 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--profile-accent);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.profile-stats-row {
+  margin-top: 16px;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--stroke);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.profile-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0;
+  gap: 3px;
+}
+
+.profile-stat strong {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.profile-stat span {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.profile-stat-divider {
+  width: 1px;
+  background: var(--stroke);
+  align-self: stretch;
+  margin: 10px 0;
+}
+
+/* Taste Identity */
+.taste-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.taste-tag {
+  border: 1px solid var(--stroke);
+  background: color-mix(in oklab, var(--bg-elev) 70%, transparent);
+  color: var(--text);
+  border-radius: 5px;
+  padding: 7px 13px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.taste-tag--primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.taste-tag--muted {
+  background: transparent;
+  border-color: transparent;
+  color: var(--primary-soft);
+  font-style: italic;
+}
+
+/* Reputation badges */
+.badges-row {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+
+.badges-row::-webkit-scrollbar {
+  display: none;
+}
+
+.badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 62px;
+}
+
+.badge-icon {
+  width: 62px;
+  height: 62px;
+  border-radius: 999px;
+  border: 1.5px solid var(--stroke);
+  background: color-mix(in oklab, var(--bg-elev) 80%, transparent);
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+
+.badge-icon--active {
+  border-color: var(--primary);
+  border-width: 2px;
+  color: var(--primary-soft);
+}
+
+.badge-label {
+  font-size: 0.56rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  text-align: center;
+  white-space: pre-line;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+/* Gig History — timeline layout */
+.gig-history-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.gig-history-entry {
+  display: flex;
+  gap: 14px;
+  cursor: pointer;
+}
+
+.gig-timeline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 18px;
+}
+
+.gig-dot {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255,255,255,0.18);
+  background: #1a1a1f;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+/* unattended: faint grey tick visible */
+.gig-dot svg {
+  opacity: 0.25;
+  color: var(--muted);
+}
+
+.gig-dot--attended {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.gig-dot--attended svg {
+  opacity: 1;
+  color: #fff;
+}
+
+.gig-line {
+  width: 1px;
+  flex: 1;
+  min-height: 32px;
+  background: rgba(255,255,255,0.1);
+}
+
+.gig-history-info {
+  flex: 1;
+  padding-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.gig-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.gig-venue {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.25;
+  flex: 1;
+  min-width: 0;
+}
+
+.gig-desc {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.gig-thumbs {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.gig-thumb {
+  width: 110px;
+  height: 82px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+.gig-when {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding-top: 4px;
+  text-transform: uppercase;
+}
+
+/* Go Pro card */
+.gopro-card {
+  margin: 20px 16px 0;
+  border: 1px solid color-mix(in oklab, var(--primary) 50%, var(--stroke));
+  border-radius: 18px;
+  padding: 24px 20px 20px;
+  background: color-mix(in oklab, var(--primary) 10%, var(--card));
+  display: grid;
+  gap: 10px;
+  text-align: center;
+}
+
+.gopro-lock {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--primary) 22%, transparent);
+  border: 1px solid color-mix(in oklab, var(--primary) 45%, transparent);
+  display: grid;
+  place-items: center;
+  color: var(--primary-soft);
+  margin: 0 auto 2px;
+}
+
+.gopro-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.gopro-desc {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.gopro-btn {
+  margin-top: 4px;
+  border: 0;
+  border-radius: 10px;
+  min-height: 48px;
+  background: linear-gradient(180deg, var(--primary-soft), var(--primary));
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 0.07em;
+  width: 100%;
+  cursor: pointer;
+}
+
+/* Show all gigs button */
+.show-all-gigs-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--stroke);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.show-all-gigs-btn:hover {
+  border-color: color-mix(in oklab, var(--primary) 50%, var(--stroke));
+  color: var(--text);
+}
+
+/* ── Gig History full-screen overlay ── */
+
+.gig-history-screen {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  border-radius: 32px;
+  overflow: hidden;
+}
+
+.gig-history-screen-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--stroke);
+  min-height: 58px;
+  flex-shrink: 0;
+}
+
+.gig-history-back {
+  border: 1px solid var(--stroke);
+  background: transparent;
+  color: var(--text);
+  border-radius: 999px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.gig-history-screen-title {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.gig-history-count {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.gig-history-scroll {
+  flex: 1;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  padding: 16px 16px 24px;
+}
+
+.gig-history-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Settings full-screen overlay ── */
+
+.settings-screen {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  z-index: 11;
+  border-radius: 32px;
+  overflow: hidden;
+}
+
+.settings-screen-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--stroke);
+  min-height: 58px;
+  flex-shrink: 0;
+}
+
+.settings-screen-back {
+  border: 1px solid var(--stroke);
+  background: transparent;
+  color: var(--text);
+  border-radius: 999px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.settings-screen-title {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+.settings-screen-spacer {
+  width: 34px;
+  flex-shrink: 0;
+}
+
+.settings-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  padding: 16px 16px 8px;
+}
+
+.settings-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.settings-scroll > .settings-group:first-child {
+  margin-top: 10px;
+}
+
+.settings-group {
+  margin-bottom: 22px;
+}
+
+.settings-group-title {
+  margin: 0 0 8px 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.settings-group-card {
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px 14px;
+  min-height: 48px;
+  border: none;
+  border-bottom: 1px solid var(--stroke);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.settings-group-card .settings-row:last-child {
+  border-bottom: none;
+}
+
+.settings-row:hover {
+  background: color-mix(in oklab, var(--text) 5%, transparent);
+}
+
+.settings-row--static {
+  cursor: default;
+}
+
+.settings-row--static:hover {
+  background: transparent;
+}
+
+.settings-row-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.settings-row-label {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 600;
+  min-width: 0;
+}
+
+.settings-row-value {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-right: 2px;
+}
+
+.settings-row-chevron {
+  flex-shrink: 0;
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+.settings-footer {
+  flex-shrink: 0;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0));
+  border-top: 1px solid var(--stroke);
+  background: color-mix(in oklab, var(--bg) 92%, black);
+}
+
+.theme-light .settings-footer {
+  background: color-mix(in oklab, var(--bg) 96%, white);
+}
+
+.settings-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in oklab, #e2493a 55%, var(--stroke));
+  background: color-mix(in oklab, #e2493a 12%, transparent);
+  color: #f07166;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.theme-light .settings-logout-btn {
+  color: #b83228;
+  border-color: color-mix(in oklab, #c53b1f 45%, var(--stroke));
+  background: color-mix(in oklab, #c53b1f 10%, transparent);
+}
+
+.settings-logout-btn:hover {
+  background: color-mix(in oklab, #e2493a 22%, transparent);
+  border-color: color-mix(in oklab, #e2493a 70%, transparent);
+}
+
+.settings-logout-btn:active {
+  transform: scale(0.99);
+}
+
+/* ── Language (from Settings) ── */
+
+.language-screen {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  z-index: 12;
+  border-radius: 32px;
+  overflow: hidden;
+}
+
+.language-screen-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--stroke);
+  min-height: 58px;
+  flex-shrink: 0;
+}
+
+.language-screen-back {
+  border: 1px solid var(--stroke);
+  background: transparent;
+  color: var(--text);
+  border-radius: 999px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.language-screen-title {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+.language-screen-spacer {
+  width: 34px;
+  flex-shrink: 0;
+}
+
+.language-screen-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.language-screen-hint {
+  margin: 0 0 10px 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.language-list-card {
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+}
+
+.language-option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 14px 16px;
+  min-height: 50px;
+  gap: 12px;
+  margin: 0;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.language-option-label {
+  flex: 1;
+}
+
+.language-option-check {
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.language-option--selected {
+  background: color-mix(in oklab, var(--primary) 8%, transparent);
+}
+
+/* ── Privacy & safety (from Settings) ── */
+
+.privacy-safety-screen {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  z-index: 13;
+  border-radius: 32px;
+  overflow: hidden;
+}
+
+.privacy-safety-screen-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--stroke);
+  min-height: 58px;
+  flex-shrink: 0;
+}
+
+.privacy-safety-screen-back {
+  border: 1px solid var(--stroke);
+  background: transparent;
+  color: var(--text);
+  border-radius: 999px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.privacy-safety-screen-title {
+  flex: 1;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+.privacy-safety-screen-spacer {
+  width: 34px;
+  flex-shrink: 0;
+}
+
+.privacy-safety-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 16px 28px;
+}
+
+.privacy-safety-section {
+  margin-bottom: 24px;
+}
+
+.privacy-safety-section-title {
+  margin: 0 0 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.privacy-safety-copy {
+  margin: 0 0 12px;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: color-mix(in oklab, var(--text) 88%, var(--muted));
+}
+
+.privacy-safety-card {
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+}
+
+.privacy-safety-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 14px 16px;
+  min-height: 48px;
+  border: none;
+  border-bottom: 1px solid var(--stroke);
+  background: transparent;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.privacy-safety-card .privacy-safety-row:last-child {
+  border-bottom: none;
+}
+
+.privacy-safety-row:hover {
+  background: color-mix(in oklab, var(--text) 5%, transparent);
+}
+
+.privacy-safety-row-chevron {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+.privacy-safety-row--danger {
+  color: #f07166;
+}
+
+.theme-light .privacy-safety-row--danger {
+  color: #b83228;
+}
+
+/* ── Send feedback (from Settings) ── */
+
+.feedback-screen {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  z-index: 14;
+  border-radius: 32px;
+  overflow: hidden;
+}
+
+.feedback-screen-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--stroke);
+  min-height: 58px;
+  flex-shrink: 0;
+}
+
+.feedback-screen-back {
+  border: 1px solid var(--stroke);
+  background: transparent;
+  color: var(--text);
+  border-radius: 999px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.feedback-screen-title {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+.feedback-screen-spacer {
+  width: 34px;
+  flex-shrink: 0;
+}
+
+.feedback-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 16px 24px;
+}
+
+.feedback-lead {
+  margin: 0 0 18px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feedback-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.feedback-optional {
+  text-transform: none;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.feedback-textarea,
+.feedback-input {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--stroke);
+  background: color-mix(in oklab, var(--card) 92%, transparent);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.feedback-input {
+  min-height: unset;
+  margin-bottom: 18px;
+}
+
+.feedback-textarea::placeholder,
+.feedback-input::placeholder {
+  color: var(--muted);
+  opacity: 0.75;
+}
+
+.feedback-textarea:focus,
+.feedback-input:focus {
+  outline: none;
+  border-color: color-mix(in oklab, var(--primary) 45%, var(--stroke));
+}
+
+.feedback-submit {
+  min-height: 48px;
+  border-radius: 12px;
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+}
+
+.feedback-submit:hover {
+  filter: brightness(1.06);
+}
+
+.feedback-submit:active {
+  transform: scale(0.99);
+}
+
+/* ── Change Email & Login (from Settings) ── */
+
+.email-login-screen {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  z-index: 15;
+  border-radius: 32px;
+  overflow: hidden;
+}
+
+.email-login-screen-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--stroke);
+  min-height: 58px;
+  flex-shrink: 0;
+  background: color-mix(in oklab, var(--bg-elev) 40%, transparent);
+}
+
+.email-login-screen-back {
+  border: 1px solid var(--stroke);
+  background: color-mix(in oklab, var(--card) 50%, transparent);
+  color: var(--text);
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.email-login-screen-back:hover {
+  border-color: color-mix(in oklab, var(--primary) 35%, var(--stroke));
+  background: color-mix(in oklab, var(--primary) 8%, transparent);
+}
+
+.email-login-screen-title {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-align: center;
+  line-height: 1.3;
+  padding: 0 6px;
+}
+
+.email-login-screen-spacer {
+  width: 36px;
+  flex-shrink: 0;
+}
+
+.email-login-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 14px 18px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.email-login-body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Two-tab switcher */
+.email-login-tablist {
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  border-radius: 16px;
+  border: 1px solid var(--stroke);
+  background: color-mix(in oklab, var(--card) 72%, transparent);
+  flex-shrink: 0;
+}
+
+.email-login-tab {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 0.18s,
+    color 0.18s,
+    box-shadow 0.18s;
+}
+
+.email-login-tab .email-login-google-mark svg {
+  width: 18px;
+  height: 18px;
+}
+
+.email-login-tab--active {
+  color: var(--text);
+  background: color-mix(in oklab, var(--primary) 16%, var(--card) 84%);
+  box-shadow:
+    0 1px 0 color-mix(in oklab, var(--text) 8%, transparent),
+    0 4px 14px color-mix(in oklab, var(--primary) 18%, transparent);
+}
+
+.theme-light .email-login-tab--active {
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.06),
+    0 4px 12px color-mix(in oklab, var(--primary) 14%, transparent);
+}
+
+.email-login-tab:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--primary) 65%, transparent);
+  outline-offset: 2px;
+}
+
+.email-login-tab-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+.email-login-tab-panel[hidden] {
+  display: none !important;
+}
+
+.email-login-tab-hint {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--muted);
+  padding: 0 2px;
+}
+
+/* Google panel */
+.email-login-google-panel {
+  position: relative;
+  border-radius: 16px;
+  padding: 16px 16px 18px;
+  border: 1px solid var(--stroke);
+  background: linear-gradient(
+    145deg,
+    color-mix(in oklab, var(--card) 92%, transparent) 0%,
+    color-mix(in oklab, var(--bg-elev) 75%, transparent) 100%
+  );
+  box-shadow: 0 1px 0 color-mix(in oklab, var(--text) 6%, transparent);
+}
+
+.email-login-google-panel--tabbed {
+  flex: 0 0 auto;
+}
+
+.email-login-google-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 18px;
+  right: 18px;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--primary) 85%, transparent),
+    color-mix(in oklab, #4285f4 70%, var(--primary) 30%)
+  );
+  opacity: 0.9;
+}
+
+.email-login-google-panel-top {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-top: 4px;
+  min-height: 28px;
+}
+
+.email-login-google-panel-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: color-mix(in oklab, var(--text) 6%, transparent);
+  border: 1px solid var(--stroke);
+}
+
+.email-login-google-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, #3dd68c 85%, var(--text) 15%);
+  background: color-mix(in oklab, #3dd68c 14%, transparent);
+  border: 1px solid color-mix(in oklab, #3dd68c 32%, var(--stroke));
+}
+
+.email-login-google-email-display {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  word-break: break-all;
+  line-height: 1.35;
+}
+
+.email-login-google-note {
+  margin: 0 0 14px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.email-login-google-note:last-of-type {
+  margin-bottom: 0;
+}
+
+.email-login-google-connect {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 50px;
+  padding: 0 18px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in oklab, #1f1f1f 20%, var(--stroke));
+  background: #fff;
+  color: #1f1f1f;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+  transition:
+    transform 0.12s,
+    box-shadow 0.15s,
+    filter 0.15s;
+}
+
+.email-login-google-connect:hover {
+  filter: brightness(1.02);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.email-login-google-connect:active {
+  transform: scale(0.99);
+}
+
+.theme-light .email-login-google-connect {
+  border-color: color-mix(in oklab, #1f1f1f 12%, var(--stroke));
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.email-login-google-mark {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.email-login-google-mark svg {
+  display: block;
+}
+
+.email-login-google-disconnect {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 14px;
+  border-radius: 11px;
+  border: 1px solid var(--stroke);
+  background: color-mix(in oklab, var(--card) 40%, transparent);
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.email-login-google-disconnect:hover {
+  color: #f07166;
+  border-color: color-mix(in oklab, #e2493a 42%, var(--stroke));
+  background: color-mix(in oklab, #e2493a 10%, transparent);
+}
+
+.theme-light .email-login-google-disconnect:hover {
+  color: #b83228;
+}
+
+/* Email & password card */
+.email-login-credentials {
+  border-radius: 16px;
+  padding: 16px 16px 22px;
+  border: 1px solid var(--stroke);
+  background: color-mix(in oklab, var(--card) 70%, transparent);
+  overflow: visible;
+}
+
+.email-login-credentials--tabbed {
+  flex: 0 0 auto;
+}
+
+.email-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: visible;
+}
+
+.email-login-identity {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 14px;
+  margin-bottom: 18px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in oklab, var(--primary) 22%, var(--stroke));
+  background: color-mix(in oklab, var(--primary) 9%, transparent);
+}
+
+.email-login-identity-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  background: color-mix(in oklab, var(--card) 80%, transparent);
+  color: var(--primary-soft);
+  border: 1px solid color-mix(in oklab, var(--primary) 25%, var(--stroke));
+}
+
+.email-login-identity-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.email-login-identity-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.email-login-identity-email {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+  word-break: break-all;
+  line-height: 1.35;
+}
+
+.email-login-identity-meta {
+  font-size: 0.74rem;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.email-login-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--muted) 90%, var(--text) 10%);
+  margin-top: 12px;
+  margin-bottom: 7px;
+}
+
+.email-login-credentials--tabbed .email-login-label:first-of-type {
+  margin-top: 0;
+}
+
+.email-login-password-section .email-login-subblock-title {
+  margin: 0 0 6px;
+}
+
+.email-login-password-section .email-login-subblock-hint {
+  margin: 0 0 14px;
+}
+
+.email-login-divider {
+  height: 1px;
+  margin: 20px 0 12px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--stroke) 12%,
+    var(--stroke) 88%,
+    transparent
+  );
+  opacity: 0.9;
+}
+
+.email-login-subblock-title {
+  margin: 10px 0 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.email-login-subblock-hint {
+  margin: 0 0 4px;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.email-login-input {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--stroke);
+  background: color-mix(in oklab, var(--bg) 65%, var(--card) 35%);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 13px 15px;
+  margin-bottom: 2px;
+  box-shadow: inset 0 1px 2px color-mix(in oklab, black 18%, transparent);
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.theme-light .email-login-input {
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.email-login-input--last {
+  margin-bottom: 0;
+}
+
+.email-login-input::placeholder {
+  color: var(--muted);
+  opacity: 0.72;
+}
+
+.email-login-input:hover {
+  border-color: color-mix(in oklab, var(--text) 12%, var(--stroke));
+}
+
+.email-login-input:focus {
+  outline: none;
+  border-color: color-mix(in oklab, var(--primary) 55%, var(--stroke));
+  box-shadow:
+    inset 0 1px 2px color-mix(in oklab, black 18%, transparent),
+    0 0 0 3px color-mix(in oklab, var(--primary) 22%, transparent);
+}
+
+.theme-light .email-login-input:focus {
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.04),
+    0 0 0 3px color-mix(in oklab, var(--primary) 18%, transparent);
+}
+
+.email-login-submit {
+  margin-top: 24px;
+  min-height: 50px;
+  border-radius: 13px;
+  border: none;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--primary) 108%, white 2%) 0%,
+    var(--primary) 100%
+  );
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow:
+    0 2px 0 color-mix(in oklab, black 22%, transparent),
+    0 8px 24px color-mix(in oklab, var(--primary) 35%, transparent);
+  transition:
+    filter 0.15s,
+    transform 0.1s,
+    box-shadow 0.15s;
+}
+
+.email-login-submit:hover {
+  filter: brightness(1.05);
+  box-shadow:
+    0 2px 0 color-mix(in oklab, black 22%, transparent),
+    0 10px 28px color-mix(in oklab, var(--primary) 42%, transparent);
+}
+
+.email-login-submit:active {
+  transform: scale(0.99);
+  box-shadow:
+    0 1px 0 color-mix(in oklab, black 25%, transparent),
+    0 4px 16px color-mix(in oklab, var(--primary) 30%, transparent);
 }

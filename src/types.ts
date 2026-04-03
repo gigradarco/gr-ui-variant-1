@@ -1,6 +1,15 @@
 export type Tab = 'feed' | 'explore' | 'plan' | 'profile'
 export type Theme = 'dark' | 'light'
 
+export type GigEntry = {
+  id: string
+  venue: string
+  when: string
+  description: string
+  attended: boolean
+  images: string[]
+}
+
 export type EventItem = {
   id: string
   title: string

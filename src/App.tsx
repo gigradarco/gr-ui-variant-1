@@ -1,13 +1,35 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Moon, Settings, Sun, X } from 'lucide-react'
+import { Moon, Sun, X } from 'lucide-react'
 import { events } from './demoData'
 import { useAppState } from './store/appStore'
 import { tabNavItems } from './tabNavigation'
 import { ExploreTab, FeedTab, PlanTab, ProfileTab } from './tabs'
+import { GigHistoryScreen } from './screens/GigHistoryScreen'
+import {
+  SettingsScreen,
+  LanguageScreen,
+  PrivacySafetyScreen,
+  FeedbackScreen,
+  EmailLoginScreen,
+} from './screens/settings'
 
 function App() {
-  const { tab, theme, activeEventId, setTab, setTheme, openEvent, closeEvent } = useAppState()
+  const {
+    tab,
+    theme,
+    activeEventId,
+    showGigHistory,
+    showSettings,
+    showLanguage,
+    showPrivacySafety,
+    showFeedback,
+    showEmailLogin,
+    setTab,
+    setTheme,
+    openEvent,
+    closeEvent,
+  } = useAppState()
   const [explorePrefill, setExplorePrefill] = useState('')
 
   const activeEvent = useMemo(
@@ -26,20 +48,14 @@ function App() {
             <img src="/assets/logo/buzo-app-logo.png" alt="Buzo" className="brand-logo" />
           </div>
           <div className="actions">
-            {tab === 'profile' ? (
-              <button className="icon-btn" type="button" aria-label="Open settings">
-                <Settings size={18} />
-              </button>
-            ) : (
-              <button
-                className="icon-btn"
-                type="button"
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              >
-                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-              </button>
-            )}
+            <button
+              className="icon-btn"
+              type="button"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
           </div>
         </header>
 
@@ -61,8 +77,17 @@ function App() {
             />
           )}
           {tab === 'plan' && <PlanTab onOpenEvent={openEvent} />}
-          {tab === 'profile' && <ProfileTab onOpenEvent={openEvent} />}
+          {tab === 'profile' && <ProfileTab />}
         </section>
+
+        <AnimatePresence>
+          {showGigHistory && <GigHistoryScreen key="gig-history" />}
+          {showSettings && <SettingsScreen key="settings" />}
+          {showLanguage && <LanguageScreen key="language" />}
+          {showPrivacySafety && <PrivacySafetyScreen key="privacy-safety" />}
+          {showFeedback && <FeedbackScreen key="feedback" />}
+          {showEmailLogin && <EmailLoginScreen key="email-login" />}
+        </AnimatePresence>
 
         <nav className="bottom-nav">
           {tabNavItems.map((item) => {

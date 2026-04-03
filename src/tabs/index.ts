@@ -1,4 +1,4 @@
 export { FeedTab } from './FeedTab'
 export { ExploreTab } from './ExploreTab'
 export { PlanTab } from './PlanTab'
-export { ProfileTab } from './ProfileTab'
+export { ProfileTab, PROFILE_EXPERIENCE_RING_FALLBACK } from './ProfileTab'
