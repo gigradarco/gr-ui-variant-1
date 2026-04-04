@@ -8,6 +8,7 @@ import {
   planPastEvents,
 } from '../../data/demoData'
 import { PlanEventDetail } from './PlanEventDetail'
+import { PlanEventReview } from './PlanEventReview'
 
 type PlanTabProps = {
   onOpenEvent: (eventId: string) => void
@@ -20,6 +21,27 @@ type DetailRoute =
 export function PlanTab({ onOpenEvent }: PlanTabProps) {
   const [segment, setSegment] = useState<'upcoming' | 'past'>('upcoming')
   const [detail, setDetail] = useState<DetailRoute | null>(null)
+  const [reviewPastId, setReviewPastId] = useState<string | null>(null)
+
+  if (reviewPastId) {
+    const reviewData = getPlanDetailPast(reviewPastId)
+    if (!reviewData) {
+      return (
+        <div className="screen-content plan-home">
+          <p className="plan-home-sub">This event is no longer available.</p>
+          <button type="button" className="plan-segment plan-segment--on" onClick={() => setReviewPastId(null)}>
+            Back to plan
+          </button>
+        </div>
+      )
+    }
+    return (
+      <PlanEventReview
+        data={reviewData}
+        onBack={() => setReviewPastId(null)}
+      />
+    )
+  }
 
   if (detail) {
     const data =
@@ -46,8 +68,12 @@ export function PlanTab({ onOpenEvent }: PlanTabProps) {
       <PlanEventDetail
         data={data}
         variant={detail.kind}
-        onBack={() => setDetail(null)}
+        onBack={() => {
+          setReviewPastId(null)
+          setDetail(null)
+        }}
         onOpenEvent={onOpenEvent}
+        onOpenReview={detail.kind === 'past' ? () => setReviewPastId(detail.id) : undefined}
       />
     )
   }

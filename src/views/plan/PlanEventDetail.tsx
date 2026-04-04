@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
 import {
   ArrowLeft,
   Clock,
@@ -16,6 +15,8 @@ type PlanEventDetailProps = {
   variant: 'upcoming' | 'past'
   onBack: () => void
   onOpenEvent: (eventId: string) => void
+  /** Past events only: opens post-event review flow. */
+  onOpenReview?: () => void
 }
 
 const waveformHeights = [
@@ -27,6 +28,7 @@ export function PlanEventDetail({
   variant,
   onBack,
   onOpenEvent,
+  onOpenReview,
 }: PlanEventDetailProps) {
   const [favorited, setFavorited] = useState(false)
   const [playing, setPlaying] = useState(false)
@@ -42,12 +44,7 @@ export function PlanEventDetail({
   )
 
   return (
-    <motion.div
-      className="screen-content plan-page plan-event-detail"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
-    >
+    <div className="screen-content plan-page plan-event-detail">
       <header className="plan-toolbar">
         <button
           type="button"
@@ -57,6 +54,12 @@ export function PlanEventDetail({
         >
           <ArrowLeft size={22} strokeWidth={2} />
         </button>
+        <p
+          className={`plan-toolbar-status plan-toolbar-status--${variant}`}
+          role="status"
+        >
+          {variant === 'upcoming' ? 'Upcoming' : 'Past'}
+        </p>
         <button
           type="button"
           className="plan-toolbar-btn"
@@ -218,11 +221,24 @@ export function PlanEventDetail({
             EVENT ENDED
           </button>
         )}
+        <button
+          type="button"
+          className="plan-cta-review"
+          disabled={variant === 'upcoming'}
+          aria-label={
+            variant === 'upcoming'
+              ? 'Event review unlocks after the event'
+              : 'Write an event review'
+          }
+          onClick={() => onOpenReview?.()}
+        >
+          EVENT REVIEW
+        </button>
         <button type="button" className="plan-cta-secondary">
           <Share2 size={18} strokeWidth={2} aria-hidden />
           SHARE WITH FRIENDS
         </button>
       </div>
-    </motion.div>
+    </div>
   )
 }
