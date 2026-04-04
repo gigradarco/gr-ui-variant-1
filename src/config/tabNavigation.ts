@@ -1,5 +1,5 @@
 import { Calendar, LayoutGrid, Search, User, type LucideIcon } from 'lucide-react'
-import type { Tab } from './types'
+import type { Tab } from '../types'
 
 export type TabNavItem = {
   key: Tab

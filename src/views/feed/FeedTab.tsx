@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { ChevronDown, Search, Sparkles } from 'lucide-react'
-import { events, feedSuggestedPrompts } from '../demoData'
+import { events, feedSuggestedPrompts } from '../../data/demoData'
 
 type FeedTabProps = {
   onOpenEvent: (eventId: string) => void

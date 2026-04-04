@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { ArrowLeft, ChevronRight } from 'lucide-react'
-import { useAppState } from '../../store/appStore'
+import { useAppState } from '../../../store/appStore'
 
 export function PrivacySafetyScreen() {
   const { closePrivacySafety } = useAppState()

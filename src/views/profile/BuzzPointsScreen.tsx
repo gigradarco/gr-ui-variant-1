@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { ArrowLeft, Check, Crown, Info, Lock } from 'lucide-react'
-import { buzzActivities, buzzSummary, buzzTiers, getBuzzTierState } from '../demoData'
-import { useAppState } from '../store/appStore'
+import { buzzActivities, buzzSummary, buzzTiers, getBuzzTierState } from '../../data/demoData'
+import { useAppState } from '../../store/appStore'
 
 function formatBuzz(n: number) {
   return n.toLocaleString('en-US')

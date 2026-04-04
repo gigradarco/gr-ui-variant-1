@@ -14,7 +14,7 @@ import {
   Shield,
   User,
 } from 'lucide-react'
-import { useAppState } from '../../store/appStore'
+import { useAppState } from '../../../store/appStore'
 
 type RowIcon = ComponentType<{ size?: number; className?: string }>
 
@@ -69,6 +69,7 @@ export function SettingsScreen() {
     openFeedback,
     openEmailLogin,
     openEditProfile,
+    openSubscription,
   } = useAppState()
 
   const handleLogout = () => {
@@ -103,7 +104,7 @@ export function SettingsScreen() {
 
       <div className="settings-scroll">
         <SettingsGroup title="Buzo Pro">
-          <SettingsRow icon={CreditCard} label="Manage subscription" onClick={noop} />
+          <SettingsRow icon={CreditCard} label="Manage subscription" onClick={openSubscription} />
         </SettingsGroup>
 
         <SettingsGroup title="Account">

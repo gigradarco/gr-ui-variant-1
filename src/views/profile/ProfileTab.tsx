@@ -1,11 +1,8 @@
 import type { CSSProperties } from 'react'
 import { motion } from 'framer-motion'
 import { Lock, Star, Building2, Moon, Settings, Zap, Trophy, ChevronRight } from 'lucide-react'
-import { buzzSummary, getBuzzTierState, gigHistory } from '../demoData'
-import { useAppState } from '../store/appStore'
-import { GigHistoryList } from '../components/GigHistoryList'
-
-const PREVIEW_COUNT = 5
+import { buzzSummary, getBuzzTierState } from '../../data/demoData'
+import { useAppState } from '../../store/appStore'
 
 type ProfileTabProps = {
   /**
@@ -38,7 +35,7 @@ const badges = [
 export function ProfileTab({
   experienceRingFill = PROFILE_EXPERIENCE_RING_FALLBACK,
 }: ProfileTabProps) {
-  const { openGigHistory, openSettings, openBuzzPoints, userProfile } = useAppState()
+  const { openSettings, openBuzzPoints, userProfile } = useAppState()
   const { current: buzzTier } = getBuzzTierState(buzzSummary.total)
   const headline =
     userProfile.displayName.trim() !== ''
@@ -50,8 +47,6 @@ export function ProfileTab({
   const ringPercent = Math.round(ringFill * 100)
   const ringStyle = { '--ring-fill': ringFill } as CSSProperties
 
-  const previewGigs = gigHistory.slice(0, PREVIEW_COUNT)
-  const remaining = gigHistory.length - PREVIEW_COUNT
   const tasteCount = tasteGenres.length
   const badgeCount = badges.length
 
@@ -169,22 +164,6 @@ export function ProfileTab({
             )
           })}
         </div>
-      </section>
-
-      {/* Gig History — preview (top 5) */}
-      <section className="profile-section">
-        <div className="section-title-rule"><span>GIG HISTORY</span></div>
-        <GigHistoryList items={previewGigs} hasMore={remaining > 0} />
-        {remaining > 0 && (
-          <button
-            type="button"
-            className="show-all-gigs-btn"
-            onClick={openGigHistory}
-          >
-            <span>Show all {gigHistory.length} gigs</span>
-            <ChevronRight size={15} />
-          </button>
-        )}
       </section>
 
       {/* Go Pro upsell */}

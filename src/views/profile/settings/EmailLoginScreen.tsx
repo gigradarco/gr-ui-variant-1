@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, CheckCircle2, Mail } from 'lucide-react'
-import { useAppState } from '../../store/appStore'
+import { useAppState } from '../../../store/appStore'
 
 /** Demo account — replace with session user.email */
 const CURRENT_EMAIL = 'vincenzo@example.com'

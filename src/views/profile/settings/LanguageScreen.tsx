@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { ArrowLeft, Check } from 'lucide-react'
-import { useAppState } from '../../store/appStore'
+import { useAppState } from '../../../store/appStore'
 
 /** Single option for now; extend when you add locales. */
 const LANGUAGES = [{ id: 'en', label: 'English' }] as const

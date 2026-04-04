@@ -1,4 +1,4 @@
-import type { EventItem, GigEntry } from './types'
+import type { EventItem, GigEntry, PlanPageEvent, PlanPastEvent } from '../types'
 
 export const events: EventItem[] = [
   {
@@ -50,6 +50,66 @@ export const events: EventItem[] = [
     ticketPrice: '$45.00',
   },
 ]
+
+/** Single featured event for the Plan tab (event detail wireframe). */
+export const planPageEvent: PlanPageEvent = {
+  eventId: 'neonpulse',
+  heroImage:
+    'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=1200&q=80',
+  displayTitle: 'NEON REBELLION: PHASE IV',
+  artistLine: 'BY KØRE GRAVITY',
+  genreTags: ['INDUSTRIAL TECHNO', 'UNDERGROUND'],
+  venueLine: 'THE VAULT, BERLIN',
+  timeRange: '23:00 – 06:00',
+  aiVibeScore: 9.8,
+  eliteVerifiedCount: 42,
+  eliteStackExtra: 39,
+  experienceParts: {
+    before:
+      'A relentless, high-BPM exploration of sound design where concrete walls vibrate with sub frequencies. This is not just music; it is a ',
+    emphasis: 'visceral journey',
+    after:
+      ' into the mechanical heartbeat of the underground. Expect hypnotic loops and raw analogue textures until sunrise.',
+  },
+  audioPreviewLabel: 'PREVIEW: KØRE — DARK MATTER',
+  audioCurrent: '0:14',
+  audioTotal: '0:30',
+  friendsAttendingCount: 125,
+  friends: [
+    {
+      id: 'f1',
+      name: 'Sarah',
+      avatar:
+        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
+      ring: true,
+    },
+    {
+      id: 'f2',
+      name: 'Marcus',
+      avatar:
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
+      ring: true,
+    },
+    {
+      id: 'f3',
+      name: 'Lena',
+      avatar:
+        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80',
+    },
+    {
+      id: 'f4',
+      name: 'David',
+      avatar:
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
+    },
+    {
+      id: 'f5',
+      name: 'Mia',
+      avatar:
+        'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80',
+    },
+  ],
+}
 
 export const exploreTargetPrompt = 'any good jazz tonight near tiong bahru ?'
 
@@ -271,6 +331,82 @@ export const gigHistory: GigEntry[] = [
     images: [],
   },
 ]
+
+/** Past gigs for Plan tab — same source as profile gig history (`gigHistory`). */
+export const planPastEvents: PlanPastEvent[] = gigHistory.map((g) => ({
+  id: `past-${g.id}`,
+  title: g.description,
+  venue: g.venue,
+  whenLabel: g.when,
+  image:
+    g.images[0] ??
+    'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=800&q=80',
+}))
+
+const planDetailFallbackFriends = planPageEvent.friends
+
+export function planDetailFromEventItem(ev: EventItem): PlanPageEvent {
+  const t0 = (ev.vibeTags[0] ?? ev.genre).toUpperCase()
+  const t1 = (ev.vibeTags[1] ?? 'LIVE').toUpperCase()
+  return {
+    eventId: ev.id,
+    heroImage: ev.image,
+    displayTitle: ev.title.toUpperCase(),
+    artistLine: `HOST · ${ev.host.toUpperCase()}`,
+    genreTags: [t0, t1],
+    venueLine: `${ev.venue.toUpperCase()}, ${ev.district.toUpperCase()}`,
+    timeRange: ev.time,
+    aiVibeScore: Math.min(9.9, 7.4 + (ev.verified % 25) / 10),
+    eliteVerifiedCount: ev.verified,
+    eliteStackExtra: Math.max(8, ev.friendsGoing * 9),
+    experienceParts: {
+      before: `Tonight at ${ev.venue}: ${ev.genre} energy built for the floor. `,
+      emphasis: ev.vibeTags[0] ?? 'All night',
+      after: ` ${ev.hostPrompt}`,
+    },
+    audioPreviewLabel: `PREVIEW: ${ev.title.slice(0, 28).toUpperCase()}`,
+    audioCurrent: '0:00',
+    audioTotal: '0:45',
+    friendsAttendingCount: ev.friendsGoing * 14 + 32,
+    friends: planDetailFallbackFriends.slice(0, Math.max(3, Math.min(5, ev.friendsGoing + 2))),
+  }
+}
+
+export function planDetailFromPast(p: PlanPastEvent): PlanPageEvent {
+  return {
+    eventId: p.id,
+    heroImage: p.image,
+    displayTitle: p.title.toUpperCase(),
+    artistLine: 'PAST NIGHT',
+    genreTags: ['ARCHIVE', 'WAS THERE'],
+    venueLine: p.venue.toUpperCase(),
+    timeRange: p.whenLabel,
+    aiVibeScore: 8.6,
+    eliteVerifiedCount: 56,
+    eliteStackExtra: 24,
+    experienceParts: {
+      before: 'A night logged in your plan. ',
+      emphasis: 'Memory',
+      after: ' — open any night here for recap-style details.',
+    },
+    audioPreviewLabel: 'RECAP (DEMO)',
+    audioCurrent: '0:00',
+    audioTotal: '0:00',
+    friendsAttendingCount: 0,
+    friends: planDetailFallbackFriends.slice(0, 3),
+  }
+}
+
+export function getPlanDetailUpcoming(eventId: string): PlanPageEvent | null {
+  if (eventId === planPageEvent.eventId) return planPageEvent
+  const ev = events.find((e) => e.id === eventId)
+  return ev ? planDetailFromEventItem(ev) : null
+}
+
+export function getPlanDetailPast(pastId: string): PlanPageEvent | null {
+  const p = planPastEvents.find((x) => x.id === pastId)
+  return p ? planDetailFromPast(p) : null
+}
 
 /**
  * Visual palette for tier cards / hero (gradients). Not shown as user-facing labels.

@@ -1,4 +1,4 @@
-import { events } from './demoData'
+import { events } from '../../data/demoData'
 
 export type ExploreAgentResult = {
   reply: string

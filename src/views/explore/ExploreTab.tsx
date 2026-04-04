@@ -6,13 +6,13 @@ import {
   exploreSuggestedPrompts,
   exploreTargetPrompt,
   telegramBotLink,
-} from '../demoData'
+} from '../../data/demoData'
 import {
   fetchMapboxPlaceName,
   fetchOpenAIExploreResult,
   getHardcodedAgentFallback,
   normalizePrompt,
-} from '../exploreAgent'
+} from './exploreAgent'
 
 type ExploreTabProps = {
   onOpenEvent: (eventId: string) => void

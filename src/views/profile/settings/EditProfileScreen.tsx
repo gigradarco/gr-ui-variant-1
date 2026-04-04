@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Camera } from 'lucide-react'
-import { useAppState } from '../../store/appStore'
+import { useAppState } from '../../../store/appStore'
 
 export function EditProfileScreen() {
   const closeEditProfile = useAppState((s) => s.closeEditProfile)

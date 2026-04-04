@@ -22,7 +22,6 @@ type AppState = {
   tab: Tab
   theme: Theme
   activeEventId: string | null
-  showGigHistory: boolean
   showBuzzPoints: boolean
   showSettings: boolean
   showLanguage: boolean
@@ -30,12 +29,11 @@ type AppState = {
   showFeedback: boolean
   showEmailLogin: boolean
   showEditProfile: boolean
+  showSubscription: boolean
   setTab: (tab: Tab) => void
   setTheme: (theme: Theme) => void
   openEvent: (eventId: string) => void
   closeEvent: () => void
-  openGigHistory: () => void
-  closeGigHistory: () => void
   openBuzzPoints: () => void
   closeBuzzPoints: () => void
   openSettings: () => void
@@ -50,6 +48,8 @@ type AppState = {
   closeEmailLogin: () => void
   openEditProfile: () => void
   closeEditProfile: () => void
+  openSubscription: () => void
+  closeSubscription: () => void
   setUserProfile: (patch: Partial<UserProfile>) => void
 }
 
@@ -58,7 +58,6 @@ export const useAppState = create<AppState>((set) => ({
   tab: 'feed',
   theme: 'dark',
   activeEventId: null,
-  showGigHistory: false,
   showBuzzPoints: false,
   showSettings: false,
   showLanguage: false,
@@ -66,12 +65,11 @@ export const useAppState = create<AppState>((set) => ({
   showFeedback: false,
   showEmailLogin: false,
   showEditProfile: false,
+  showSubscription: false,
   setTab: (tab) => set({ tab }),
   setTheme: (theme) => set({ theme }),
   openEvent: (eventId) => set({ activeEventId: eventId }),
   closeEvent: () => set({ activeEventId: null }),
-  openGigHistory: () => set({ showGigHistory: true }),
-  closeGigHistory: () => set({ showGigHistory: false }),
   openBuzzPoints: () => set({ showBuzzPoints: true }),
   closeBuzzPoints: () => set({ showBuzzPoints: false }),
   openSettings: () => set({ showSettings: true }),
@@ -86,6 +84,8 @@ export const useAppState = create<AppState>((set) => ({
   closeEmailLogin: () => set({ showEmailLogin: false }),
   openEditProfile: () => set({ showEditProfile: true }),
   closeEditProfile: () => set({ showEditProfile: false }),
+  openSubscription: () => set({ showSubscription: true }),
+  closeSubscription: () => set({ showSubscription: false }),
   setUserProfile: (patch) =>
     set((s) => ({ userProfile: { ...s.userProfile, ...patch } })),
 }))

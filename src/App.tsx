@@ -1,12 +1,11 @@
 import { lazy, Suspense, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Moon, Sun, X } from 'lucide-react'
-import { events } from './demoData'
+import { events } from './data/demoData'
 import { useAppState } from './store/appStore'
-import { tabNavItems } from './tabNavigation'
-import { FeedTab } from './tabs/FeedTab'
-import { GigHistoryScreen } from './screens/GigHistoryScreen'
-import { BuzzPointsScreen } from './screens/BuzzPointsScreen'
+import { tabNavItems } from './config/tabNavigation'
+import { FeedTab } from './views'
+import { BuzzPointsScreen } from './views/profile/BuzzPointsScreen'
 import {
   SettingsScreen,
   EditProfileScreen,
@@ -14,16 +13,17 @@ import {
   PrivacySafetyScreen,
   FeedbackScreen,
   EmailLoginScreen,
-} from './screens/settings'
+  SubscriptionScreen,
+} from './views/profile/settings'
 
 const ExploreTab = lazy(() =>
-  import('./tabs/ExploreTab').then((m) => ({ default: m.ExploreTab })),
+  import('./views/explore/ExploreTab').then((m) => ({ default: m.ExploreTab })),
 )
 const PlanTab = lazy(() =>
-  import('./tabs/PlanTab').then((m) => ({ default: m.PlanTab })),
+  import('./views/plan/PlanTab').then((m) => ({ default: m.PlanTab })),
 )
 const ProfileTab = lazy(() =>
-  import('./tabs/ProfileTab').then((m) => ({ default: m.ProfileTab })),
+  import('./views/profile/ProfileTab').then((m) => ({ default: m.ProfileTab })),
 )
 
 function App() {
@@ -31,7 +31,6 @@ function App() {
     tab,
     theme,
     activeEventId,
-    showGigHistory,
     showBuzzPoints,
     showSettings,
     showLanguage,
@@ -39,6 +38,7 @@ function App() {
     showFeedback,
     showEmailLogin,
     showEditProfile,
+    showSubscription,
     setTab,
     setTheme,
     openEvent,
@@ -103,7 +103,6 @@ function App() {
         </section>
 
         <AnimatePresence>
-          {showGigHistory && <GigHistoryScreen key="gig-history" />}
           {showBuzzPoints && <BuzzPointsScreen key="buzz-points" />}
           {showSettings && <SettingsScreen key="settings" />}
           {showEditProfile && <EditProfileScreen key="edit-profile" />}
@@ -111,6 +110,7 @@ function App() {
           {showPrivacySafety && <PrivacySafetyScreen key="privacy-safety" />}
           {showFeedback && <FeedbackScreen key="feedback" />}
           {showEmailLogin && <EmailLoginScreen key="email-login" />}
+          {showSubscription && <SubscriptionScreen key="subscription" />}
         </AnimatePresence>
 
         <nav className="bottom-nav" aria-label="Main">
