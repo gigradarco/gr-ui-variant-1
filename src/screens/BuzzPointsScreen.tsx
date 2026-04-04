@@ -19,7 +19,7 @@ const TIER_COPY: Record<string, { streak: string }> = {
   on_the_floor: { streak: 'You’re going out · better drop alerts and check-in buzz' },
   scene_regular: { streak: 'Known in the scene · guestlist nudges and venue boosts' },
   front_row: { streak: 'Always there for the big night · sold-out heads-ups, review bonuses' },
-  afters: { streak: 'Late-night regular · crew boosts and last-minute after picks' },
+  afters: { streak: 'Midnight Sun energy · crew boosts and late, late picks' },
   sunrise: { streak: 'Closed the venue energy · top perks, full story, crew legend status' },
 }
 

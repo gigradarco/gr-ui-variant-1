@@ -113,7 +113,7 @@ function App() {
           {showEmailLogin && <EmailLoginScreen key="email-login" />}
         </AnimatePresence>
 
-        <nav className="bottom-nav">
+        <nav className="bottom-nav" aria-label="Main">
           {tabNavItems.map((item) => {
             const Icon = item.icon
             const isActive = tab === item.key
@@ -124,9 +124,14 @@ function App() {
                 key={item.key}
                 type="button"
                 onClick={() => setTab(item.key)}
+                aria-current={isActive ? 'page' : undefined}
               >
-                <Icon size={18} />
-                <span>{item.label}</span>
+                <span className={item.iconDot ? 'nav-item-icon nav-item-icon--plan' : 'nav-item-icon'}>
+                  <Icon size={22} strokeWidth={isActive ? 2.25 : 2} aria-hidden />
+                  {item.iconDot ? <span className="nav-item-plan-dot" aria-hidden /> : null}
+                </span>
+                <span className="nav-item-label">{item.label}</span>
+                {isActive ? <span className="nav-item-active-bar" aria-hidden /> : null}
               </button>
             )
           })}

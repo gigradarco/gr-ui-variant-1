@@ -292,7 +292,7 @@ export const buzzTiers: BuzzTierDef[] = [
   { id: 'on_the_floor', level: 2, metal: 'silver', label: 'On the Floor', minPoints: 4_000 },
   { id: 'scene_regular', level: 3, metal: 'gold', label: 'Scene Regular', minPoints: 8_000 },
   { id: 'front_row', level: 4, metal: 'platinum', label: 'Front Row', minPoints: 12_000 },
-  { id: 'afters', level: 5, metal: 'diamond', label: 'Afters', minPoints: 20_000 },
+  { id: 'afters', level: 5, metal: 'diamond', label: 'Midnight Sun', minPoints: 20_000 },
   { id: 'sunrise', level: 6, metal: 'black', label: 'Sunrise', minPoints: 50_000 },
 ]
 

@@ -649,29 +649,98 @@ body {
 
 .bottom-nav {
   flex-shrink: 0;
-  min-height: 56px;
-  padding-top: 10px;
-  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
-  border-top: 1px solid var(--stroke);
+  min-height: 58px;
+  padding-top: 8px;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
+  padding-left: 4px;
+  padding-right: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  background: color-mix(in oklab, var(--bg) 88%, black);
+  align-items: end;
+  background: #000000;
+  gap: 0;
+}
+
+.theme-light .bottom-nav {
+  background: #0a0a0a;
+  border-top-color: rgba(255, 255, 255, 0.08);
 }
 
 .nav-item {
   border: 0;
   background: transparent;
-  color: var(--muted);
-  display: grid;
-  place-items: center;
-  gap: 2px;
-  font-size: 0.68rem;
-  min-height: 48px;
-  padding: 4px 4px 6px;
+  color: #8c8c8c;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  min-height: 52px;
+  padding: 6px 4px 2px;
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s ease;
+}
+
+.nav-item:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--primary) 65%, transparent);
+  outline-offset: 2px;
+  border-radius: 8px;
 }
 
 .nav-item.active {
+  color: var(--primary);
+}
+
+.theme-light .nav-item.active {
   color: var(--primary-soft);
+}
+
+.nav-item-icon {
+  display: grid;
+  place-items: center;
+  color: currentColor;
+  line-height: 0;
+}
+
+.nav-item-icon--plan {
+  position: relative;
+}
+
+.nav-item-plan-dot {
+  position: absolute;
+  right: 0;
+  bottom: 1px;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+  box-shadow: 0 0 0 2px #000000;
+}
+
+.theme-light .nav-item-plan-dot {
+  box-shadow: 0 0 0 2px #0a0a0a;
+}
+
+.nav-item-label {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: currentColor;
+}
+
+.nav-item-active-bar {
+  display: block;
+  width: 28px;
+  height: 3px;
+  margin-top: 1px;
+  border-radius: 2px;
+  background: currentColor;
+  flex-shrink: 0;
 }
 
 .event-sheet {
