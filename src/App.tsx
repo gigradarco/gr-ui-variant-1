@@ -1,7 +1,11 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Info, Moon, Sun, X, Zap } from 'lucide-react'
-import { events, getPlanDetailPast, getPlanDetailUpcoming } from './data/demoData'
+import {
+  events,
+  getPlanDetailPast,
+  getPlanDetailUpcoming,
+} from './data/demoData'
 import { useAppState } from './store/appStore'
 import type { Tab } from './types'
 import { PlanEventDetail } from './views/plan/PlanEventDetail'
@@ -69,6 +73,7 @@ function App() {
     requestPlanDetail,
     pendingPlanDetail,
     clearPendingPlanDetail,
+    isDiscoverExpanded,
   } = useAppState()
   const [discoverPrefill, setDiscoverPrefill] = useState('')
   const [sheetPlanOverlay, setSheetPlanOverlay] = useState<SheetPlanOverlay | null>(null)
@@ -158,31 +163,45 @@ function App() {
               ? 'phone-shell phone-shell--behind-event-sheet'
               : sheetPlanOverlay
                 ? 'phone-shell phone-shell--behind-plan-overlay'
-                : 'phone-shell'
+                : tab === 'discover'
+                  ? `phone-shell phone-shell--discover ${isDiscoverExpanded ? 'phone-shell--expanded' : ''}`
+                  : 'phone-shell'
           }
         >
-          <header className="topbar">
-            <div className="brand-wrap">
-              <img
-                className="brand-logo"
-                src="/assets/logo/b-logo.svg"
-                alt="Buzo"
-                width={34}
-                height={34}
-                decoding="async"
-              />
-            </div>
-            <div className="actions">
-              <button
-                className="icon-btn"
-                type="button"
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          <AnimatePresence initial={false}>
+            {!isDiscoverExpanded && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
+                style={{ overflow: 'hidden', flexShrink: 0 }}
               >
-                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-              </button>
-            </div>
-          </header>
+                <header className="topbar">
+                  <div className="brand-wrap">
+                    <img
+                      className="brand-logo"
+                      src="/assets/logo/b-logo.svg"
+                      alt="Buzo"
+                      width={34}
+                      height={34}
+                      decoding="async"
+                    />
+                  </div>
+                  <div className="actions">
+                    <button
+                      className="icon-btn"
+                      type="button"
+                      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                      aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                    >
+                      {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+                    </button>
+                  </div>
+                </header>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <section className="screen">
             <Suspense fallback={<div className="tab-suspense-fallback" aria-hidden />}>
@@ -230,29 +249,41 @@ function App() {
             {showSubscription && <SubscriptionScreen key="subscription" />}
           </AnimatePresence>
 
-          <nav className="bottom-nav" aria-label="Main">
-            {tabNavItems.map((item) => {
-              const Icon = item.icon
-              const isActive = tab === item.key
+          <AnimatePresence initial={false}>
+            {!isDiscoverExpanded && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
+                style={{ overflow: 'hidden', flexShrink: 0 }}
+              >
+                <nav className="bottom-nav" aria-label="Main">
+                  {tabNavItems.map((item) => {
+                    const Icon = item.icon
+                    const isActive = tab === item.key
 
-              return (
-                <button
-                  className={isActive ? 'nav-item active' : 'nav-item'}
-                  key={item.key}
-                  type="button"
-                  onClick={() => setTab(item.key)}
-                  aria-current={isActive ? 'page' : undefined}
-                >
-                  <span className={item.iconDot ? 'nav-item-icon nav-item-icon--plan' : 'nav-item-icon'}>
-                    <Icon size={22} strokeWidth={isActive ? 2.25 : 2} aria-hidden />
-                    {item.iconDot ? <span className="nav-item-plan-dot" aria-hidden /> : null}
-                  </span>
-                  <span className="nav-item-label">{item.label}</span>
-                  {isActive ? <span className="nav-item-active-bar" aria-hidden /> : null}
-                </button>
-              )
-            })}
-          </nav>
+                    return (
+                      <button
+                        className={isActive ? 'nav-item active' : 'nav-item'}
+                        key={item.key}
+                        type="button"
+                        onClick={() => setTab(item.key)}
+                        aria-current={isActive ? 'page' : undefined}
+                      >
+                        <span className={item.iconDot ? 'nav-item-icon nav-item-icon--plan' : 'nav-item-icon'}>
+                          <Icon size={22} strokeWidth={isActive ? 2.25 : 2} aria-hidden />
+                          {item.iconDot ? <span className="nav-item-plan-dot" aria-hidden /> : null}
+                        </span>
+                        <span className="nav-item-label">{item.label}</span>
+                        {isActive ? <span className="nav-item-active-bar" aria-hidden /> : null}
+                      </button>
+                    )
+                  })}
+                </nav>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </main>
       )}
 

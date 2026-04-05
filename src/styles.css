@@ -125,6 +125,11 @@ body {
     opacity 0.28s ease;
 }
 
+/* Discover: shell keeps the same solid bg as other tabs so the topbar looks identical. */
+.phone-shell--discover {
+  background: var(--bg);
+}
+
 /** Event detail sheet open: soften feed chrome behind the modal. */
 .phone-shell--behind-event-sheet {
   filter: blur(9px);
@@ -388,6 +393,68 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
+}
+
+
+.topbar-telegram {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: min(212px, 56vw);
+  padding: 5px 4px 5px 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--primary) 40%, var(--stroke));
+  background: color-mix(in oklab, var(--card) 82%, var(--bg));
+  color: var(--text);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.topbar-telegram:hover {
+  border-color: color-mix(in oklab, var(--primary) 65%, var(--stroke));
+  background: color-mix(in oklab, var(--primary) 14%, var(--card));
+}
+
+.topbar-telegram:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--primary) 50%, transparent);
+  outline-offset: 2px;
+}
+
+.topbar-telegram-copy {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+  text-align: right;
+}
+
+.topbar-telegram-copy strong {
+  display: block;
+  font-size: 0.66rem;
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar-telegram-copy small {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar-telegram-chevron {
+  flex-shrink: 0;
+  color: var(--muted);
 }
 
 .ghost,
@@ -840,6 +907,7 @@ body {
   background: var(--card);
   border: 1px solid var(--stroke);
   cursor: default;
+  flex-shrink: 0;
 }
 
 .event-card img {
@@ -921,9 +989,11 @@ body {
 .chat-bubble {
   max-width: 90%;
   border-radius: 16px;
-  padding: 12px;
+  padding: 14px 16px;
+  font-size: 0.92rem;
   font-weight: 500;
-  line-height: 1.4;
+  line-height: 1.45;
+  flex-shrink: 0;
 }
 
 .chat-bubble.user {
@@ -1001,8 +1071,45 @@ body {
   animation-delay: 0.24s;
 }
 
+.event-card.compact {
+  margin: 4px 0;
+}
+
+.event-card.compact img {
+  height: 130px;
+}
+
+.event-card.compact .event-meta {
+  margin-top: -115px;
+  padding: 0 10px;
+}
+
 .event-card.compact .event-body {
-  margin-top: 122px;
+  margin-top: 90px;
+  padding: 12px;
+}
+
+.event-card.compact .event-body h3 {
+  margin: 4px 0;
+  font-size: 1.15rem;
+}
+
+.event-card.compact .event-body p {
+  font-size: 0.85rem;
+}
+
+.event-card.compact .tags {
+  margin: 8px 0;
+}
+
+.event-card.compact .tags span {
+  padding: 4px 8px;
+  font-size: 0.72rem;
+}
+
+.event-card.compact .cta-full {
+  min-height: 38px;
+  font-size: 0.85rem;
 }
 
 .tags {
@@ -1498,6 +1605,7 @@ body {
     min-height: 58px;
     padding: 10px 14px;
   }
+
 }
 
 /*
@@ -7932,6 +8040,486 @@ body {
 
 .welcome-layla-shortcut:active {
   transform: scale(0.98);
+}
+
+/* ─── Discover tab ────────────────────────────────────────────────────────── */
+
+/* ─── Discover secondary header ─── */
+.discover-secondary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.discover-secondary-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.discover-new-chat-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: color-mix(in oklab, var(--card) 60%, transparent);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.discover-new-chat-btn:hover {
+  background: var(--card);
+  border-color: color-mix(in oklab, var(--primary) 40%, var(--stroke));
+}
+
+.discover-expand-btn {
+  min-height: 32px;
+  min-width: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─── Discover drawer ─── */
+.discover-drawer-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 100;
+}
+
+.discover-drawer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 80%;
+  max-width: 320px;
+  background: var(--bg);
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+  border-right: 1px solid var(--stroke);
+}
+
+.discover-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid var(--stroke);
+}
+
+.discover-drawer-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.discover-drawer-content {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.discover-drawer-empty {
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 32px;
+}
+
+.discover-drawer-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.discover-drawer-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--card) 60%, transparent);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.discover-drawer-item:hover {
+  background: var(--card);
+}
+
+.discover-drawer-item.active {
+  background: var(--card);
+  border-color: var(--primary);
+}
+
+.discover-drawer-item-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-right: 8px;
+}
+
+.discover-drawer-item-delete {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.discover-drawer-item-delete:hover {
+  background: rgba(255, 60, 60, 0.15);
+  color: #ff4d4d;
+}
+
+/* Screen container becomes a flex column so the tab can fill it */
+.screen:has(.discover-tab.discover-layla) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* The tab itself fills the screen, no margin/width hacks needed */
+.discover-tab.discover-layla {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(ellipse 80% 35% at 50% 0%, rgba(226, 67, 37, 0.22), transparent 55%),
+    radial-gradient(ellipse 100% 45% at 10% 0%, rgba(226, 67, 37, 0.16), transparent 50%),
+    linear-gradient(to bottom, #352436 0%, #261c2e 22%, #151018 52%, #0c0a0e 100%);
+  color: var(--text);
+}
+
+.theme-light .discover-tab.discover-layla {
+  background:
+    radial-gradient(ellipse 100% 45% at 15% 0%, rgba(226, 67, 37, 0.14), transparent 50%),
+    linear-gradient(to bottom, #ebe4f0 0%, #e2dbe8 40%, var(--bg) 100%);
+}
+
+/* Scroll area — fills remaining space, scrolls chat content */
+.discover-layla-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 16px 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.discover-layla-scroll-inner {
+  width: 100%;
+  max-width: min(100%, 42rem);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 24px;
+}
+
+/* Empty state: shrink so composer sits in the middle of the screen */
+.discover-layla-scroll--empty {
+  flex: 1 1 auto;
+  overflow-y: visible;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Empty state centred content */
+.discover-layla-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 20px 24px;
+  gap: 0;
+}
+
+.discover-telegram-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 6px 6px 12px;
+  margin-bottom: 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(8, 6, 12, 0.52);
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.discover-telegram-btn:hover {
+  border-color: color-mix(in oklab, var(--primary) 55%, rgba(255, 255, 255, 0.2));
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.discover-telegram-btn:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--primary) 50%, transparent);
+  outline-offset: 2px;
+}
+
+.theme-light .discover-telegram-btn {
+  background: rgba(255, 255, 255, 0.86);
+  border-color: color-mix(in oklab, var(--primary) 35%, rgba(28, 20, 36, 0.2));
+  color: #1c1424;
+}
+
+.theme-light .discover-telegram-btn:hover {
+  background: #fff;
+}
+
+.discover-layla-empty-title {
+  margin: 0 0 8px;
+  font-size: clamp(1.28rem, 4.8vw, 1.58rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+  color: rgba(255, 255, 255, 0.94);
+}
+
+.theme-light .discover-layla-empty-title {
+  color: #1c1424;
+}
+
+.discover-layla-empty-sub {
+  margin: 0;
+  max-width: 280px;
+  font-size: 0.84rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.theme-light .discover-layla-empty-sub {
+  color: color-mix(in oklab, #1c1424 58%, var(--muted));
+}
+
+/* User bubble right-aligned */
+.discover-layla-scroll .chat-bubble.user {
+  align-self: flex-end;
+  max-width: 82%;
+}
+
+/* Bot bubble full-width feel */
+.discover-layla-scroll .chat-bubble.bot {
+  align-self: flex-start;
+  max-width: 92%;
+}
+
+/* Footer: composer + chips, pinned at bottom */
+.discover-layla-footer {
+  flex-shrink: 0;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: transparent;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.theme-light .discover-layla-footer {
+  border-top-color: rgba(28, 20, 36, 0.08);
+}
+
+.discover-layla-prompt-stack {
+  gap: 10px;
+}
+
+/* Composer box */
+.discover-tab.discover-layla .welcome-layla-composer {
+  padding: 12px 14px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(16, 12, 20, 0.82);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 12px 40px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.theme-light .discover-tab.discover-layla .welcome-layla-composer {
+  border-color: rgba(28, 20, 36, 0.12);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 1px 0 #fff inset, 0 10px 36px rgba(28, 24, 40, 0.12);
+}
+
+/* Compact Composer (when thread has started) */
+.discover-tab.discover-layla .welcome-layla-composer--compact {
+  display: flex;
+  align-items: flex-end;
+  padding: 8px 8px 8px 4px;
+  gap: 4px;
+}
+
+.discover-tab.discover-layla .welcome-layla-composer--compact .welcome-layla-textarea {
+  min-height: auto;
+  height: 38px;
+  padding: 8px 4px;
+  flex: 1;
+}
+
+.discover-tab.discover-layla .welcome-layla-composer--compact .welcome-layla-toolbar {
+  margin-top: 0;
+  padding-top: 0;
+  border: none;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.discover-tab.discover-layla .welcome-layla-attach-icon {
+  height: 38px;
+  width: 38px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.discover-tab.discover-layla .welcome-layla-attach-icon:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.theme-light .discover-tab.discover-layla .welcome-layla-attach-icon {
+  color: rgba(28, 20, 36, 0.5);
+}
+
+.theme-light .discover-tab.discover-layla .welcome-layla-attach-icon:hover {
+  color: rgba(28, 20, 36, 0.9);
+}
+
+.discover-tab.discover-layla .welcome-layla-textarea {
+  min-height: 52px;
+  padding: 4px 6px 2px;
+  font-size: 0.94rem;
+  line-height: 1.45;
+}
+
+.theme-dark .discover-tab.discover-layla .welcome-layla-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.discover-tab.discover-layla .welcome-layla-toolbar {
+  margin-top: 2px;
+  padding-top: 10px;
+  border-top-color: rgba(255, 255, 255, 0.09);
+  gap: 6px;
+}
+
+.discover-tab.discover-layla .welcome-layla-attach {
+  height: 34px;
+  padding: 0 12px;
+  font-size: 0.78rem;
+  background: rgba(0, 0, 0, 0.28);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.discover-tab.discover-layla .welcome-layla-attach:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+
+.theme-light .discover-tab.discover-layla .welcome-layla-attach {
+  background: color-mix(in oklab, var(--bg) 88%, #fff);
+  border-color: rgba(28, 20, 36, 0.12);
+  color: color-mix(in oklab, #1c1424 88%, var(--muted));
+}
+
+.discover-tab.discover-layla .welcome-layla-mic {
+  width: 34px;
+  height: 34px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.discover-tab.discover-layla .welcome-layla-send {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(180deg, var(--primary-soft), var(--primary));
+  box-shadow: 0 2px 12px color-mix(in oklab, var(--primary) 42%, transparent);
+}
+
+.discover-tab.discover-layla .welcome-layla-send:hover {
+  filter: brightness(1.06);
+}
+
+/* Quick-prompt chips */
+.discover-tab.discover-layla .welcome-layla-chip-row {
+  row-gap: 8px;
+  column-gap: 8px;
+}
+
+.discover-tab.discover-layla .welcome-layla-shortcut {
+  flex: 0 1 auto;
+  padding: 8px 13px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1.38;
+  letter-spacing: 0.01em;
+  white-space: normal;
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  background: rgba(8, 6, 12, 0.55);
+  box-shadow: none;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.discover-tab.discover-layla .welcome-layla-shortcut:hover {
+  border-color: color-mix(in oklab, var(--primary) 55%, rgba(255, 255, 255, 0.2));
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+}
+
+.theme-light .discover-tab.discover-layla .welcome-layla-shortcut {
+  border-color: rgba(28, 20, 36, 0.12);
+  background: rgba(255, 255, 255, 0.72);
+  color: #1c1424;
+}
+
+.theme-light .discover-tab.discover-layla .welcome-layla-shortcut:hover {
+  border-color: color-mix(in oklab, var(--primary) 45%, rgba(28, 20, 36, 0.2));
+  background: #fff;
 }
 
 .welcome-scroll-hint {

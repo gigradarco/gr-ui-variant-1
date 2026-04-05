@@ -117,6 +117,8 @@ type AppState = {
   setUserProfile: (patch: Partial<UserProfile>) => void
   setSubscriptionTier: (tier: SubscriptionTier) => void
   setFeedLocationCityId: (cityId: string) => void
+  isDiscoverExpanded: boolean
+  toggleDiscoverExpanded: () => void
 }
 
 export const useAppState = create<AppState>((set) => ({
@@ -138,6 +140,7 @@ export const useAppState = create<AppState>((set) => ({
   showSignIn: false,
   showEditProfile: false,
   showSubscription: false,
+  isDiscoverExpanded: false,
   dismissWelcome: () => {
     persistWelcomeDismissed()
     set({ welcomeDismissed: true, showSignIn: false })
@@ -200,4 +203,5 @@ export const useAppState = create<AppState>((set) => ({
     set((s) => ({ userProfile: { ...s.userProfile, ...patch } })),
   setSubscriptionTier: (subscriptionTier) => set({ subscriptionTier }),
   setFeedLocationCityId: (feedLocationCityId) => set({ feedLocationCityId }),
+  toggleDiscoverExpanded: () => set((s) => ({ isDiscoverExpanded: !s.isDiscoverExpanded })),
 }))
