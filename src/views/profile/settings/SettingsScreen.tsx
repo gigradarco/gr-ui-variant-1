@@ -66,6 +66,7 @@ function SettingsRow({
 export function SettingsScreen() {
   const {
     closeSettings,
+    returnToLanding,
     openLanguage,
     openPrivacySafety,
     openFeedback,
@@ -78,7 +79,7 @@ export function SettingsScreen() {
 
   const handleLogout = () => {
     closeSettings()
-    window.alert('You’re signed out. (Demo — hook your auth session here.)')
+    returnToLanding()
   }
 
   const noop = () => {

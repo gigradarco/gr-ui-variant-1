@@ -17,6 +17,7 @@ import {
   EmailLoginScreen,
   SubscriptionScreen,
 } from './views/profile/settings'
+import { WelcomeScreen, SignInSheet } from './views/welcome'
 
 const DiscoverTab = lazy(() =>
   import('./views/discover/DiscoverTab').then((m) => ({ default: m.DiscoverTab })),
@@ -49,6 +50,8 @@ function App() {
   const {
     tab,
     theme,
+    welcomeDismissed,
+    showSignIn,
     activeEventId,
     showBuzzPoints,
     showSettings,
@@ -58,6 +61,7 @@ function App() {
     showEmailLogin,
     showEditProfile,
     showSubscription,
+    dismissWelcome,
     setTab,
     setTheme,
     openEvent,
@@ -139,108 +143,122 @@ function App() {
       <div className="glow glow-1" />
       <div className="glow glow-2" />
 
-      <main
-        className={
-          activeEvent
-            ? 'phone-shell phone-shell--behind-event-sheet'
-            : sheetPlanOverlay
-              ? 'phone-shell phone-shell--behind-plan-overlay'
-              : 'phone-shell'
-        }
-      >
-        <header className="topbar">
-          <div className="brand-wrap">
-            <img
-              className="brand-logo"
-              src="/assets/logo/b-logo.svg"
-              alt="Buzo"
-              width={34}
-              height={34}
-              decoding="async"
-            />
-          </div>
-          <div className="actions">
-            <button
-              className="icon-btn"
-              type="button"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-          </div>
-        </header>
-
-        <section className="screen">
-          <Suspense fallback={<div className="tab-suspense-fallback" aria-hidden />}>
-            {tab === 'feed' && (
-              <FeedTab
-                onOpenEvent={openEvent}
-                onAsk={(prompt) => {
-                  setDiscoverPrefill(prompt)
-                  setTab('discover')
-                }}
+      {!welcomeDismissed ? (
+        <WelcomeScreen
+          onEnterApp={(prefill, initialTab = 'discover') => {
+            setDiscoverPrefill(prefill)
+            setTab(initialTab)
+            dismissWelcome()
+          }}
+        />
+      ) : (
+        <main
+          className={
+            activeEvent
+              ? 'phone-shell phone-shell--behind-event-sheet'
+              : sheetPlanOverlay
+                ? 'phone-shell phone-shell--behind-plan-overlay'
+                : 'phone-shell'
+          }
+        >
+          <header className="topbar">
+            <div className="brand-wrap">
+              <img
+                className="brand-logo"
+                src="/assets/logo/b-logo.svg"
+                alt="Buzo"
+                width={34}
+                height={34}
+                decoding="async"
               />
-            )}
-            {tab === 'discover' && (
-              <DiscoverTab
-                onOpenEvent={openEvent}
-                prefillPrompt={discoverPrefill}
-                onConsumePrefill={() => setDiscoverPrefill('')}
-              />
-            )}
-            {tab === 'plan' && <PlanTab onOpenEvent={openEvent} />}
-            {tab === 'profile' && <ProfileTab />}
-          </Suspense>
-        </section>
-
-        <AnimatePresence>
-          {sheetPlanOverlay ? (
-            <motion.div
-              key="sheet-plan-detail"
-              className="plan-detail-overlay"
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 14 }}
-              transition={{ duration: 0.22 }}
-            >
-              {sheetPlanOverlayBody}
-            </motion.div>
-          ) : null}
-          {showBuzzPoints && <BuzzPointsScreen key="buzz-points" />}
-          {showSettings && <SettingsScreen key="settings" />}
-          {showEditProfile && <EditProfileScreen key="edit-profile" />}
-          {showLanguage && <LanguageScreen key="language" />}
-          {showPrivacySafety && <PrivacySafetyScreen key="privacy-safety" />}
-          {showFeedback && <FeedbackScreen key="feedback" />}
-          {showEmailLogin && <EmailLoginScreen key="email-login" />}
-          {showSubscription && <SubscriptionScreen key="subscription" />}
-        </AnimatePresence>
-
-        <nav className="bottom-nav" aria-label="Main">
-          {tabNavItems.map((item) => {
-            const Icon = item.icon
-            const isActive = tab === item.key
-
-            return (
+            </div>
+            <div className="actions">
               <button
-                className={isActive ? 'nav-item active' : 'nav-item'}
-                key={item.key}
+                className="icon-btn"
                 type="button"
-                onClick={() => setTab(item.key)}
-                aria-current={isActive ? 'page' : undefined}
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
               >
-                <span className={item.iconDot ? 'nav-item-icon nav-item-icon--plan' : 'nav-item-icon'}>
-                  <Icon size={22} strokeWidth={isActive ? 2.25 : 2} aria-hidden />
-                  {item.iconDot ? <span className="nav-item-plan-dot" aria-hidden /> : null}
-                </span>
-                <span className="nav-item-label">{item.label}</span>
-                {isActive ? <span className="nav-item-active-bar" aria-hidden /> : null}
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
               </button>
-            )
-          })}
-        </nav>
-      </main>
+            </div>
+          </header>
+
+          <section className="screen">
+            <Suspense fallback={<div className="tab-suspense-fallback" aria-hidden />}>
+              {tab === 'feed' && (
+                <FeedTab
+                  onOpenEvent={openEvent}
+                  onAsk={(prompt) => {
+                    setDiscoverPrefill(prompt)
+                    setTab('discover')
+                  }}
+                />
+              )}
+              {tab === 'discover' && (
+                <DiscoverTab
+                  onOpenEvent={openEvent}
+                  prefillPrompt={discoverPrefill}
+                  onConsumePrefill={() => setDiscoverPrefill('')}
+                />
+              )}
+              {tab === 'plan' && <PlanTab onOpenEvent={openEvent} />}
+              {tab === 'profile' && <ProfileTab />}
+            </Suspense>
+          </section>
+
+          <AnimatePresence>
+            {sheetPlanOverlay ? (
+              <motion.div
+                key="sheet-plan-detail"
+                className="plan-detail-overlay"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 14 }}
+                transition={{ duration: 0.22 }}
+              >
+                {sheetPlanOverlayBody}
+              </motion.div>
+            ) : null}
+            {showBuzzPoints && <BuzzPointsScreen key="buzz-points" />}
+            {showSettings && <SettingsScreen key="settings" />}
+            {showEditProfile && <EditProfileScreen key="edit-profile" />}
+            {showLanguage && <LanguageScreen key="language" />}
+            {showPrivacySafety && <PrivacySafetyScreen key="privacy-safety" />}
+            {showFeedback && <FeedbackScreen key="feedback" />}
+            {showEmailLogin && <EmailLoginScreen key="email-login" />}
+            {showSubscription && <SubscriptionScreen key="subscription" />}
+          </AnimatePresence>
+
+          <nav className="bottom-nav" aria-label="Main">
+            {tabNavItems.map((item) => {
+              const Icon = item.icon
+              const isActive = tab === item.key
+
+              return (
+                <button
+                  className={isActive ? 'nav-item active' : 'nav-item'}
+                  key={item.key}
+                  type="button"
+                  onClick={() => setTab(item.key)}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  <span className={item.iconDot ? 'nav-item-icon nav-item-icon--plan' : 'nav-item-icon'}>
+                    <Icon size={22} strokeWidth={isActive ? 2.25 : 2} aria-hidden />
+                    {item.iconDot ? <span className="nav-item-plan-dot" aria-hidden /> : null}
+                  </span>
+                  <span className="nav-item-label">{item.label}</span>
+                  {isActive ? <span className="nav-item-active-bar" aria-hidden /> : null}
+                </button>
+              )
+            })}
+          </nav>
+        </main>
+      )}
+
+      <AnimatePresence>
+        {showSignIn ? <SignInSheet key="welcome-sign-in" /> : null}
+      </AnimatePresence>
 
       <AnimatePresence>
         {activeEvent && (

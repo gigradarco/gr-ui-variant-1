@@ -7565,3 +7565,965 @@ body {
     0 0 0 1px color-mix(in oklab, var(--primary) 8%, transparent),
     0 10px 28px rgba(20, 24, 35, 0.08);
 }
+
+/* ── Layla-style welcome (pre-login intro) ── */
+
+.welcome-root {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.welcome-topbar {
+  min-height: 52px;
+  border-bottom: 1px solid var(--stroke);
+  padding: 14px 12px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.welcome-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.welcome-text-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--stroke);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--card) 92%, var(--bg));
+  color: var(--text);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.welcome-text-btn:hover {
+  background: color-mix(in oklab, var(--primary) 10%, var(--card));
+  border-color: color-mix(in oklab, var(--primary) 35%, var(--stroke));
+}
+
+.welcome-text-btn:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--primary) 50%, transparent);
+  outline-offset: 2px;
+}
+
+.welcome-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 16px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* Layla-like hero + prompt stage (deep plum field, light composer card). */
+.welcome-layla-stage {
+  margin: 0 -16px;
+  padding: 22px clamp(20px, 5vw, 32px) 26px;
+  border-radius: 0 0 22px 22px;
+  background:
+    radial-gradient(120% 90% at 15% -5%, rgba(226, 67, 37, 0.22), transparent 52%),
+    linear-gradient(
+      165deg,
+      #2e1f35 0%,
+      #241829 42%,
+      color-mix(in oklab, #1a121c 88%, var(--bg)) 100%
+    );
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.theme-light .welcome-layla-stage {
+  background:
+    radial-gradient(120% 90% at 15% -10%, rgba(226, 67, 37, 0.14), transparent 50%),
+    linear-gradient(165deg, #ebe4f0 0%, #e2dbe8 45%, var(--bg) 100%);
+}
+
+.welcome-hero--layla {
+  gap: 12px;
+}
+
+.welcome-eyebrow--layla {
+  color: rgba(255, 215, 200, 0.95);
+  letter-spacing: 0.12em;
+}
+
+.theme-light .welcome-eyebrow--layla {
+  color: color-mix(in oklab, var(--primary) 75%, #4a3a52);
+}
+
+.welcome-headline--layla {
+  font-size: clamp(1.75rem, 5.2vw, 2.15rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+
+.theme-light .welcome-headline--layla {
+  color: #1c1424;
+}
+
+.welcome-sub--layla {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.98rem;
+  line-height: 1.45;
+  max-width: 36rem;
+}
+
+.theme-light .welcome-sub--layla {
+  color: color-mix(in oklab, #1c1424 62%, var(--muted));
+}
+
+/* Composer + pills share one width; centered with extra space on viewport sides. */
+.welcome-layla-prompt-stack {
+  width: 100%;
+  max-width: min(100%, 42rem);
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  box-sizing: border-box;
+}
+
+.welcome-layla-composer {
+  width: 100%;
+  box-sizing: border-box;
+  background: #fff;
+  border-radius: 22px;
+  padding: 16px 18px 12px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.65) inset,
+    0 18px 40px rgba(0, 0, 0, 0.28);
+}
+
+.theme-dark .welcome-layla-composer {
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 18px 40px rgba(0, 0, 0, 0.38);
+}
+
+.theme-light .welcome-layla-composer {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 12px 32px rgba(20, 24, 35, 0.1);
+}
+
+.welcome-layla-textarea {
+  display: block;
+  width: 100%;
+  min-height: 92px;
+  margin: 0;
+  padding: 6px 8px 4px;
+  border: none;
+  resize: none;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #141414;
+  background: transparent;
+}
+
+.theme-dark .welcome-layla-textarea {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.theme-dark .welcome-layla-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.theme-dark .welcome-layla-toolbar {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.welcome-layla-textarea::placeholder {
+  color: #9ca3af;
+}
+
+.welcome-layla-textarea:focus {
+  outline: none;
+}
+
+.welcome-layla-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid #ececee;
+}
+
+.welcome-layla-attach {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #f3f4f6;
+  color: #4b5563;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    border-color 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.welcome-layla-attach:hover {
+  background: #ebeef2;
+  border-color: #d1d5db;
+}
+
+.theme-dark .welcome-layla-attach {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.theme-dark .welcome-layla-attach:hover {
+  background: rgba(255, 255, 255, 0.13);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.welcome-layla-toolbar-spacer {
+  flex: 1;
+  min-width: 8px;
+}
+
+.welcome-layla-mic {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.theme-dark .welcome-layla-mic {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.theme-dark .welcome-layla-mic:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.welcome-layla-mic:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.welcome-layla-send {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 999px;
+  background: #3f3f46;
+  color: #fff;
+  cursor: pointer;
+  transition:
+    filter 0.12s,
+    transform 0.08s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.welcome-layla-send:hover {
+  filter: brightness(1.08);
+}
+
+.welcome-layla-send:active {
+  transform: scale(0.97);
+}
+
+.welcome-chip-scroller {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 4px 2px 6px;
+  margin: 0;
+  scroll-snap-type: x proximity;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.welcome-chip-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.welcome-layla-chip-row {
+  width: 100%;
+  margin-top: 0;
+  padding-left: 0;
+  padding-right: 0;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+  overflow-x: visible;
+  row-gap: 10px;
+  scroll-snap-type: none;
+  -webkit-overflow-scrolling: auto;
+}
+
+.welcome-layla-shortcut {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  border: none;
+  background: #fff;
+  color: #111827;
+  border-radius: 999px;
+  min-height: 40px;
+  padding: 0 16px;
+  font-size: 0.84rem;
+  font-weight: 650;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+  transition:
+    transform 0.1s,
+    box-shadow 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.theme-dark .welcome-layla-shortcut {
+  background: rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.theme-light .welcome-layla-shortcut {
+  box-shadow: 0 1px 3px rgba(20, 24, 35, 0.12);
+}
+
+.welcome-layla-shortcut:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.welcome-layla-shortcut:active {
+  transform: scale(0.98);
+}
+
+.welcome-scroll-hint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 6px auto 0;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.welcome-scroll-hint:hover {
+  color: #fff;
+}
+
+.theme-light .welcome-scroll-hint {
+  color: color-mix(in oklab, #1c1424 75%, var(--muted));
+}
+
+.theme-light .welcome-scroll-hint:hover {
+  color: #1c1424;
+}
+
+.welcome-section-title {
+  margin: 0 0 12px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.welcome-spotlight-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.welcome-spotlight-card {
+  display: grid;
+  grid-template-columns: 108px 1fr;
+  gap: 12px;
+  align-items: stretch;
+  padding: 0;
+  border: 1px solid var(--stroke);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--card);
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.welcome-spotlight-card:hover {
+  border-color: color-mix(in oklab, var(--primary) 35%, var(--stroke));
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2);
+}
+
+.theme-light .welcome-spotlight-card:hover {
+  box-shadow: 0 10px 24px rgba(20, 24, 35, 0.1);
+}
+
+.welcome-spotlight-img {
+  width: 100%;
+  height: 100%;
+  min-height: 96px;
+  object-fit: cover;
+  display: block;
+}
+
+.welcome-spotlight-body {
+  padding: 12px 14px 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center;
+}
+
+.welcome-spotlight-title {
+  font-weight: 800;
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+.welcome-spotlight-sub {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.welcome-spotlight-cta {
+  margin-top: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--primary-soft);
+}
+
+.welcome-pillars {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 14px;
+  border-radius: 18px;
+  border: 1px solid var(--stroke);
+  background: color-mix(in oklab, var(--bg-elev) 55%, transparent);
+}
+
+.welcome-pillar {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.welcome-pillar-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: color-mix(in oklab, var(--primary) 14%, transparent);
+  color: var(--primary-soft);
+}
+
+.theme-light .welcome-pillar-icon {
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  color: var(--primary);
+}
+
+.welcome-pillar-title {
+  margin: 0 0 4px;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.welcome-pillar-copy {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* ── Below fold (Layla-style: editorial + pillars + social proof + FAQ + CTA) ── */
+
+.welcome-below-fold {
+  padding-top: 0;
+}
+
+.welcome-section-title--large {
+  font-size: clamp(1.15rem, 3.5vw, 1.35rem);
+  margin-bottom: 14px;
+}
+
+.welcome-section-headline {
+  margin: 0 0 14px;
+  font-size: clamp(1.2rem, 3.6vw, 1.45rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.welcome-all-in-one,
+.welcome-every-step,
+.welcome-testimonials,
+.welcome-faq,
+.welcome-final-cta {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-top: 0;
+}
+
+.welcome-prose {
+  margin: 0 0 16px;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: color-mix(in oklab, var(--text) 88%, var(--muted));
+}
+
+.theme-light .welcome-prose {
+  color: color-mix(in oklab, var(--text) 92%, var(--muted));
+}
+
+.welcome-soft-cta {
+  align-self: flex-start;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(180deg, var(--primary-soft), var(--primary));
+  box-shadow: 0 8px 22px color-mix(in oklab, var(--primary) 32%, transparent);
+  transition: filter 0.12s, transform 0.08s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.welcome-soft-cta:hover {
+  filter: brightness(1.05);
+}
+
+.welcome-soft-cta:active {
+  transform: scale(0.99);
+}
+
+/* Video + everything below: same max width as prompt stack, centered on wide viewports. */
+.welcome-content-column {
+  width: 100%;
+  max-width: min(100%, 42rem);
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.welcome-video-section {
+  display: flex;
+  flex-direction: column;
+  padding-top: 4px;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.welcome-video-title {
+  margin: 0 0 10px;
+  font-size: clamp(0.92rem, 2.4vw, 1.02rem);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.welcome-video-frame {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  flex-shrink: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  min-height: 160px;
+  background: #0a0a0b;
+  border: 1px solid var(--stroke);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+}
+
+.theme-light .welcome-video-frame {
+  box-shadow: 0 12px 32px rgba(20, 24, 35, 0.12);
+}
+
+.welcome-video-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.welcome-every-step-lead {
+  margin: 0 0 16px;
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.welcome-pillars--layla {
+  gap: 18px;
+  padding: 18px 16px 20px;
+}
+
+.welcome-pillar-copy--long {
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.welcome-testimonial-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.welcome-testimonial-card {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--stroke);
+  background: color-mix(in oklab, var(--card) 82%, transparent);
+}
+
+.welcome-testimonial-quote {
+  margin: 0 0 12px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.welcome-testimonial-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.welcome-testimonial-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: color-mix(in oklab, var(--primary) 18%, var(--card));
+  color: var(--primary-soft);
+}
+
+.theme-light .welcome-testimonial-avatar {
+  color: var(--primary);
+}
+
+.welcome-testimonial-name {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.welcome-faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.welcome-faq-item {
+  border-radius: 14px;
+  border: 1px solid var(--stroke);
+  background: color-mix(in oklab, var(--bg-elev) 40%, transparent);
+  overflow: hidden;
+}
+
+.welcome-faq-question {
+  list-style: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+  position: relative;
+  padding-right: 36px;
+}
+
+.welcome-faq-question::-webkit-details-marker {
+  display: none;
+}
+
+.welcome-faq-question::after {
+  content: '';
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: translateY(-65%) rotate(45deg);
+  transition: transform 0.18s ease;
+}
+
+.welcome-faq-item[open] .welcome-faq-question::after {
+  transform: translateY(-35%) rotate(225deg);
+}
+
+.welcome-faq-answer {
+  margin: 0;
+  padding: 0 16px 14px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.welcome-final-cta {
+  align-items: stretch;
+  padding: 0;
+}
+
+.welcome-final-lead {
+  margin: 0 0 16px;
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.welcome-final-cta-btn {
+  border: none;
+  border-radius: 14px;
+  min-height: 50px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(180deg, var(--primary-soft), var(--primary));
+  box-shadow: 0 10px 28px color-mix(in oklab, var(--primary) 35%, transparent);
+  transition: filter 0.12s, transform 0.08s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.welcome-final-cta-btn:hover {
+  filter: brightness(1.05);
+}
+
+.welcome-final-cta-btn:active {
+  transform: scale(0.99);
+}
+
+.welcome-footnote {
+  margin: 0;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.4;
+  padding: 0 8px 8px;
+}
+
+.welcome-signin-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.welcome-signin-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--stroke);
+  min-height: 58px;
+  flex-shrink: 0;
+  background: color-mix(in oklab, var(--bg-elev) 40%, transparent);
+}
+
+.welcome-signin-back {
+  border: 1px solid var(--stroke);
+  background: color-mix(in oklab, var(--card) 50%, transparent);
+  color: var(--text);
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.welcome-signin-back:hover {
+  border-color: color-mix(in oklab, var(--primary) 35%, var(--stroke));
+}
+
+.welcome-signin-title {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.welcome-signin-spacer {
+  width: 36px;
+  flex-shrink: 0;
+}
+
+.welcome-signin-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 22px 18px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.welcome-signin-lead {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.welcome-signin-google,
+.welcome-signin-email {
+  width: 100%;
+  min-height: 50px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    filter 0.12s,
+    border-color 0.15s,
+    background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.welcome-signin-google {
+  border: 1px solid color-mix(in oklab, var(--stroke) 80%, transparent);
+  background: var(--card);
+  color: var(--text);
+}
+
+.welcome-signin-google:hover {
+  border-color: color-mix(in oklab, var(--primary) 35%, var(--stroke));
+}
+
+.welcome-signin-email {
+  border: 1px solid var(--stroke);
+  background: transparent;
+  color: var(--text);
+}
+
+.welcome-signin-email:hover {
+  border-color: color-mix(in oklab, var(--primary) 35%, var(--stroke));
+  background: color-mix(in oklab, var(--primary) 6%, transparent);
+}
+
+.welcome-signin-google-mark {
+  display: inline-flex;
+}
+
+.welcome-signin-note {
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.45;
+}
+
+@media (min-width: 1200px) and (min-height: 680px) {
+  .welcome-root {
+    width: min(100%, 420px);
+    max-width: min(100%, 420px);
+    flex: 0 1 auto;
+    height: min(844px, calc(100dvh - 40px));
+    max-height: min(844px, calc(100dvh - 40px));
+    border-radius: 32px;
+    border: 1px solid var(--stroke);
+    background: color-mix(in oklab, var(--bg) 80%, black);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(6px);
+  }
+
+  .welcome-topbar {
+    min-height: 58px;
+    padding: 10px 14px;
+    border-radius: 32px 32px 0 0;
+  }
+}
+
+@media (orientation: landscape) and (pointer: coarse),
+  (orientation: landscape) and (max-height: 500px) {
+  .welcome-root {
+    width: 100%;
+    max-width: 100%;
+    flex: 1 1 auto;
+    height: auto;
+    max-height: 100%;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    background: var(--bg);
+  }
+}

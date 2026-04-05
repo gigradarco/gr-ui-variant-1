@@ -2,6 +2,35 @@ import { create } from 'zustand'
 import { DEFAULT_LOCATION_CITY_ID } from '../data/locationRegions'
 import type { Tab, Theme } from '../types'
 
+const WELCOME_SESSION_KEY = 'buzo-welcome-dismissed'
+
+function readWelcomeDismissed(): boolean {
+  if (typeof window === 'undefined') {
+    return false
+  }
+  try {
+    return window.sessionStorage.getItem(WELCOME_SESSION_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+function persistWelcomeDismissed() {
+  try {
+    window.sessionStorage.setItem(WELCOME_SESSION_KEY, '1')
+  } catch {
+    /* ignore quota / private mode */
+  }
+}
+
+function clearWelcomeDismissedPersisted() {
+  try {
+    window.sessionStorage.removeItem(WELCOME_SESSION_KEY)
+  } catch {
+    /* ignore */
+  }
+}
+
 export type UserProfile = {
   displayName: string
   /** Handle without leading @ */
@@ -29,6 +58,10 @@ export type SubscriptionTier = 'basic' | 'pro'
 
 type AppState = {
   userProfile: UserProfile
+  /** After the Layla-style welcome, user can explore before optional sign-in. */
+  welcomeDismissed: boolean
+  /** Demo flag — replace with real session. */
+  isAuthenticated: boolean
   tab: Tab
   theme: Theme
   /** Which plan the signed-in user is on (drives subscription screen highlights). */
@@ -44,8 +77,17 @@ type AppState = {
   showPrivacySafety: boolean
   showFeedback: boolean
   showEmailLogin: boolean
+  /** Pre-app sign-in sheet from the welcome screen. */
+  showSignIn: boolean
   showEditProfile: boolean
   showSubscription: boolean
+  dismissWelcome: () => void
+  openSignIn: () => void
+  closeSignIn: () => void
+  /** Demo only — call after OAuth / email auth succeeds. */
+  completeSignInDemo: () => void
+  /** Sign out demo session and show the pre-login welcome again. */
+  returnToLanding: () => void
   setTab: (tab: Tab) => void
   setTheme: (theme: Theme) => void
   openEvent: (eventId: string) => void
@@ -79,6 +121,8 @@ type AppState = {
 
 export const useAppState = create<AppState>((set) => ({
   userProfile: defaultUserProfile,
+  welcomeDismissed: readWelcomeDismissed(),
+  isAuthenticated: false,
   tab: 'feed',
   theme: 'dark',
   subscriptionTier: 'pro',
@@ -91,8 +135,38 @@ export const useAppState = create<AppState>((set) => ({
   showPrivacySafety: false,
   showFeedback: false,
   showEmailLogin: false,
+  showSignIn: false,
   showEditProfile: false,
   showSubscription: false,
+  dismissWelcome: () => {
+    persistWelcomeDismissed()
+    set({ welcomeDismissed: true, showSignIn: false })
+  },
+  openSignIn: () => set({ showSignIn: true }),
+  closeSignIn: () => set({ showSignIn: false }),
+  completeSignInDemo: () => {
+    persistWelcomeDismissed()
+    set({ welcomeDismissed: true, isAuthenticated: true, showSignIn: false })
+  },
+  returnToLanding: () => {
+    clearWelcomeDismissedPersisted()
+    set({
+      welcomeDismissed: false,
+      isAuthenticated: false,
+      showSignIn: false,
+      tab: 'feed',
+      activeEventId: null,
+      pendingPlanDetail: null,
+      showBuzzPoints: false,
+      showSettings: false,
+      showLanguage: false,
+      showPrivacySafety: false,
+      showFeedback: false,
+      showEmailLogin: false,
+      showEditProfile: false,
+      showSubscription: false,
+    })
+  },
   setTab: (tab) => set({ tab }),
   setTheme: (theme) => set({ theme }),
   openEvent: (eventId) => set({ activeEventId: eventId }),

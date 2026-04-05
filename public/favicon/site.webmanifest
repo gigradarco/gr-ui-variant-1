@@ -1,6 +1,8 @@
 {
   "name": "Buzo",
   "short_name": "Buzo",
+  "start_url": "/",
+  "scope": "/",
   "icons": [
     {
       "src": "/favicon/android-chrome-192x192.png",

@@ -1,6 +1,7 @@
 import type { KeyboardEvent } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Check, ChevronRight, Minus, Sparkles, Ticket } from 'lucide-react'
+import { BUZO_PRO_MONTHLY_PRICE_DISPLAY } from '../../../config/pricing'
 import { useAppState } from '../../../store/appStore'
 
 const PLAN_COMPARE_ROWS: { label: string; basic: boolean; pro: boolean }[] = [
@@ -141,7 +142,7 @@ export function SubscriptionScreen() {
                 .filter(Boolean)
                 .join(' ')}
             >
-              $4.99 / month
+              {BUZO_PRO_MONTHLY_PRICE_DISPLAY}
             </p>
             <p className="subscription-plan-renew">
               {isProTier ? 'Renews April 12, 2026' : 'Upgrade anytime'}

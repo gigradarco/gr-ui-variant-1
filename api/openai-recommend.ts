@@ -94,7 +94,7 @@ export default async function handler(req: any, res: any) {
 
   const model = process.env.OPENAI_MODEL || 'gpt-4o-mini'
   const systemPrompt = [
-    'You are GigRadar assistant for nightlife discovery.',
+    'You are Buzo assistant for nightlife discovery.',
     'Use the provided event list to recommend exactly one best-match event if possible.',
     'Respond as strict JSON only (no markdown):',
     '{"reply":"string","suggestedEventId":"string|null","locationQuery":"string|null"}',

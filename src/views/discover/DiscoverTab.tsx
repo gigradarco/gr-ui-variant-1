@@ -227,7 +227,7 @@ export function DiscoverTab({ onOpenEvent, prefillPrompt, onConsumePrefill }: Di
       <div className="discover-actions">
         <div className="chat-input">
           <input
-            placeholder="Ask GigRadar..."
+            placeholder="Ask Buzo..."
             value={inputValue}
             onChange={(event) => setInputValue(event.target.value)}
             onKeyDown={(event) => {
@@ -246,7 +246,7 @@ export function DiscoverTab({ onOpenEvent, prefillPrompt, onConsumePrefill }: Di
           href={telegramBotLink}
           target="_blank"
           rel="noreferrer"
-          aria-label="Open GigRadar Telegram bot"
+          aria-label="Open Buzo Telegram bot"
         >
           <span className="telegram-btn-copy">
             <strong>Continue in Telegram</strong>

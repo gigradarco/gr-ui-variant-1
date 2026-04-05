@@ -14,7 +14,7 @@ export const events: EventItem[] = [
     district: 'Clarke Quay',
     time: '22:30',
     genre: 'Techno',
-    exploreCategoryId: 'tech',
+    exploreCategoryId: 'club-nights',
     locationCityId: 'singapore',
     verified: 89,
     image:
@@ -23,7 +23,7 @@ export const events: EventItem[] = [
     hostPrompt: 'any techno in Clarke Quay tonight?',
     friendsGoing: 2,
     vibeTags: ['Warehouse', 'Peak Energy'],
-    ticketPrice: '$42.00',
+    ticketPrice: '42.00 SGD',
     bpReward: 15,
     buzzPct: 98,
   },
@@ -43,7 +43,7 @@ export const events: EventItem[] = [
     hostPrompt: 'Best cocktails, worst acoustics.',
     friendsGoing: 4,
     vibeTags: ['Speakeasy', 'Smoked Negroni'],
-    ticketPrice: '$28.00',
+    ticketPrice: '28.00 SGD',
     bpReward: 12,
   },
   {
@@ -53,7 +53,7 @@ export const events: EventItem[] = [
     district: 'Tiong Bahru',
     time: '22:00',
     genre: 'Jazz',
-    exploreCategoryId: 'arts',
+    exploreCategoryId: 'jazz-blues',
     locationCityId: 'singapore',
     verified: 94,
     image:
@@ -62,7 +62,7 @@ export const events: EventItem[] = [
     hostPrompt: "who's down for some deep house tonight?",
     friendsGoing: 3,
     vibeTags: ['Intimate', 'Vinyl Audio'],
-    ticketPrice: '$35.00',
+    ticketPrice: '35.00 SGD',
   },
   {
     id: 'neonpulse',
@@ -71,7 +71,7 @@ export const events: EventItem[] = [
     district: 'Downtown Core',
     time: '23:00',
     genre: 'Electronic',
-    exploreCategoryId: 'ai',
+    exploreCategoryId: 'underground',
     locationCityId: 'singapore',
     verified: 92,
     image:
@@ -80,7 +80,7 @@ export const events: EventItem[] = [
     hostPrompt: 'closing set is supposed to be unreal tonight.',
     friendsGoing: 4,
     vibeTags: ['Live Visuals', 'Hard Groove'],
-    ticketPrice: '$45.00',
+    ticketPrice: '45.00 SGD',
   },
 ]
 
@@ -151,6 +151,174 @@ export const discoverSuggestedPrompts = [
   'best techno tonight in Clarke Quay?',
   'who is going to neon pulse tonight?',
 ]
+
+/** Layla-style welcome shortcuts → prefilled into Discover when the user enters the app. */
+export type WelcomeIntroShortcut = { label: string; prompt: string }
+
+export const welcomeIntroShortcuts: WelcomeIntroShortcut[] = [
+  {
+    label: 'Create a new night',
+    prompt: 'Surprise me with a credible night out — jazz or house, near central Singapore',
+  },
+  {
+    label: 'Inspire me where to go',
+    prompt: 'What are the strongest picks tonight with real verification and social proof?',
+  },
+  {
+    label: 'Plan a crawl',
+    prompt: 'Where should a group go in Clarke Quay tonight with mixed tastes?',
+  },
+  {
+    label: 'Last-minute escape',
+    prompt: 'I have two hours — one unforgettable stop near Marina Bay',
+  },
+]
+
+export type WelcomeSpotlightNight = {
+  title: string
+  subtitle: string
+  image: string
+  prompt: string
+}
+
+/** Layla-style persona + trip framing: “Friends — …”, deep-link prompts into Discover. */
+export const welcomeSpotlightNights: WelcomeSpotlightNight[] = [
+  {
+    title: 'Friends — Clarke Quay crawl',
+    subtitle: 'Techno & clubs · group-ready',
+    image: events[0].image,
+    prompt: `Where should a big group go for techno in ${events[0].district} tonight?`,
+  },
+  {
+    title: 'Couples — Jazz & drinks',
+    subtitle: `${events[2].district} · low-key magic`,
+    image: events[2].image,
+    prompt: 'Any good jazz tonight near Tiong Bahru ?',
+  },
+  {
+    title: 'Solo — Late-night neon',
+    subtitle: `${events[1].district} · cocktails first`,
+    image: events[1].image,
+    prompt: 'Best solo-friendly cocktail bars open late tonight near the CBD?',
+  },
+]
+
+export type WelcomeLandingPillar = {
+  title: string
+  body: string
+  icon: 'sparkles' | 'wallet' | 'compass' | 'calendar'
+}
+
+export const welcomeAllInOneCopy = {
+  title: 'All-in-one AI nightlife planner',
+  body: `Looking for the right night — date, birthday, reunion, or “nothing planned yet”? You’re in the right place. Ask Buzo anything about where to go: venues, lineups, credibility, cover, and what people like you are leaning toward. Whether you’re rolling with friends, going out as a couple, or flying solo, we help you turn an idea into a plan you trust. Fewer tabs, fewer regrets — more of the good kind of nights.`,
+  ctaLabel: 'Create a new night',
+}
+
+export const welcomeEveryStepCopy = {
+  title: 'I’ll be there for you every step',
+  lead: 'Curate picks, save nights you care about, and catch signals from your crew when it matters — so going out feels lighter, not louder.',
+}
+
+/** Same four beats as Layla (tailor-made, cheaper, hidden gems, no surprises), written for going out. */
+export const welcomeLandingPillars: WelcomeLandingPillar[] = [
+  {
+    icon: 'sparkles',
+    title: 'Tailor-made',
+    body: 'Tell Buzo your vibe, budget, and neighborhood — get a plan that fits your night, not a one-size list of the usual suspects.',
+  },
+  {
+    icon: 'wallet',
+    title: 'Cheaper',
+    body: 'See credible options with fair entry and less guesswork, so you don’t pay twice for the wrong door or dead room.',
+  },
+  {
+    icon: 'compass',
+    title: 'Hidden gems',
+    body: 'Dig past the obvious feed — off-path rooms, residencies, and pockets of the city that still feel like a find.',
+  },
+  {
+    icon: 'calendar',
+    title: 'No surprises',
+    body: 'Verification context, timing, and what to expect — so your night runs on rhythm, not on “I hope this place is real.”',
+  },
+]
+
+export type WelcomeLandingTestimonial = {
+  quote: string
+  initials: string
+  name: string
+  age: number
+}
+
+export const welcomeLandingTestimonials: WelcomeLandingTestimonial[] = [
+  {
+    quote:
+      'We used Buzo like a pocket concierge — it turned “where tonight?” into a short list we actually trusted. Saved us an hour of group chat chaos.',
+    initials: 'M',
+    name: 'Maya',
+    age: 28,
+  },
+  {
+    quote:
+      'I’m picky about techno. Buzo’s picks felt closer to word-of-mouth than random listings — and we still made it door on time.',
+    initials: 'J',
+    name: 'James',
+    age: 34,
+  },
+  {
+    quote:
+      'Date night in a city we don’t know: cocktails, jazz, no cringe. That’s the bar — Buzo cleared it.',
+    initials: 'R',
+    name: 'Rina',
+    age: 31,
+  },
+]
+
+export type WelcomeLandingFaqItem = { question: string; answer: string }
+
+export const welcomeLandingFaq: WelcomeLandingFaqItem[] = [
+  {
+    question: 'What is Buzo?',
+    answer:
+      'Buzo is your AI-assisted planner for going out — from “what’s credible tonight?” to “where should we meet first?” It blends taste, verification context, and what’s happening around you so you decide faster.',
+  },
+  {
+    question: 'How does Buzo work?',
+    answer:
+      'Share your area, vibe, budget, and timing. Buzo returns grounded suggestions you can refine — with context on venues, crowds, and signals so you’re not flying blind.',
+  },
+  {
+    question: 'Can Buzo help with group nights?',
+    answer:
+      'Yes — say who’s coming and the mix of tastes. Buzo can bias toward meetup-friendly flow, cover-friendly options, and spots with room to breathe.',
+  },
+  {
+    question: 'Is Buzo good for couples or solo?',
+    answer:
+      'Both. Couples get low-stress pacing and atmosphere-led picks; solo travelers get safer, flexible routing with neighborhoods that are easier to navigate late.',
+  },
+  {
+    question: 'Is Buzo free to use?',
+    answer:
+      'You can explore planning and discovery in the demo. When accounts go live, core discovery stays accessible — with optional upgrades for power users.',
+  },
+]
+
+export const welcomeFinalCtaCopy = {
+  title: 'Ready to give it a try?',
+  body: 'See how Buzo can turn a vague idea into a night out in under a minute.',
+  ctaLabel: 'Try Buzo now',
+}
+
+/** Placeholder hero video on the welcome page — swap `videoId` for your real upload (the id after `v=` in YouTube). */
+export const welcomePlaceholderYoutube = {
+  title: 'See the night before you go',
+  /** https://www.youtube.com/watch?v=MJ3Is0Uwxho */
+  videoId: 'MJ3Is0Uwxho',
+  embedTitle:
+    'What Singapore Nightlife Looks Like at Clarke Quay on a Saturday | 2025 Walking Tour [4K]',
+}
 
 export const feedSuggestedPrompts = [
   'Any good jazz tonight near Tiong Bahru?',

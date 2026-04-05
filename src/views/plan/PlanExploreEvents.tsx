@@ -3,27 +3,28 @@ import { useMemo, useState } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import {
   ArrowLeft,
-  Bitcoin,
-  BrainCircuit,
-  Cpu,
-  Dumbbell,
-  Flower2,
+  Disc3,
   Globe,
+  Headphones,
+  MicVocal,
+  Music,
   Palette,
+  Store,
+  Tent,
   UtensilsCrossed,
 } from 'lucide-react'
 import { EXPLORE_CATEGORY_DEFS } from '../../data/exploreCategories'
 import { EXPLORE_LOCAL_REGIONS } from '../../data/locationRegionIcons'
 
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
-  tech: Cpu,
-  food: UtensilsCrossed,
-  ai: BrainCircuit,
+  'live-music': Music,
+  'club-nights': Disc3,
+  'jazz-blues': MicVocal,
+  underground: Headphones,
   arts: Palette,
-  climate: Globe,
-  fitness: Dumbbell,
-  wellness: Flower2,
-  crypto: Bitcoin,
+  food: UtensilsCrossed,
+  popups: Store,
+  festivals: Tent,
 }
 
 type PlanExploreEventsProps = {

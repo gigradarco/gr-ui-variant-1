@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import { motion } from 'framer-motion'
 import { Lock, Star, Building2, Moon, Settings, Zap, Trophy, ChevronRight } from 'lucide-react'
+import { BUZO_PRO_UPSELL_CTA } from '../../config/pricing'
 import { buzzSummary, getBuzzTierState } from '../../data/demoData'
 import { useAppState } from '../../store/appStore'
 
@@ -176,7 +177,7 @@ export function ProfileTab({
           Unlock your full 3-year history, deep data analytics, and early access to buzzed guestlists.
         </p>
         <button type="button" className="gopro-btn">
-          GO PRO — €4.99/MO
+          {BUZO_PRO_UPSELL_CTA}
         </button>
       </div>
     </motion.div>
