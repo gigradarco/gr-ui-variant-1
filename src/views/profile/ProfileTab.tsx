@@ -1,18 +1,19 @@
 import type { CSSProperties } from 'react'
 import { motion } from 'framer-motion'
-import {
-  Building2,
-  ChevronRight,
-  Lock,
-  LogOut,
-  Moon,
-  Settings,
-  Star,
-  Trophy,
-  Zap,
-} from 'lucide-react'
+import { ChevronRight, Lock, LogOut, Settings } from 'lucide-react'
 import { BUZO_PRO_UPSELL_CTA } from '../../config/pricing'
 import { buzzSummary, getBuzzTierState } from '../../data/demoData'
+import {
+  PROFILE_REPUTATION_PREVIEW_COUNT,
+  PROFILE_TASTE_PREVIEW_COUNT,
+  reputationBadges,
+  tasteIdentityTags,
+} from '../../data/profileIdentity'
+import {
+  PROFILE_CITIES_COUNT,
+  PROFILE_GENRES_TRACKED,
+  PROFILE_GIGS_TOTAL,
+} from '../../data/profileStats'
 import { useAppState } from '../../store/appStore'
 
 type ProfileTabProps = {
@@ -26,27 +27,18 @@ type ProfileTabProps = {
 /** Default ring fullness for demo UI; change here or pass `experienceRingFill` from parent / API. */
 export const PROFILE_EXPERIENCE_RING_FALLBACK = 0.75
 
-const tasteGenres = [
-  { label: 'DARK DISCO', accent: true },
-  { label: 'MINIMAL TECHNO', accent: false },
-  { label: 'INDUSTRIAL', accent: false },
-  { label: 'EBM', accent: false },
-  { label: 'POST-PUNK', accent: 'muted' },
-  { label: 'ACID HOUSE', accent: false },
-]
-
-const badges = [
-  { icon: Star, label: 'FIRST\nCHECK-IN' },
-  { icon: Building2, label: 'CITY\nCURATOR' },
-  { icon: Moon, label: 'NIGHT\nOWL' },
-  { icon: Zap, label: 'STREAK\nMASTER' },
-  { icon: Trophy, label: 'LEGEND' },
-]
-
 export function ProfileTab({
   experienceRingFill = PROFILE_EXPERIENCE_RING_FALLBACK,
 }: ProfileTabProps) {
-  const { openSettings, openBuzzPoints, returnToLanding, userProfile } = useAppState()
+  const {
+    openSettings,
+    openBuzzPoints,
+    openProfileTasteAll,
+    openProfileReputationAll,
+    openProfileStats,
+    returnToLanding,
+    userProfile,
+  } = useAppState()
   const { current: buzzTier } = getBuzzTierState(buzzSummary.total)
   const headline =
     userProfile.displayName.trim() !== ''
@@ -58,8 +50,10 @@ export function ProfileTab({
   const ringPercent = Math.round(ringFill * 100)
   const ringStyle = { '--ring-fill': ringFill } as CSSProperties
 
-  const tasteCount = tasteGenres.length
-  const badgeCount = badges.length
+  const tastePreview = tasteIdentityTags.slice(0, PROFILE_TASTE_PREVIEW_COUNT)
+  const badgesPreview = reputationBadges.slice(0, PROFILE_REPUTATION_PREVIEW_COUNT)
+  const tasteCount = tasteIdentityTags.length
+  const badgeCount = reputationBadges.length
 
   return (
     <motion.div
@@ -126,33 +120,63 @@ export function ProfileTab({
           </span>
           <ChevronRight size={16} className="profile-buzz-chevron" aria-hidden />
         </button>
-        <div className="profile-stats-row">
-          <div className="profile-stat">
-            <strong>12</strong>
+        <div className="profile-stats-row" role="group" aria-label="Scene stats">
+          <button
+            type="button"
+            className="profile-stat profile-stat-btn"
+            onClick={() => openProfileStats('cities')}
+            aria-label={`Open cities: ${PROFILE_CITIES_COUNT} cities visited`}
+          >
+            <strong>{PROFILE_CITIES_COUNT}</strong>
             <span>CITIES</span>
-          </div>
-          <div className="profile-stat-divider" />
-          <div className="profile-stat">
-            <strong>87</strong>
+          </button>
+          <div className="profile-stat-divider" aria-hidden />
+          <button
+            type="button"
+            className="profile-stat profile-stat-btn"
+            onClick={() => openProfileStats('gigs')}
+            aria-label={`Open gigs: ${PROFILE_GIGS_TOTAL} gigs attended`}
+          >
+            <strong>{PROFILE_GIGS_TOTAL}</strong>
             <span>GIGS</span>
-          </div>
-          <div className="profile-stat-divider" />
-          <div className="profile-stat">
-            <strong>24</strong>
+          </button>
+          <div className="profile-stat-divider" aria-hidden />
+          <button
+            type="button"
+            className="profile-stat profile-stat-btn"
+            onClick={() => openProfileStats('genres')}
+            aria-label={`Open genres: ${PROFILE_GENRES_TRACKED} genres tracked`}
+          >
+            <strong>{PROFILE_GENRES_TRACKED}</strong>
             <span>GENRES</span>
-          </div>
+          </button>
         </div>
+        <button
+          type="button"
+          className="profile-stats-overview-link"
+          onClick={() => openProfileStats()}
+        >
+          View full breakdown
+        </button>
       </div>
 
       {/* Taste Identity */}
       <section className="profile-section" aria-labelledby="profile-taste-heading">
-        <div className="section-title-rule" id="profile-taste-heading">
-          <span>
+        <div className="section-title-rule section-title-rule--with-action" id="profile-taste-heading">
+          <span className="section-title-rule__text">
             Taste identity <span className="section-title-count">({tasteCount})</span>
           </span>
+          <span className="section-title-rule__line" aria-hidden />
+          <button
+            type="button"
+            className="section-title-action"
+            onClick={openProfileTasteAll}
+          >
+            Show all
+          </button>
         </div>
         <div className="taste-tags">
-          {tasteGenres.map((g) => (
+          {tastePreview.map((g) => (
             <span
               key={g.label}
               className={`taste-tag${g.accent === true ? ' taste-tag--primary' : g.accent === 'muted' ? ' taste-tag--muted' : ''}`}
@@ -165,16 +189,24 @@ export function ProfileTab({
 
       {/* Reputation */}
       <section className="profile-section" aria-labelledby="profile-reputation-heading">
-        <div className="section-title-rule" id="profile-reputation-heading">
-          <span>
+        <div className="section-title-rule section-title-rule--with-action" id="profile-reputation-heading">
+          <span className="section-title-rule__text">
             Reputation <span className="section-title-count">({badgeCount})</span>
           </span>
+          <span className="section-title-rule__line" aria-hidden />
+          <button
+            type="button"
+            className="section-title-action"
+            onClick={openProfileReputationAll}
+          >
+            Show all
+          </button>
         </div>
         <div className="badges-row">
-          {badges.map(({ icon: Icon, label }, i) => {
-            const active = i === 0 || i === 2
+          {badgesPreview.map(({ icon: Icon, label, accent }, i) => {
+            const active = accent === true
             return (
-              <div key={label} className="badge-item">
+              <div key={`${i}-${label}`} className="badge-item">
                 <div className={`badge-icon${active ? ' badge-icon--active' : ''}`}>
                   <Icon size={22} />
                 </div>

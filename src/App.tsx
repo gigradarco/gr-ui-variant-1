@@ -13,6 +13,9 @@ import { PlanEventDetail } from './views/plan/PlanEventDetail'
 import { tabNavItems } from './config/tabNavigation'
 import { FeedTab } from './views'
 import { BuzzPointsScreen } from './views/profile/BuzzPointsScreen'
+import { ProfileReputationScreen } from './views/profile/ProfileReputationScreen'
+import { ProfileStatsScreen } from './views/profile/ProfileStatsScreen'
+import { ProfileTasteIdentityScreen } from './views/profile/ProfileTasteIdentityScreen'
 import {
   SettingsScreen,
   EditProfileScreen,
@@ -62,6 +65,9 @@ function MainApp() {
     showSignIn,
     activeEventId,
     showBuzzPoints,
+    showProfileTasteAll,
+    showProfileReputationAll,
+    showProfileStats,
     showSettings,
     showLanguage,
     showPrivacySafety,
@@ -253,6 +259,9 @@ function MainApp() {
               </motion.div>
             ) : null}
             {showBuzzPoints && <BuzzPointsScreen key="buzz-points" />}
+            {showProfileTasteAll && <ProfileTasteIdentityScreen key="profile-taste-all" />}
+            {showProfileReputationAll && <ProfileReputationScreen key="profile-reputation-all" />}
+            {showProfileStats && <ProfileStatsScreen key="profile-stats" />}
             {showSettings && <SettingsScreen key="settings" />}
             {showEditProfile && <EditProfileScreen key="edit-profile" />}
             {showLanguage && <LanguageScreen key="language" />}

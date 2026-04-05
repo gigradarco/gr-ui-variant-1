@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ChevronDown,
   ChevronRight,
-  Mic,
   Maximize2,
   Minimize2,
   MoreHorizontal,
@@ -60,6 +59,8 @@ export function DiscoverTab({ onOpenEvent, prefillPrompt, onConsumePrefill }: Di
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [newChatMenuOpen, setNewChatMenuOpen] = useState(false)
   const [discoverMoreOpen, setDiscoverMoreOpen] = useState(false)
+  /** Thread-mode composer: user can expand for more visible typing area */
+  const [composerExpanded, setComposerExpanded] = useState(false)
 
   const requestCounter = useRef(0)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
@@ -102,6 +103,7 @@ export function DiscoverTab({ onOpenEvent, prefillPrompt, onConsumePrefill }: Di
     setIsDrawerOpen(false)
     setNewChatMenuOpen(false)
     setDiscoverMoreOpen(false)
+    setComposerExpanded(false)
   }
 
   const handleSelectConversation = (conv: Conversation) => {
@@ -226,30 +228,52 @@ export function DiscoverTab({ onOpenEvent, prefillPrompt, onConsumePrefill }: Di
     status === 'loading' ||
     (status === 'done' && (resultMode === 'hardcoded' || resultMode === 'agent'))
 
-  const syncCompactTextareaHeight = useCallback(() => {
+  const syncTextareaHeight = useCallback(() => {
     const el = textareaRef.current
     if (!el) {
       return
     }
-    if (!hasThread) {
+
+    if (!hasThread && !composerExpanded) {
       el.style.height = ''
       return
     }
+
     const cs = getComputedStyle(el)
     const lineHeight = parseFloat(cs.lineHeight)
     const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom)
-    const minPx = Number.isFinite(lineHeight)
-      ? Math.ceil(lineHeight * 2 + padY)
-      : 52
-    const maxPx = Math.min(window.innerHeight * 0.34, 140)
-    el.style.height = 'auto'
-    const next = Math.max(minPx, Math.min(el.scrollHeight, maxPx))
-    el.style.height = `${next}px`
-  }, [hasThread, inputValue])
+
+    if (!hasThread && composerExpanded) {
+      const minPx = Number.isFinite(lineHeight)
+        ? Math.ceil(lineHeight * 4 + padY)
+        : 80
+      const maxPx = Math.min(window.innerHeight * 0.5, 480)
+      el.style.height = 'auto'
+      const next = Math.max(minPx, Math.min(el.scrollHeight, maxPx))
+      el.style.height = `${next}px`
+      return
+    }
+
+    if (hasThread) {
+      if (composerExpanded) {
+        el.style.height = ''
+        el.style.minHeight = ''
+        return
+      }
+      const minLines = 2
+      const minPx = Number.isFinite(lineHeight)
+        ? Math.ceil(lineHeight * minLines + padY)
+        : 52
+      const maxPx = Math.min(window.innerHeight * 0.34, 140)
+      el.style.height = 'auto'
+      const next = Math.max(minPx, Math.min(el.scrollHeight, maxPx))
+      el.style.height = `${next}px`
+    }
+  }, [hasThread, inputValue, composerExpanded])
 
   useLayoutEffect(() => {
-    syncCompactTextareaHeight()
-  }, [syncCompactTextareaHeight])
+    syncTextareaHeight()
+  }, [syncTextareaHeight])
 
   useEffect(() => {
     if (!newChatMenuOpen && !discoverMoreOpen) {
@@ -577,7 +601,18 @@ export function DiscoverTab({ onOpenEvent, prefillPrompt, onConsumePrefill }: Di
 
       <div className="discover-layla-footer">
         <div className="welcome-layla-prompt-stack discover-layla-prompt-stack">
-          <div className={`welcome-layla-composer ${hasThread ? 'welcome-layla-composer--compact' : ''}`} role="group" aria-label="Describe your night">
+          <div
+            className={[
+              'welcome-layla-composer',
+              hasThread && 'welcome-layla-composer--compact',
+              hasThread && composerExpanded && 'welcome-layla-composer--compact-expanded',
+              !hasThread && composerExpanded && 'welcome-layla-composer--expanded',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            role="group"
+            aria-label="Describe your night"
+          >
             {hasThread && (
               <button
                 type="button"
@@ -621,11 +656,16 @@ export function DiscoverTab({ onOpenEvent, prefillPrompt, onConsumePrefill }: Di
               {!hasThread && <span className="welcome-layla-toolbar-spacer" aria-hidden />}
               <button
                 type="button"
-                className="welcome-layla-mic"
-                aria-label="Speak your prompt"
-                onClick={() => window.alert('Demo: connect speech-to-text here.')}
+                className="welcome-layla-mic welcome-layla-expand-composer"
+                aria-label={composerExpanded ? 'Collapse composer' : 'Expand composer'}
+                aria-pressed={composerExpanded}
+                onClick={() => setComposerExpanded((v) => !v)}
               >
-                <Mic size={20} strokeWidth={2} aria-hidden />
+                {composerExpanded ? (
+                  <Minimize2 size={18} strokeWidth={2} aria-hidden />
+                ) : (
+                  <Maximize2 size={18} strokeWidth={2} aria-hidden />
+                )}
               </button>
               <button
                 type="button"

@@ -56,6 +56,9 @@ export type PendingPlanDetail = {
 
 export type SubscriptionTier = 'basic' | 'pro'
 
+/** Section to scroll to when opening scene stats from profile. */
+export type ProfileStatsFocus = 'cities' | 'gigs' | 'genres'
+
 type AppState = {
   userProfile: UserProfile
   /** After the Layla-style welcome, user can explore before optional sign-in. */
@@ -72,6 +75,11 @@ type AppState = {
   /** Feed location pill — Plan explore detail defaults country/city filter to this. */
   feedLocationCityId: string
   showBuzzPoints: boolean
+  showProfileTasteAll: boolean
+  showProfileReputationAll: boolean
+  showProfileStats: boolean
+  /** When non-null, stats screen scrolls to this block after open. */
+  profileStatsFocus: ProfileStatsFocus | null
   showSettings: boolean
   showLanguage: boolean
   showPrivacySafety: boolean
@@ -100,6 +108,12 @@ type AppState = {
   clearPendingPlanDetail: () => void
   openBuzzPoints: () => void
   closeBuzzPoints: () => void
+  openProfileTasteAll: () => void
+  closeProfileTasteAll: () => void
+  openProfileReputationAll: () => void
+  closeProfileReputationAll: () => void
+  openProfileStats: (focus?: ProfileStatsFocus | null) => void
+  closeProfileStats: () => void
   openSettings: () => void
   closeSettings: () => void
   openLanguage: () => void
@@ -132,6 +146,10 @@ export const useAppState = create<AppState>((set) => ({
   pendingPlanDetail: null,
   feedLocationCityId: DEFAULT_LOCATION_CITY_ID,
   showBuzzPoints: false,
+  showProfileTasteAll: false,
+  showProfileReputationAll: false,
+  showProfileStats: false,
+  profileStatsFocus: null,
   showSettings: false,
   showLanguage: false,
   showPrivacySafety: false,
@@ -166,6 +184,10 @@ export const useAppState = create<AppState>((set) => ({
       activeEventId: null,
       pendingPlanDetail: null,
       showBuzzPoints: false,
+      showProfileTasteAll: false,
+      showProfileReputationAll: false,
+      showProfileStats: false,
+      profileStatsFocus: null,
       showSettings: false,
       showLanguage: false,
       showPrivacySafety: false,
@@ -190,6 +212,16 @@ export const useAppState = create<AppState>((set) => ({
   clearPendingPlanDetail: () => set({ pendingPlanDetail: null }),
   openBuzzPoints: () => set({ showBuzzPoints: true }),
   closeBuzzPoints: () => set({ showBuzzPoints: false }),
+  openProfileTasteAll: () => set({ showProfileTasteAll: true }),
+  closeProfileTasteAll: () => set({ showProfileTasteAll: false }),
+  openProfileReputationAll: () => set({ showProfileReputationAll: true }),
+  closeProfileReputationAll: () => set({ showProfileReputationAll: false }),
+  openProfileStats: (focus) =>
+    set({
+      showProfileStats: true,
+      profileStatsFocus: focus === undefined ? null : focus,
+    }),
+  closeProfileStats: () => set({ showProfileStats: false, profileStatsFocus: null }),
   openSettings: () => set({ showSettings: true }),
   closeSettings: () => set({ showSettings: false }),
   openLanguage: () => set({ showLanguage: true }),

@@ -1320,8 +1320,9 @@ body {
 }
 
 .theme-light .bottom-nav {
-  background: #0a0a0a;
-  border-top-color: rgba(255, 255, 255, 0.08);
+  background: var(--bg-elev);
+  border-top-color: var(--stroke);
+  box-shadow: 0 -8px 28px rgba(20, 24, 35, 0.06);
 }
 
 .nav-item {
@@ -1351,6 +1352,10 @@ body {
   color: var(--primary);
 }
 
+.theme-light .nav-item {
+  color: var(--muted);
+}
+
 .theme-light .nav-item.active {
   color: var(--primary-soft);
 }
@@ -1378,7 +1383,7 @@ body {
 }
 
 .theme-light .nav-item-plan-dot {
-  box-shadow: 0 0 0 2px #0a0a0a;
+  box-shadow: 0 0 0 2px var(--bg-elev);
 }
 
 .nav-item-label {
@@ -1824,6 +1829,366 @@ body {
   letter-spacing: 0.08em;
 }
 
+.section-title-rule--with-action::after {
+  display: none;
+}
+
+.section-title-rule__text {
+  flex-shrink: 0;
+}
+
+.section-title-rule__line {
+  flex: 1;
+  min-width: 10px;
+  height: 1px;
+  background: var(--stroke);
+  align-self: center;
+}
+
+.section-title-action {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 4px 0 4px 6px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primary-soft);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s ease;
+}
+
+.section-title-action:hover {
+  opacity: 0.88;
+}
+
+.theme-light .section-title-action {
+  color: var(--primary);
+}
+
+/* Profile full-list overlays (taste identity, reputation) */
+.profile-list-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  border-radius: 32px;
+  overflow: hidden;
+}
+
+.profile-list-screen-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  min-height: 58px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--stroke);
+  background: color-mix(in oklab, var(--bg-elev) 88%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.profile-list-screen-back {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: transparent;
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.profile-list-screen-back:hover {
+  background: color-mix(in oklab, var(--bg-elev) 65%, transparent);
+  border-color: color-mix(in oklab, var(--primary) 35%, var(--stroke));
+}
+
+.profile-list-screen-title {
+  flex: 1;
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--text);
+}
+
+.profile-list-screen-spacer {
+  width: 34px;
+  flex-shrink: 0;
+}
+
+/* Scene stats: wider side margins + safe-area (body uses .profile-stats-layout) */
+.profile-stats-screen .profile-list-screen-header {
+  padding-left: calc(40px + env(safe-area-inset-left, 0px));
+  padding-right: calc(40px + env(safe-area-inset-right, 0px));
+}
+
+.profile-list-screen-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 20px 16px calc(28px + env(safe-area-inset-bottom, 0));
+}
+
+.profile-list-screen-intro {
+  margin: 0 0 18px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.profile-taste-tags--full {
+  gap: 10px;
+}
+
+.profile-reputation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px 12px;
+  justify-items: center;
+}
+
+@media (min-width: 420px) {
+  .profile-reputation-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.profile-stats-layout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding-top: 18px;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  padding-left: calc(40px + env(safe-area-inset-left, 0px));
+  padding-right: calc(40px + env(safe-area-inset-right, 0px));
+}
+
+.profile-stats-layout-intro {
+  margin: 0 0 14px;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.profile-stats-tablist {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-bottom: 14px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.profile-stats-tablist::-webkit-scrollbar {
+  display: none;
+}
+
+.profile-stats-tab {
+  flex: 1;
+  min-width: 5.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 8px 8px;
+  border: 1px solid var(--stroke);
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--card) 85%, transparent);
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.profile-stats-tab:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--primary) 50%, transparent);
+  outline-offset: 2px;
+}
+
+.profile-stats-tab--active {
+  border-color: color-mix(in oklab, var(--primary) 45%, var(--stroke));
+  background: color-mix(in oklab, var(--primary) 14%, var(--card));
+  color: var(--text);
+}
+
+.profile-stats-tab-label {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.profile-stats-tab-count {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--primary-soft);
+  letter-spacing: -0.02em;
+}
+
+.theme-light .profile-stats-tab-count {
+  color: var(--primary);
+}
+
+.profile-stats-tab--active .profile-stats-tab-count {
+  color: var(--primary);
+}
+
+.profile-stats-panel-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.profile-stats-panel {
+  animation: profile-stats-panel-in 0.18s ease;
+}
+
+@keyframes profile-stats-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile-stats-panel-lead {
+  margin: 0 0 12px;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.profile-stats-city-list,
+.profile-stats-gig-list,
+.profile-stats-genre-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-radius: 14px;
+  border: 1px solid var(--stroke);
+  overflow: hidden;
+  background: var(--card);
+}
+
+.profile-stats-city-row,
+.profile-stats-gig-row,
+.profile-stats-genre-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--stroke);
+}
+
+.profile-stats-city-row:last-child,
+.profile-stats-gig-row:last-child,
+.profile-stats-genre-row:last-child {
+  border-bottom: none;
+}
+
+.profile-stats-city-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.profile-stats-city-main strong {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.profile-stats-city-main span {
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+
+.profile-stats-city-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.profile-stats-city-last {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.profile-stats-gig-row {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.profile-stats-gig-row strong {
+  font-size: 0.92rem;
+}
+
+.profile-stats-gig-row span {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.profile-stats-gig-date {
+  font-size: 0.72rem !important;
+  font-weight: 600;
+  color: var(--muted) !important;
+}
+
+.profile-stats-genre-row .profile-stats-genre-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.profile-stats-genre-count {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--primary-soft);
+}
+
+.theme-light .profile-stats-genre-count {
+  color: var(--primary);
+}
+
 /* Hero — reference: broken ring, grayscale portrait, tight stack */
 .profile-hero-new {
   --profile-accent: #e55b3c;
@@ -2013,6 +2378,59 @@ body {
   background: var(--stroke);
   align-self: stretch;
   margin: 10px 0;
+}
+
+button.profile-stat-btn {
+  width: auto;
+  min-width: 0;
+}
+
+.profile-stat-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease;
+}
+
+.profile-stat-btn:hover {
+  background: color-mix(in oklab, var(--primary) 8%, transparent);
+}
+
+.profile-stat-btn:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--primary) 50%, transparent);
+  outline-offset: -2px;
+}
+
+.profile-stats-overview-link {
+  margin: 12px 0 0;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary-soft);
+  cursor: pointer;
+  align-self: center;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.profile-stats-overview-link:hover {
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  color: var(--primary);
+}
+
+.theme-light .profile-stats-overview-link {
+  color: var(--primary);
 }
 
 /* Taste Identity */
@@ -8498,6 +8916,40 @@ body {
   box-sizing: border-box;
 }
 
+/* Compact thread composer expanded: ~half the viewport for typing & reading */
+.discover-tab.discover-layla
+  .welcome-layla-composer--compact.welcome-layla-composer--compact-expanded {
+  min-height: min(50dvh, 50vh);
+  height: min(50dvh, 50vh);
+  max-height: min(50dvh, 50vh);
+  align-items: stretch;
+}
+
+.discover-tab.discover-layla
+  .welcome-layla-composer--compact.welcome-layla-composer--compact-expanded
+  .welcome-layla-attach-icon {
+  align-self: flex-end;
+  margin-bottom: 2px;
+}
+
+.discover-tab.discover-layla
+  .welcome-layla-composer--compact.welcome-layla-composer--compact-expanded
+  .welcome-layla-toolbar {
+  align-self: flex-end;
+  margin-bottom: 2px;
+}
+
+.discover-tab.discover-layla
+  .welcome-layla-composer--compact.welcome-layla-composer--compact-expanded
+  .welcome-layla-textarea {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  height: auto;
+  align-self: stretch;
+  overflow-y: auto;
+}
+
 .discover-tab.discover-layla .welcome-layla-composer--compact .welcome-layla-toolbar {
   margin-top: 0;
   padding-top: 0;
@@ -8540,6 +8992,15 @@ body {
   line-height: 1.45;
 }
 
+/* Empty-state composer: taller box when expanded (mic removed — same control as thread mode) */
+.discover-tab.discover-layla
+  .welcome-layla-composer:not(.welcome-layla-composer--compact).welcome-layla-composer--expanded
+  .welcome-layla-textarea {
+  min-height: calc(4 * 1.45em + 12px);
+  max-height: min(50dvh, 50vh);
+  overflow-y: auto;
+}
+
 .theme-dark .discover-tab.discover-layla .welcome-layla-textarea::placeholder {
   color: rgba(255, 255, 255, 0.38);
 }
@@ -8576,6 +9037,21 @@ body {
   width: 34px;
   height: 34px;
   color: rgba(255, 255, 255, 0.6);
+}
+
+/* Expand/collapse uses .welcome-layla-mic — dark icons on light composer */
+.theme-light .discover-tab.discover-layla .welcome-layla-mic {
+  color: color-mix(in oklab, #1c1424 78%, var(--muted));
+}
+
+.theme-light .discover-tab.discover-layla .welcome-layla-mic:hover {
+  background: rgba(28, 20, 36, 0.08);
+  color: #1c1424;
+}
+
+.theme-light .discover-tab.discover-layla .welcome-layla-mic[aria-pressed='true'] {
+  background: rgba(28, 20, 36, 0.12);
+  color: #141018;
 }
 
 .discover-tab.discover-layla .welcome-layla-send {
