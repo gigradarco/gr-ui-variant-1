@@ -125,7 +125,7 @@ export const useAppState = create<AppState>((set) => ({
   userProfile: defaultUserProfile,
   welcomeDismissed: readWelcomeDismissed(),
   isAuthenticated: false,
-  tab: 'feed',
+  tab: 'discover',
   theme: 'dark',
   subscriptionTier: 'pro',
   activeEventId: null,
@@ -149,7 +149,12 @@ export const useAppState = create<AppState>((set) => ({
   closeSignIn: () => set({ showSignIn: false }),
   completeSignInDemo: () => {
     persistWelcomeDismissed()
-    set({ welcomeDismissed: true, isAuthenticated: true, showSignIn: false })
+    set({
+      welcomeDismissed: true,
+      isAuthenticated: true,
+      showSignIn: false,
+      tab: 'discover',
+    })
   },
   returnToLanding: () => {
     clearWelcomeDismissedPersisted()
@@ -157,7 +162,7 @@ export const useAppState = create<AppState>((set) => ({
       welcomeDismissed: false,
       isAuthenticated: false,
       showSignIn: false,
-      tab: 'feed',
+      tab: 'discover',
       activeEventId: null,
       pendingPlanDetail: null,
       showBuzzPoints: false,

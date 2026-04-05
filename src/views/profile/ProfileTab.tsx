@@ -1,6 +1,16 @@
 import type { CSSProperties } from 'react'
 import { motion } from 'framer-motion'
-import { Lock, Star, Building2, Moon, Settings, Zap, Trophy, ChevronRight } from 'lucide-react'
+import {
+  Building2,
+  ChevronRight,
+  Lock,
+  LogOut,
+  Moon,
+  Settings,
+  Star,
+  Trophy,
+  Zap,
+} from 'lucide-react'
 import { BUZO_PRO_UPSELL_CTA } from '../../config/pricing'
 import { buzzSummary, getBuzzTierState } from '../../data/demoData'
 import { useAppState } from '../../store/appStore'
@@ -36,7 +46,7 @@ const badges = [
 export function ProfileTab({
   experienceRingFill = PROFILE_EXPERIENCE_RING_FALLBACK,
 }: ProfileTabProps) {
-  const { openSettings, openBuzzPoints, userProfile } = useAppState()
+  const { openSettings, openBuzzPoints, returnToLanding, userProfile } = useAppState()
   const { current: buzzTier } = getBuzzTierState(buzzSummary.total)
   const headline =
     userProfile.displayName.trim() !== ''
@@ -66,6 +76,14 @@ export function ProfileTab({
           onClick={openSettings}
         >
           <Settings size={18} />
+        </button>
+        <button
+          className="icon-btn profile-toolbar-logout"
+          type="button"
+          aria-label="Log out"
+          onClick={returnToLanding}
+        >
+          <LogOut size={18} aria-hidden />
         </button>
       </div>
 

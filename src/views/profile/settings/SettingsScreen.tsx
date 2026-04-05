@@ -7,7 +7,6 @@ import {
   Fingerprint,
   Globe,
   Info,
-  LogOut,
   Mail,
   MapPin,
   MessageSquare,
@@ -66,7 +65,6 @@ function SettingsRow({
 export function SettingsScreen() {
   const {
     closeSettings,
-    returnToLanding,
     openLanguage,
     openPrivacySafety,
     openFeedback,
@@ -76,11 +74,6 @@ export function SettingsScreen() {
     theme,
     setTheme,
   } = useAppState()
-
-  const handleLogout = () => {
-    closeSettings()
-    returnToLanding()
-  }
 
   const noop = () => {
     window.alert('Demo: connect this row to your flow.')
@@ -137,13 +130,6 @@ export function SettingsScreen() {
         <SettingsGroup title="About">
           <SettingsRow icon={Info} label="App version" value="0.1.0 demo" />
         </SettingsGroup>
-      </div>
-
-      <div className="settings-footer">
-        <button type="button" className="settings-logout-btn" onClick={handleLogout}>
-          <LogOut size={18} aria-hidden />
-          <span>Log out</span>
-        </button>
       </div>
     </motion.div>
   )

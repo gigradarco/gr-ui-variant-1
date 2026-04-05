@@ -232,6 +232,19 @@ export function DiscoverTab({ onOpenEvent, prefillPrompt, onConsumePrefill }: Di
           >
             New chat
           </button>
+          {!hasThread && (
+            <a
+              className="discover-telegram-btn discover-telegram-btn--header"
+              href={telegramBotLink}
+              target="_blank"
+              rel="noreferrer"
+              title="@gigradar123_bot"
+              aria-label="Continue in Telegram — @gigradar123_bot"
+            >
+              <span className="discover-telegram-header-label">Continue in Telegram</span>
+              <ChevronRight size={16} strokeWidth={2.25} className="topbar-telegram-chevron" aria-hidden />
+            </a>
+          )}
           <button
             className="icon-btn discover-expand-btn"
             type="button"
@@ -395,19 +408,6 @@ export function DiscoverTab({ onOpenEvent, prefillPrompt, onConsumePrefill }: Di
           </div>
         ) : (
           <div className="discover-layla-empty">
-            <a
-              className="discover-telegram-btn"
-              href={telegramBotLink}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Continue in Telegram — @gigradar123_bot"
-            >
-              <span className="topbar-telegram-copy">
-                <strong>Continue in Telegram</strong>
-                <small>@gigradar123_bot</small>
-              </span>
-              <ChevronRight size={18} strokeWidth={2.25} className="topbar-telegram-chevron" aria-hidden />
-            </a>
             <h4 className="discover-layla-empty-title">Ask Buzo anything</h4>
             <p className="discover-layla-empty-sub">
               Venues, lineups, areas, or budget — replies show up here.

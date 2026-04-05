@@ -1,4 +1,4 @@
-import { Calendar, LayoutGrid, Search, User, type LucideIcon } from 'lucide-react'
+import { Calendar, LayoutGrid, Search, type LucideIcon } from 'lucide-react'
 import type { Tab } from '../types'
 
 export type TabNavItem = {
@@ -10,8 +10,7 @@ export type TabNavItem = {
 }
 
 export const tabNavItems: TabNavItem[] = [
-  { key: 'feed', label: 'Feed', icon: LayoutGrid },
   { key: 'discover', label: 'Discover', icon: Search },
+  { key: 'feed', label: 'Feed', icon: LayoutGrid },
   { key: 'plan', label: 'Plan', icon: Calendar, iconDot: true },
-  { key: 'profile', label: 'Profile', icon: User },
 ]

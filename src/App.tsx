@@ -1,6 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Info, Moon, Sun, X, Zap } from 'lucide-react'
+import { Info, Moon, Sun, User, X, Zap } from 'lucide-react'
 import {
   events,
   getPlanDetailPast,
@@ -196,6 +196,15 @@ function App() {
                       aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
                     >
                       {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+                    </button>
+                    <button
+                      className={`icon-btn${tab === 'profile' ? ' icon-btn--active' : ''}`}
+                      type="button"
+                      onClick={() => setTab('profile')}
+                      aria-label="Profile"
+                      aria-current={tab === 'profile' ? 'page' : undefined}
+                    >
+                      <User size={18} strokeWidth={tab === 'profile' ? 2.25 : 2} aria-hidden />
                     </button>
                   </div>
                 </header>

@@ -474,6 +474,18 @@ body {
   padding: 0;
 }
 
+.icon-btn--active {
+  border-color: color-mix(in oklab, var(--primary) 45%, var(--stroke));
+  color: var(--primary);
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+}
+
+.theme-light .icon-btn--active {
+  color: var(--primary-soft);
+  border-color: color-mix(in oklab, var(--primary-soft) 45%, var(--stroke));
+  background: color-mix(in oklab, var(--primary-soft) 10%, transparent);
+}
+
 .screen {
   position: relative;
   flex: 1;
@@ -1298,7 +1310,7 @@ body {
   padding-right: 4px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: end;
   background: #000000;
   gap: 0;
@@ -1749,7 +1761,33 @@ body {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  gap: 8px;
   padding: 14px 16px 0;
+}
+
+.profile-toolbar-logout {
+  border-color: color-mix(in oklab, #e2493a 55%, var(--stroke));
+  background: color-mix(in oklab, #e2493a 12%, transparent);
+  color: #f07166;
+}
+
+.theme-light .profile-toolbar-logout {
+  color: #b83228;
+  border-color: color-mix(in oklab, #c53b1f 45%, var(--stroke));
+  background: color-mix(in oklab, #c53b1f 10%, transparent);
+}
+
+.profile-toolbar-logout:hover {
+  background: color-mix(in oklab, #e2493a 22%, transparent);
+  border-color: color-mix(in oklab, #e2493a 70%, transparent);
+}
+
+.theme-light .profile-toolbar-logout:hover {
+  background: color-mix(in oklab, #c53b1f 18%, transparent);
+}
+
+.profile-toolbar-logout:active {
+  transform: scale(0.99);
 }
 
 .profile-section {
@@ -2929,7 +2967,7 @@ body {
   overflow-y: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
-  padding: 16px 16px 8px;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0));
 }
 
 .settings-scroll::-webkit-scrollbar {
@@ -3019,54 +3057,6 @@ body {
   flex-shrink: 0;
   color: var(--muted);
   opacity: 0.7;
-}
-
-.settings-footer {
-  flex-shrink: 0;
-  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0));
-  border-top: 1px solid var(--stroke);
-  background: color-mix(in oklab, var(--bg) 92%, black);
-}
-
-.theme-light .settings-footer {
-  background: color-mix(in oklab, var(--bg) 96%, white);
-}
-
-.settings-logout-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  min-height: 48px;
-  border-radius: 12px;
-  border: 1px solid color-mix(in oklab, #e2493a 55%, var(--stroke));
-  background: color-mix(in oklab, #e2493a 12%, transparent);
-  color: #f07166;
-  font-size: 0.9rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition:
-    background 0.15s,
-    border-color 0.15s,
-    color 0.15s;
-}
-
-.theme-light .settings-logout-btn {
-  color: #b83228;
-  border-color: color-mix(in oklab, #c53b1f 45%, var(--stroke));
-  background: color-mix(in oklab, #c53b1f 10%, transparent);
-}
-
-.settings-logout-btn:hover {
-  background: color-mix(in oklab, #e2493a 22%, transparent);
-  border-color: color-mix(in oklab, #e2493a 70%, transparent);
-}
-
-.settings-logout-btn:active {
-  transform: scale(0.99);
 }
 
 /* ── Subscription (from Settings) ── */
@@ -8057,7 +8047,10 @@ body {
 .discover-secondary-header-actions {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .discover-new-chat-btn {
@@ -8071,9 +8064,17 @@ body {
   color: var(--text);
   font-size: 0.85rem;
   font-weight: 600;
+  line-height: 1;
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s;
   -webkit-tap-highlight-color: transparent;
+}
+
+.discover-secondary-header .discover-new-chat-btn {
+  min-height: 32px;
+  height: 32px;
+  padding: 0 12px;
+  box-sizing: border-box;
 }
 
 .discover-new-chat-btn:hover {
@@ -8302,6 +8303,34 @@ body {
 
 .theme-light .discover-telegram-btn:hover {
   background: #fff;
+}
+
+.discover-telegram-btn.discover-telegram-btn--header {
+  margin-bottom: 0;
+  flex-shrink: 1;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 32px;
+  height: 32px;
+  padding: 0 8px 0 12px;
+  box-sizing: border-box;
+  gap: 2px;
+  line-height: 1;
+}
+
+.discover-telegram-header-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.discover-telegram-btn--header .topbar-telegram-chevron {
+  flex-shrink: 0;
+  opacity: 0.85;
 }
 
 .discover-layla-empty-title {
