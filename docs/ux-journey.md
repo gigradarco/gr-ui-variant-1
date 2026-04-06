@@ -8,7 +8,7 @@ Sign up, pick your cities, and declare your music taste (techno, jazz, indie, et
 ### 2) Friday Afternoon — The Trigger Moment
 You open Buzo and see a feed.
 
-- Your friend Marcus asked the agent, "any good techno tonight in Clarke Quay."
+- Your friend Marcus asked the agent, "any good techno tonight in Marina Bay."
 - Sarah is planning to go to Headquarters.
 - Two others from your network are interested in the same jazz night at Esplanade.
 

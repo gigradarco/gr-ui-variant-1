@@ -6,7 +6,6 @@ import {
   Maximize2,
   Minimize2,
   MoreHorizontal,
-  Paperclip,
   Send,
   History,
   Trash2,
@@ -25,9 +24,13 @@ import {
   getHardcodedAgentFallback,
   normalizePrompt,
 } from './discoverAgent'
+import { LaylaAttachDropdown } from '../../components/LaylaAttachDropdown'
 
 const SAMPLE_PLACEHOLDER =
-  'Techno in Clarke Quay tonight under $50, credible lineups only'
+  'Techno in Marina Bay tonight under $50, credible lineups only'
+
+/** Matches the hardcoded jazz typing window in the `useEffect` below (~2500ms). */
+const DISCOVER_CHIP_AGENT_MIN_LOADING_MS = 2500
 
 type DiscoverTabProps = {
   onOpenEvent: (eventId: string) => void
@@ -42,9 +45,18 @@ type Conversation = {
   resultMode: 'none' | 'hardcoded' | 'agent'
   agentReply: string
   agentEventId: string | null
+  /** Built-in replies used because the assistant API did not return a result */
+  usedDemoFallback: boolean
 }
 
 export function DiscoverTab({ onOpenEvent, prefillPrompt, onConsumePrefill }: DiscoverTabProps) {
+  const discoverChipAgentPromptsNormalized = useMemo(() => {
+    const jazzNorm = normalizePrompt(discoverTargetPrompt)
+    return new Set(
+      discoverSuggestedPrompts.map((p) => normalizePrompt(p)).filter((n) => n !== jazzNorm),
+    )
+  }, [])
+
   const event = events[1]
   const [inputValue, setInputValue] = useState('')
   const [submittedPrompt, setSubmittedPrompt] = useState('')
@@ -52,7 +64,8 @@ export function DiscoverTab({ onOpenEvent, prefillPrompt, onConsumePrefill }: Di
   const [resultMode, setResultMode] = useState<'none' | 'hardcoded' | 'agent'>('none')
   const [agentReply, setAgentReply] = useState('')
   const [agentEventId, setAgentEventId] = useState<string | null>(null)
-  
+  const [usedDemoFallback, setUsedDemoFallback] = useState(false)
+
   // Chat History State
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null)
@@ -86,11 +99,12 @@ export function DiscoverTab({ onOpenEvent, prefillPrompt, onConsumePrefill }: Di
               resultMode,
               agentReply,
               agentEventId,
+              usedDemoFallback,
             }
           : conv
       )
     )
-  }, [submittedPrompt, status, resultMode, agentReply, agentEventId, currentConversationId])
+  }, [submittedPrompt, status, resultMode, agentReply, agentEventId, usedDemoFallback, currentConversationId])
 
   const handleNewChat = () => {
     setInputValue('')
@@ -99,6 +113,7 @@ export function DiscoverTab({ onOpenEvent, prefillPrompt, onConsumePrefill }: Di
     setResultMode('none')
     setAgentReply('')
     setAgentEventId(null)
+    setUsedDemoFallback(false)
     setCurrentConversationId(null)
     setIsDrawerOpen(false)
     setNewChatMenuOpen(false)
@@ -113,6 +128,7 @@ export function DiscoverTab({ onOpenEvent, prefillPrompt, onConsumePrefill }: Di
     setResultMode(conv.resultMode)
     setAgentReply(conv.agentReply)
     setAgentEventId(conv.agentEventId)
+    setUsedDemoFallback(conv.usedDemoFallback ?? false)
     setCurrentConversationId(conv.id)
     setIsDrawerOpen(false)
   }
@@ -175,6 +191,7 @@ export function DiscoverTab({ onOpenEvent, prefillPrompt, onConsumePrefill }: Di
           resultMode: 'none',
           agentReply: '',
           agentEventId: null,
+          usedDemoFallback: false,
         },
         ...prev,
       ])
@@ -183,14 +200,20 @@ export function DiscoverTab({ onOpenEvent, prefillPrompt, onConsumePrefill }: Di
     if (normalizePrompt(nextPrompt) === discoverTargetPrompt) {
       setResultMode('hardcoded')
       setStatus('loading')
+      setUsedDemoFallback(false)
       return
     }
 
     setResultMode('agent')
     setStatus('loading')
+    setUsedDemoFallback(false)
 
-    const resolvedAgentResult =
-      (await fetchOpenAIDiscoverResult(nextPrompt)) ?? getHardcodedAgentFallback(nextPrompt)
+    const agentLoadingStartedAt = performance.now()
+    const needsMinAgentLoading = discoverChipAgentPromptsNormalized.has(normalizePrompt(nextPrompt))
+
+    const openAiResult = await fetchOpenAIDiscoverResult(nextPrompt)
+    const fromDemoFallback = openAiResult === null
+    const resolvedAgentResult = openAiResult ?? getHardcodedAgentFallback(nextPrompt)
 
     if (requestCounter.current !== requestId) {
       return
@@ -212,8 +235,21 @@ export function DiscoverTab({ onOpenEvent, prefillPrompt, onConsumePrefill }: Di
       resolvedAgentResult.suggestedEventId !== null &&
       events.some((item) => item.id === resolvedAgentResult.suggestedEventId)
 
+    if (needsMinAgentLoading) {
+      const elapsed = performance.now() - agentLoadingStartedAt
+      const waitMs = Math.max(0, DISCOVER_CHIP_AGENT_MIN_LOADING_MS - elapsed)
+      if (waitMs > 0) {
+        await new Promise((resolve) => window.setTimeout(resolve, waitMs))
+      }
+    }
+
+    if (requestCounter.current !== requestId) {
+      return
+    }
+
     setAgentReply(finalReply)
     setAgentEventId(hasMatchingEvent ? resolvedAgentResult.suggestedEventId : null)
+    setUsedDemoFallback(fromDemoFallback)
     setStatus('done')
 
     return
@@ -389,6 +425,19 @@ export function DiscoverTab({ onOpenEvent, prefillPrompt, onConsumePrefill }: Di
           </motion.div>
         </div>
         <div className="discover-secondary-header-actions">
+          {status === 'done' && resultMode === 'agent' ? (
+            <div
+              className={
+                usedDemoFallback
+                  ? 'discover-agent-mode-hint discover-agent-mode-hint--demo'
+                  : 'discover-agent-mode-hint discover-agent-mode-hint--live'
+              }
+              role="status"
+              aria-live="polite"
+            >
+              {usedDemoFallback ? 'Demo mode' : 'Live'}
+            </div>
+          ) : null}
           <div className="discover-new-chat-wrap" ref={newChatMenuRef}>
             <div className="discover-chat-menu-split">
               <button
@@ -613,18 +662,7 @@ export function DiscoverTab({ onOpenEvent, prefillPrompt, onConsumePrefill }: Di
             role="group"
             aria-label="Describe your night"
           >
-            {hasThread && (
-              <button
-                type="button"
-                className="welcome-layla-attach-icon"
-                aria-label="Attach"
-                onClick={() =>
-                  window.alert('Demo: attach a flyer, screenshot, or playlist link here.')
-                }
-              >
-                <Paperclip size={20} strokeWidth={2} aria-hidden />
-              </button>
-            )}
+            {hasThread && <LaylaAttachDropdown variant="icon" />}
             <textarea
               ref={textareaRef}
               className="welcome-layla-textarea"
@@ -641,22 +679,11 @@ export function DiscoverTab({ onOpenEvent, prefillPrompt, onConsumePrefill }: Di
               aria-label="What do you want to do tonight?"
             />
             <div className="welcome-layla-toolbar">
-              {!hasThread && (
-                <button
-                  type="button"
-                  className="welcome-layla-attach"
-                  onClick={() =>
-                    window.alert('Demo: attach a flyer, screenshot, or playlist link here.')
-                  }
-                >
-                  <Paperclip size={17} strokeWidth={2} aria-hidden />
-                  <span>Attach</span>
-                </button>
-              )}
+              {!hasThread && <LaylaAttachDropdown variant="toolbar" />}
               {!hasThread && <span className="welcome-layla-toolbar-spacer" aria-hidden />}
               <button
                 type="button"
-                className="welcome-layla-mic welcome-layla-expand-composer"
+                className="welcome-layla-expand-composer"
                 aria-label={composerExpanded ? 'Collapse composer' : 'Expand composer'}
                 aria-pressed={composerExpanded}
                 onClick={() => setComposerExpanded((v) => !v)}

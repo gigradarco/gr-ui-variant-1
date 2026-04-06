@@ -11,7 +11,7 @@ export const events: EventItem[] = [
     id: 'marquee',
     title: 'Marquee Singapore',
     venue: 'Marquee',
-    district: 'Clarke Quay',
+    district: 'Marina Bay',
     time: '22:30',
     genre: 'Techno',
     exploreCategoryId: 'club-nights',
@@ -20,7 +20,7 @@ export const events: EventItem[] = [
     image:
       'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80',
     host: 'Marcus',
-    hostPrompt: 'any techno in Clarke Quay tonight?',
+    hostPrompt: 'any techno in Marina Bay tonight?',
     friendsGoing: 2,
     vibeTags: ['Warehouse', 'Peak Energy'],
     ticketPrice: '42.00 SGD',
@@ -148,7 +148,7 @@ export const discoverTargetPrompt = 'any good jazz tonight near tiong bahru ?'
 
 export const discoverSuggestedPrompts = [
   'any good jazz tonight near Tiong Bahru ?',
-  'best techno tonight in Clarke Quay?',
+  'best techno tonight in Marina Bay?',
   'who is going to neon pulse tonight?',
 ]
 
@@ -166,7 +166,7 @@ export const welcomeIntroShortcuts: WelcomeIntroShortcut[] = [
   },
   {
     label: 'Plan a crawl',
-    prompt: 'Where should a group go in Clarke Quay tonight with mixed tastes?',
+    prompt: 'Where should a group go in Marina Bay tonight with mixed tastes?',
   },
   {
     label: 'Last-minute escape',
@@ -184,7 +184,7 @@ export type WelcomeSpotlightNight = {
 /** Layla-style persona + trip framing: “Friends — …”, deep-link prompts into Discover. */
 export const welcomeSpotlightNights: WelcomeSpotlightNight[] = [
   {
-    title: 'Friends — Clarke Quay crawl',
+    title: 'Friends — Marina Bay crawl',
     subtitle: 'Techno & clubs · group-ready',
     image: events[0].image,
     prompt: `Where should a big group go for techno in ${events[0].district} tonight?`,
@@ -317,12 +317,12 @@ export const welcomePlaceholderYoutube = {
   /** https://www.youtube.com/watch?v=MJ3Is0Uwxho */
   videoId: 'MJ3Is0Uwxho',
   embedTitle:
-    'What Singapore Nightlife Looks Like at Clarke Quay on a Saturday | 2025 Walking Tour [4K]',
+    'What Singapore Nightlife Looks Like at Marina Bay on a Saturday | 2025 Walking Tour [4K]',
 }
 
 export const feedSuggestedPrompts = [
   'Any good jazz tonight near Tiong Bahru?',
-  'Best techno tonight in Clarke Quay?',
+  'Best techno tonight in Marina Bay?',
   'Rooftop vibes with friends tonight?',
 ]
 
@@ -334,7 +334,7 @@ export const feedWireframePosts: FeedWireframePost[] = [
     hostAvatar:
       'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
     hostVerb: 'asked',
-    hostLine: 'any techno in Clarke Quay tonight?',
+    hostLine: 'any techno in Marina Bay tonight?',
     bp: 15,
     buzzPct: 98,
     heroImage:
@@ -342,7 +342,7 @@ export const feedWireframePosts: FeedWireframePost[] = [
     kicker: 'UNDERGROUND CLUB',
     kickerStyle: 'neon',
     venueName: 'THE VAULT',
-    venueLine: 'WAREHOUSE 14 · CLARKE QUAY',
+    venueLine: 'WAREHOUSE 14 · MARINA BAY',
   },
   {
     eventId: 'neon-noir',

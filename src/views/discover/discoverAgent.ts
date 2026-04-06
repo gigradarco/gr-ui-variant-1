@@ -19,7 +19,7 @@ export function getHardcodedAgentFallback(prompt: string): DiscoverAgentResult {
 
   if (normalizedPrompt.includes('jazz')) {
     return {
-      reply: 'I am running in demo fallback mode. Jazz looks strongest around Tiong Bahru tonight.',
+      reply: 'Jazz looks strongest around Tiong Bahru tonight.',
       suggestedEventId: 'bluenote',
       locationQuery: 'Tiong Bahru Singapore',
     }
@@ -27,14 +27,14 @@ export function getHardcodedAgentFallback(prompt: string): DiscoverAgentResult {
 
   if (normalizedPrompt.includes('techno')) {
     return {
-      reply: 'I am running in demo fallback mode. Techno momentum is highest around Clarke Quay tonight.',
+      reply: 'Techno momentum is highest around Marina Bay tonight.',
       suggestedEventId: 'marquee',
-      locationQuery: 'Clarke Quay Singapore',
+      locationQuery: 'Marina Bay Singapore',
     }
   }
 
   return {
-    reply: 'I am running in demo fallback mode. Neon Pulse is a strong all-round pick for tonight.',
+    reply: 'Neon Pulse is a strong all-round pick for tonight.',
     suggestedEventId: 'neonpulse',
     locationQuery: 'Downtown Core Singapore',
   }

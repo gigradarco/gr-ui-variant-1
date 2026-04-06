@@ -4,9 +4,7 @@ import {
   CalendarCheck,
   ChevronDown,
   Compass,
-  Mic,
   Moon,
-  Paperclip,
   Send,
   Sparkles,
   Sun,
@@ -26,9 +24,10 @@ import {
 } from '../../data/demoData'
 import type { Tab } from '../../types'
 import { useAppState } from '../../store/appStore'
+import { LaylaAttachDropdown } from '../../components/LaylaAttachDropdown'
 
 const SAMPLE_PLACEHOLDER =
-  'Techno in Clarke Quay tonight under $50, credible lineups only'
+  'Techno in Marina Bay tonight under $50, credible lineups only'
 
 function youtubeEmbedSrc(videoId: string) {
   const u = new URL(`https://www.youtube.com/embed/${encodeURIComponent(videoId)}`)
@@ -153,25 +152,8 @@ export function WelcomeScreen({ onEnterApp }: WelcomeScreenProps) {
                 aria-label="What do you want to do tonight?"
               />
               <div className="welcome-layla-toolbar">
-                <button
-                  type="button"
-                  className="welcome-layla-attach"
-                  onClick={() =>
-                    window.alert('Demo: attach a flyer, screenshot, or playlist link here.')
-                  }
-                >
-                  <Paperclip size={17} strokeWidth={2} aria-hidden />
-                  <span>Attach</span>
-                </button>
+                <LaylaAttachDropdown variant="toolbar" />
                 <span className="welcome-layla-toolbar-spacer" aria-hidden />
-                <button
-                  type="button"
-                  className="welcome-layla-mic"
-                  aria-label="Speak your prompt"
-                  onClick={() => window.alert('Demo: connect speech-to-text here.')}
-                >
-                  <Mic size={20} strokeWidth={2} aria-hidden />
-                </button>
                 <button
                   type="button"
                   className="welcome-layla-send"

@@ -8518,12 +8518,83 @@ button.profile-stat-btn {
   color: rgba(255, 255, 255, 0.9);
 }
 
+.welcome-layla-attach-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.welcome-layla-attach-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.welcome-layla-attach-chevron {
+  flex-shrink: 0;
+  margin-left: 2px;
+  opacity: 0.75;
+  transition: transform 0.15s ease;
+}
+
+.welcome-layla-attach[aria-expanded='true'] .welcome-layla-attach-chevron {
+  transform: rotate(180deg);
+}
+
+.welcome-layla-attach-menu {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  z-index: 200;
+  margin: 0;
+  padding: 6px;
+  min-width: 220px;
+  border-radius: 14px;
+  border: 1px solid var(--stroke);
+  background: color-mix(in oklab, var(--card) 96%, var(--bg));
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+}
+
+.welcome-layla-attach-menu .discover-new-chat-menu-item.welcome-layla-attach-menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.welcome-layla-attach-menu-leading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.welcome-layla-attach-menu-label {
+  flex: 1;
+}
+
+.welcome-layla-attach-menu-meta {
+  width: 100%;
+  padding-left: calc(18px + 10px);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
 .welcome-layla-toolbar-spacer {
   flex: 1;
   min-width: 8px;
 }
 
-.welcome-layla-mic {
+.welcome-layla-expand-composer {
   width: 36px;
   height: 36px;
   display: grid;
@@ -8537,16 +8608,16 @@ button.profile-stat-btn {
   -webkit-tap-highlight-color: transparent;
 }
 
-.theme-dark .welcome-layla-mic {
+.theme-dark .welcome-layla-expand-composer {
   color: rgba(255, 255, 255, 0.6);
 }
 
-.theme-dark .welcome-layla-mic:hover {
+.theme-dark .welcome-layla-expand-composer:hover {
   background: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.9);
 }
 
-.welcome-layla-mic:hover {
+.welcome-layla-expand-composer:hover {
   background: rgba(0, 0, 0, 0.05);
 }
 
@@ -8692,6 +8763,36 @@ button.profile-stat-btn {
   flex-wrap: nowrap;
   flex-shrink: 0;
   min-width: 0;
+}
+
+/* Discover — agent reply source: beside New chat */
+.discover-agent-mode-hint {
+  flex-shrink: 0;
+  padding: 0 2px 0 0;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.discover-agent-mode-hint--demo {
+  color: color-mix(in oklab, var(--primary) 82%, var(--muted));
+}
+
+.theme-light .discover-agent-mode-hint--demo {
+  color: color-mix(in oklab, var(--primary-soft) 75%, var(--muted));
+}
+
+.discover-agent-mode-hint--live {
+  color: #4ade80;
+  opacity: 0.92;
+}
+
+.theme-light .discover-agent-mode-hint--live {
+  color: #16a34a;
+  opacity: 1;
 }
 
 .discover-new-chat-wrap {
@@ -9221,23 +9322,23 @@ button.profile-stat-btn {
   color: color-mix(in oklab, #1c1424 88%, var(--muted));
 }
 
-.discover-tab.discover-layla .welcome-layla-mic {
+.discover-tab.discover-layla .welcome-layla-expand-composer {
   width: 34px;
   height: 34px;
   color: rgba(255, 255, 255, 0.6);
 }
 
-/* Expand/collapse uses .welcome-layla-mic — dark icons on light composer */
-.theme-light .discover-tab.discover-layla .welcome-layla-mic {
+/* Expand/collapse — dark icons on light composer */
+.theme-light .discover-tab.discover-layla .welcome-layla-expand-composer {
   color: color-mix(in oklab, #1c1424 78%, var(--muted));
 }
 
-.theme-light .discover-tab.discover-layla .welcome-layla-mic:hover {
+.theme-light .discover-tab.discover-layla .welcome-layla-expand-composer:hover {
   background: rgba(28, 20, 36, 0.08);
   color: #1c1424;
 }
 
-.theme-light .discover-tab.discover-layla .welcome-layla-mic[aria-pressed='true'] {
+.theme-light .discover-tab.discover-layla .welcome-layla-expand-composer[aria-pressed='true'] {
   background: rgba(28, 20, 36, 0.12);
   color: #141018;
 }
