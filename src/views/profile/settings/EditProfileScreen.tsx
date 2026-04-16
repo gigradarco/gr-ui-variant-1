@@ -1,11 +1,16 @@
-import { useCallback, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, Camera } from 'lucide-react'
 import { UploadToast, type UploadToastState } from '../../../components/UploadToast'
 import { postProfileAvatar } from '../../../lib/auth-api'
 import { resizeImageForAvatar } from '../../../lib/resizeImageForAvatar'
+import { api } from '../../../lib/trpc'
 import { useAppState } from '../../../store/appStore'
 import { AvatarCropModal } from './AvatarCropModal'
+
+function normalizeProfileUsername(s: string): string {
+  return s.trim().replace(/^@+/, '').toLowerCase()
+}
 
 export function EditProfileScreen() {
   const closeEditProfile = useAppState((s) => s.closeEditProfile)
@@ -17,6 +22,14 @@ export function EditProfileScreen() {
   const [pendingCropFile, setPendingCropFile] = useState<File | null>(null)
   const [uploadToast, setUploadToast] = useState<UploadToastState>(null)
   const toastIdRef = useRef(0)
+
+  const initialNormalized = useRef(
+    normalizeProfileUsername(useAppState.getState().userProfile.username),
+  )
+  const [verifiedFor, setVerifiedFor] = useState<string | null>(null)
+
+  const checkUsernameMu = api.profile.checkUsername.useMutation()
+  const updateProfileMu = api.profile.update.useMutation()
 
   const dismissUploadToast = useCallback(() => setUploadToast(null), [])
 
@@ -30,6 +43,14 @@ export function EditProfileScreen() {
   )
   const [username, setUsername] = useState(() => useAppState.getState().userProfile.username)
   const [bio, setBio] = useState(() => useAppState.getState().userProfile.bio)
+
+  useEffect(() => {
+    const n = normalizeProfileUsername(username)
+    setVerifiedFor((prev) => (prev !== null && n !== prev ? null : prev))
+  }, [username])
+
+  const normalizedNow = normalizeProfileUsername(username)
+  const usernameChanged = normalizedNow !== initialNormalized.current
 
   const openPhotoPicker = () => {
     setPhotoError(null)
@@ -66,20 +87,73 @@ export function EditProfileScreen() {
     }
   }
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault()
-    const handle = username.trim().replace(/^@+/, '').toUpperCase()
-    if (!handle) {
-      window.alert('Choose a username.')
+  const onVerifyUsername = async () => {
+    const n = normalizeProfileUsername(username)
+    if (n.length < 4) {
+      pushUploadToast('Username must be at least 4 characters.', 'error')
       return
     }
-    setUserProfile({
+    if (!usernameChanged) {
+      pushUploadToast('This is already your username.', 'success')
+      setVerifiedFor(n)
+      return
+    }
+    try {
+      const r = await checkUsernameMu.mutateAsync({ username: n })
+      if (r.available) {
+        setVerifiedFor(n)
+        pushUploadToast('Username is available.', 'success')
+      } else {
+        pushUploadToast('That username is taken.', 'error')
+      }
+    } catch (err) {
+      pushUploadToast(err instanceof Error ? err.message : 'Could not verify username.', 'error')
+    }
+  }
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    const n = normalizeProfileUsername(username)
+    if (!n) {
+      pushUploadToast('Choose a username.', 'error')
+      return
+    }
+    if (usernameChanged) {
+      if (n.length < 4) {
+        pushUploadToast('Username must be at least 4 characters.', 'error')
+        return
+      }
+      if (verifiedFor !== n) {
+        pushUploadToast('Verify your new username before saving.', 'error')
+        return
+      }
+    }
+    const payload: {
+      displayName: string
+      bio: string
+      username?: string
+    } = {
       displayName: displayName.trim(),
-      username: handle,
       bio: bio.trim(),
-    })
-    closeEditProfile()
-    window.alert('Profile saved. (Demo — connect to your API.)')
+    }
+    if (usernameChanged) {
+      payload.username = n
+    }
+    try {
+      const data = await updateProfileMu.mutateAsync(payload)
+      setUserProfile({
+        displayName: String(data.display_name ?? '').trim() || displayName.trim(),
+        username: String(data.username ?? n)
+          .replace(/^@/, '')
+          .toUpperCase(),
+        bio: String(data.bio ?? '').trim(),
+        avatarUrl: String(data.avatar_url ?? avatarUrl),
+      })
+      closeEditProfile()
+      pushUploadToast('Profile saved.', 'success')
+    } catch (err) {
+      pushUploadToast(err instanceof Error ? err.message : 'Could not save profile.', 'error')
+    }
   }
 
   return (
@@ -176,6 +250,7 @@ export function EditProfileScreen() {
               <input
                 id="edit-profile-username"
                 className="edit-profile-input edit-profile-input--username"
+                aria-describedby="edit-profile-username-hint"
                 value={username}
                 onChange={(e) =>
                   setUsername(e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, ''))
@@ -183,9 +258,26 @@ export function EditProfileScreen() {
                 autoCapitalize="characters"
                 autoCorrect="off"
                 spellCheck={false}
-                maxLength={24}
+                maxLength={30}
                 placeholder="HANDLE"
               />
+            </div>
+            <div className="edit-profile-username-actions">
+              <button
+                type="button"
+                className="edit-profile-verify-username"
+                onClick={onVerifyUsername}
+                disabled={checkUsernameMu.isPending || !usernameChanged}
+              >
+                {checkUsernameMu.isPending ? 'Checking…' : 'Verify username'}
+              </button>
+              <p className="edit-profile-username-hint" id="edit-profile-username-hint">
+                {usernameChanged
+                  ? verifiedFor === normalizedNow
+                    ? 'Verified — you can save.'
+                    : 'New handle: 4–30 characters · verify before save.'
+                  : '4–30 characters. Change handle to verify before save.'}
+              </p>
             </div>
           </div>
         </div>
@@ -212,8 +304,12 @@ export function EditProfileScreen() {
         </div>
 
         <div className="edit-profile-footer">
-          <button type="submit" className="edit-profile-save">
-            Save changes
+          <button
+            type="submit"
+            className="edit-profile-save"
+            disabled={updateProfileMu.isPending}
+          >
+            {updateProfileMu.isPending ? 'Saving…' : 'Save changes'}
           </button>
         </div>
       </form>

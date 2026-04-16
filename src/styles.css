@@ -4945,6 +4945,51 @@ button.profile-stat-btn {
   border: none;
 }
 
+.edit-profile-username-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin-top: 10px;
+}
+
+.edit-profile-verify-username {
+  flex-shrink: 0;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in oklab, var(--primary) 55%, var(--stroke));
+  background: color-mix(in oklab, var(--primary) 12%, var(--card));
+  color: var(--text);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    filter 0.15s,
+    opacity 0.15s;
+}
+
+.edit-profile-verify-username:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.edit-profile-verify-username:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.edit-profile-username-hint {
+  flex: 1;
+  min-width: 200px;
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
 .edit-profile-textarea {
   width: 100%;
   border-radius: 10px;
