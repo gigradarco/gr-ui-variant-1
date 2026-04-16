@@ -7,14 +7,15 @@ import {
   Fingerprint,
   Globe,
   Info,
-  Mail,
   MapPin,
   MessageSquare,
   Moon,
   Shield,
   Sun,
+  Trash2,
   User,
 } from 'lucide-react'
+import { postDeleteAccount } from '../../../lib/auth-api'
 import { useAppState } from '../../../store/appStore'
 
 type RowIcon = ComponentType<{ size?: number; className?: string }>
@@ -33,11 +34,13 @@ function SettingsRow({
   label,
   value,
   onClick,
+  destructive,
 }: {
   icon: RowIcon
   label: string
   value?: string
   onClick?: () => void
+  destructive?: boolean
 }) {
   const showChevron = onClick != null
   const content = (
@@ -53,7 +56,11 @@ function SettingsRow({
 
   if (onClick) {
     return (
-      <button type="button" className="settings-row" onClick={onClick}>
+      <button
+        type="button"
+        className={`settings-row${destructive ? ' settings-row--destructive' : ''}`}
+        onClick={onClick}
+      >
         {content}
       </button>
     )
@@ -63,20 +70,37 @@ function SettingsRow({
 }
 
 export function SettingsScreen() {
-  const {
+   const {
     closeSettings,
     openLanguage,
     openPrivacySafety,
     openFeedback,
-    openEmailLogin,
     openEditProfile,
     openSubscription,
+    returnToLanding,
     theme,
     setTheme,
   } = useAppState()
 
   const noop = () => {
     window.alert('Demo: connect this row to your flow.')
+  }
+
+  const handleDeleteAccount = () => {
+    const ok = window.confirm(
+      'Delete your Buzo account permanently? Your profile and activity will be removed. This cannot be undone.',
+    )
+    if (!ok) return
+    void (async () => {
+      try {
+        await postDeleteAccount()
+        closeSettings()
+        returnToLanding()
+        window.location.reload()
+      } catch (e) {
+        window.alert(e instanceof Error ? e.message : 'Could not delete account. Try again.')
+      }
+    })()
   }
 
   return (
@@ -105,20 +129,15 @@ export function SettingsScreen() {
           <SettingsRow icon={CreditCard} label="Manage subscription" onClick={openSubscription} />
         </SettingsGroup>
 
-        <SettingsGroup title="Account">
-          <SettingsRow icon={User} label="Edit profile" onClick={openEditProfile} />
-          <SettingsRow icon={Mail} label="Change Email & Login" onClick={openEmailLogin} />
-        </SettingsGroup>
-
         <SettingsGroup title="Preferences">
+          <SettingsRow icon={MapPin} label="Location & gigs near you" onClick={noop} />
+          <SettingsRow icon={Fingerprint} label="Taste & recommendations" onClick={noop} />
           <SettingsRow
             icon={theme === 'dark' ? Moon : Sun}
             label="Appearance"
             value={theme === 'dark' ? 'Dark' : 'Light'}
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           />
-          <SettingsRow icon={MapPin} label="Location & gigs near you" onClick={noop} />
-          <SettingsRow icon={Fingerprint} label="Taste & recommendations" onClick={noop} />
           <SettingsRow icon={Globe} label="Language" value="English" onClick={openLanguage} />
         </SettingsGroup>
 
@@ -129,6 +148,16 @@ export function SettingsScreen() {
 
         <SettingsGroup title="About">
           <SettingsRow icon={Info} label="App version" value="0.1.0 demo" />
+        </SettingsGroup>
+
+        <SettingsGroup title="Account">
+          <SettingsRow icon={User} label="Edit profile" onClick={openEditProfile} />
+          <SettingsRow
+            icon={Trash2}
+            label="Delete account"
+            destructive
+            onClick={handleDeleteAccount}
+          />
         </SettingsGroup>
       </div>
     </motion.div>

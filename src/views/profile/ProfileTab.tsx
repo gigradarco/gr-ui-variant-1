@@ -104,6 +104,7 @@ export function ProfileTab({
                 decoding="async"
                 fetchPriority="high"
               />
+              <span className="profile-avatar-gloss" aria-hidden />
             </div>
           </div>
           <span className="profile-rank-badge">

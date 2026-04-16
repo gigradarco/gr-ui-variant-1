@@ -1,12 +1,29 @@
-import { useState, type FormEvent } from 'react'
-import { motion } from 'framer-motion'
+import { useCallback, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, Camera } from 'lucide-react'
+import { UploadToast, type UploadToastState } from '../../../components/UploadToast'
+import { postProfileAvatar } from '../../../lib/auth-api'
+import { resizeImageForAvatar } from '../../../lib/resizeImageForAvatar'
 import { useAppState } from '../../../store/appStore'
+import { AvatarCropModal } from './AvatarCropModal'
 
 export function EditProfileScreen() {
   const closeEditProfile = useAppState((s) => s.closeEditProfile)
   const setUserProfile = useAppState((s) => s.setUserProfile)
   const avatarUrl = useAppState((s) => s.userProfile.avatarUrl)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [photoBusy, setPhotoBusy] = useState(false)
+  const [photoError, setPhotoError] = useState<string | null>(null)
+  const [pendingCropFile, setPendingCropFile] = useState<File | null>(null)
+  const [uploadToast, setUploadToast] = useState<UploadToastState>(null)
+  const toastIdRef = useRef(0)
+
+  const dismissUploadToast = useCallback(() => setUploadToast(null), [])
+
+  const pushUploadToast = useCallback((message: string, variant: 'success' | 'error') => {
+    toastIdRef.current += 1
+    setUploadToast({ id: toastIdRef.current, variant, message })
+  }, [])
 
   const [displayName, setDisplayName] = useState(
     () => useAppState.getState().userProfile.displayName,
@@ -14,8 +31,39 @@ export function EditProfileScreen() {
   const [username, setUsername] = useState(() => useAppState.getState().userProfile.username)
   const [bio, setBio] = useState(() => useAppState.getState().userProfile.bio)
 
-  const changePhoto = () => {
-    window.alert('Demo: open camera roll or image picker, then upload to your profile API.')
+  const openPhotoPicker = () => {
+    setPhotoError(null)
+    fileInputRef.current?.click()
+  }
+
+  const onPhotoSelected = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file || !file.type.startsWith('image/')) {
+      setPhotoError('Choose an image file.')
+      return
+    }
+    setPhotoError(null)
+    setPendingCropFile(file)
+  }
+
+  const onCropConfirm = async (cropped: File) => {
+    setPhotoBusy(true)
+    setPhotoError(null)
+    try {
+      const prepared = await resizeImageForAvatar(cropped)
+      const url = await postProfileAvatar(prepared)
+      setUserProfile({ avatarUrl: url })
+      setPendingCropFile(null)
+      pushUploadToast('Profile photo updated.', 'success')
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Upload failed'
+      setPhotoError(msg)
+      pushUploadToast(msg, 'error')
+      throw err
+    } finally {
+      setPhotoBusy(false)
+    }
   }
 
   const handleSubmit = (e: FormEvent) => {
@@ -60,17 +108,44 @@ export function EditProfileScreen() {
           <h3 className="edit-profile-group-title">Photo</h3>
           <div className="edit-profile-group-card edit-profile-photo-card">
             <div className="edit-profile-avatar-wrap">
-              <img
-                src={avatarUrl}
-                alt=""
-                className="edit-profile-avatar"
-                decoding="async"
-              />
+              <div className="edit-profile-avatar-inner">
+                <img
+                  src={avatarUrl}
+                  alt=""
+                  className="edit-profile-avatar"
+                  decoding="async"
+                />
+                <span className="edit-profile-avatar-gloss" aria-hidden />
+              </div>
             </div>
-            <button type="button" className="edit-profile-change-photo" onClick={changePhoto}>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/*"
+              className="edit-profile-photo-input"
+              aria-hidden
+              tabIndex={-1}
+              onChange={onPhotoSelected}
+            />
+            <button
+              type="button"
+              className="edit-profile-change-photo"
+              onClick={openPhotoPicker}
+              disabled={photoBusy}
+              aria-busy={photoBusy}
+              aria-describedby="edit-profile-photo-hint"
+            >
               <Camera size={18} aria-hidden />
-              <span>Change photo</span>
+              <span>{photoBusy ? 'Uploading…' : 'Change photo'}</span>
             </button>
+            <p id="edit-profile-photo-hint" className="edit-profile-photo-hint">
+              JPEG, PNG, or WebP · max 2&nbsp;MB
+            </p>
+            {photoError ? (
+              <p className="edit-profile-photo-error" role="alert">
+                {photoError}
+              </p>
+            ) : null}
           </div>
         </div>
 
@@ -142,6 +217,19 @@ export function EditProfileScreen() {
           </button>
         </div>
       </form>
+
+      <AnimatePresence>
+        {pendingCropFile ? (
+          <AvatarCropModal
+            key={`${pendingCropFile.name}-${pendingCropFile.size}-${pendingCropFile.lastModified}`}
+            file={pendingCropFile}
+            onCancel={() => setPendingCropFile(null)}
+            onConfirm={onCropConfirm}
+          />
+        ) : null}
+      </AnimatePresence>
+
+      <UploadToast toast={uploadToast} onDismiss={dismissUploadToast} />
     </motion.div>
   )
 }

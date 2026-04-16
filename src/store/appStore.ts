@@ -95,6 +95,8 @@ type AppState = {
   showEmailLogin: boolean
   /** Pre-app sign-in sheet from the welcome screen. */
   showSignIn: boolean
+  /** Set when magic link / OAuth redirect returns #error (shown in the sign-in sheet). */
+  signInRedirectError: string | null
   showEditProfile: boolean
   showSubscription: boolean
   dismissWelcome: () => void
@@ -177,21 +179,23 @@ export const useAppState = create<AppState>((set) => ({
   showFeedback: false,
   showEmailLogin: false,
   showSignIn: false,
+  signInRedirectError: null,
   showEditProfile: false,
   showSubscription: false,
   isDiscoverExpanded: false,
   dismissWelcome: () => {
     persistWelcomeDismissed()
-    set({ welcomeDismissed: true, showSignIn: false })
+    set({ welcomeDismissed: true, showSignIn: false, signInRedirectError: null })
   },
-  openSignIn: () => set({ showSignIn: true }),
-  closeSignIn: () => set({ showSignIn: false }),
+  openSignIn: () => set({ showSignIn: true, signInRedirectError: null }),
+  closeSignIn: () => set({ showSignIn: false, signInRedirectError: null }),
   completeSignInDemo: () => {
     persistWelcomeDismissed()
     set({
       welcomeDismissed: true,
       isAuthenticated: true,
       showSignIn: false,
+      signInRedirectError: null,
       tab: 'discover',
     })
   },
@@ -235,6 +239,7 @@ export const useAppState = create<AppState>((set) => ({
       ...(isRealUser
         ? {
             showSignIn: false,
+            signInRedirectError: null,
             welcomeDismissed: true,
             tab: 'discover' as Tab,
           }
@@ -251,6 +256,7 @@ export const useAppState = create<AppState>((set) => ({
       welcomeDismissed: false,
       isAuthenticated: false,
       showSignIn: false,
+      signInRedirectError: null,
       tab: 'discover',
       activeEventId: null,
       pendingPlanDetail: null,

@@ -9,6 +9,13 @@ import { consumeOAuthHash } from './session'
  */
 export function AuthSync({ children }: { children: ReactNode }) {
   useEffect(() => {
+    const onHashError = (ev: Event) => {
+      const msg = (ev as CustomEvent<{ message: string }>).detail?.message
+      if (msg) {
+        useAppState.setState({ showSignIn: true, signInRedirectError: msg })
+      }
+    }
+    window.addEventListener('buzo-auth-hash-error', onHashError)
     consumeOAuthHash()
 
     let cancelled = false
@@ -29,6 +36,7 @@ export function AuthSync({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true
       window.removeEventListener('buzo-auth-changed', onAuth)
+      window.removeEventListener('buzo-auth-hash-error', onHashError)
     }
   }, [])
 

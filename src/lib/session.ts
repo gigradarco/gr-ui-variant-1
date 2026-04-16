@@ -45,17 +45,61 @@ export function notifyAuthChanged() {
   window.dispatchEvent(new Event('buzo-auth-changed'))
 }
 
+function decodeAuthParam(value: string): string {
+  try {
+    return decodeURIComponent(value.replace(/\+/g, ' '))
+  } catch {
+    return value
+  }
+}
+
+function stripUrlToPathAndSearch(): void {
+  window.history.replaceState(
+    null,
+    '',
+    `${window.location.pathname}${window.location.search}`,
+  )
+}
+
+function emitAuthHashError(message: string) {
+  window.dispatchEvent(new CustomEvent('buzo-auth-hash-error', { detail: { message } }))
+}
+
 /**
- * After Supabase OAuth / magic link, tokens arrive in the URL hash. Persist and strip the hash.
+ * After Supabase OAuth / magic link, tokens arrive in the URL `#hash` (implicit flow).
+ * Some errors also arrive in the hash or `?error=` query. Clears the fragment/query and persists tokens.
  */
 export function consumeOAuthHash(): boolean {
+  const path = window.location.pathname
+  const search = window.location.search
+
+  const sp = new URLSearchParams(search)
+  const qErr = sp.get('error_description') ?? sp.get('error')
+  if (qErr) {
+    window.history.replaceState(null, '', path)
+    emitAuthHashError(decodeAuthParam(qErr))
+    return false
+  }
+
   const raw = window.location.hash?.replace(/^#/, '')
   if (!raw) return false
+
   const params = new URLSearchParams(raw)
+  const errDesc = params.get('error_description') ?? params.get('error')
+  if (errDesc) {
+    stripUrlToPathAndSearch()
+    emitAuthHashError(decodeAuthParam(errDesc))
+    return false
+  }
+
   const access_token = params.get('access_token')
   const refresh_token = params.get('refresh_token')
-  if (!access_token) return false
+  if (!access_token) {
+    stripUrlToPathAndSearch()
+    return false
+  }
+
   setTokens({ access_token, refresh_token })
-  window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
+  stripUrlToPathAndSearch()
   return true
 }

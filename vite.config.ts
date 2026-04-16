@@ -11,6 +11,7 @@ export default defineConfig({
       '/trpc': backend,
       '/api/geocode': backend,
       '/api/auth': backend,
+      '/api/profile': backend,
       '/health': backend,
     },
   },

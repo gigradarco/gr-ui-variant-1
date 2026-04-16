@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Mail } from 'lucide-react'
-import { googleOAuthRedirectUrl, postMagicLink } from '../../lib/auth-api'
+import { ArrowLeft } from 'lucide-react'
+import { googleOAuthRedirectUrl } from '../../lib/auth-api'
 import { useAppState } from '../../store/appStore'
 
 function GoogleMark() {
@@ -30,11 +30,8 @@ function GoogleMark() {
 }
 
 export function SignInSheet() {
-  const { closeSignIn } = useAppState()
-  const [view, setView] = useState<'main' | 'email'>('main')
-  const [email, setEmail] = useState('')
-  const [busy, setBusy] = useState<'idle' | 'google' | 'email'>('idle')
-  const [emailStatus, setEmailStatus] = useState<'idle' | 'sent' | 'error'>('idle')
+  const { closeSignIn, signInRedirectError } = useAppState()
+  const [busy, setBusy] = useState<'idle' | 'google'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
 
   const emailRedirectTo = `${window.location.origin}/`
@@ -50,31 +47,6 @@ export function SignInSheet() {
     }
   }
 
-  const sendMagicLink = async () => {
-    const trimmed = email.trim()
-    if (!trimmed) {
-      setEmailStatus('error')
-      setErrorMessage('Enter your email address.')
-      return
-    }
-    setBusy('email')
-    setErrorMessage('')
-    setEmailStatus('idle')
-    try {
-      await postMagicLink(trimmed, emailRedirectTo)
-      setEmailStatus('sent')
-    } catch (e) {
-      setEmailStatus('error')
-      setErrorMessage(
-        e instanceof Error
-          ? e.message
-          : 'Could not send email — is gr-backend running and ALLOWED_ORIGINS set?',
-      )
-    } finally {
-      setBusy('idle')
-    }
-  }
-
   return (
     <motion.div
       className="welcome-signin-sheet"
@@ -87,110 +59,41 @@ export function SignInSheet() {
         <button
           type="button"
           className="welcome-signin-back"
-          onClick={() => {
-            if (view === 'email') {
-              setView('main')
-              setEmailStatus('idle')
-              setErrorMessage('')
-              return
-            }
-            closeSignIn()
-          }}
-          aria-label={view === 'email' ? 'Back to sign-in options' : 'Back'}
+          onClick={() => closeSignIn()}
+          aria-label="Back"
         >
           <ArrowLeft size={18} />
         </button>
-        <span className="welcome-signin-title">
-          {view === 'email' ? 'Continue with email' : 'Sign in to Buzo'}
-        </span>
+        <span className="welcome-signin-title">Sign in to Buzo</span>
         <span className="welcome-signin-spacer" aria-hidden />
       </header>
 
       <div className="welcome-signin-body">
-        {view === 'main' ? (
-          <>
-            <p className="welcome-signin-lead">
-              Save plans, sync taste, and see what your crew is doing — one account across the app.
-            </p>
+        <p className="welcome-signin-lead">
+          Save plans, sync taste, and see what your crew is doing — one account across the app.
+        </p>
 
-            {errorMessage && view === 'main' ? (
-              <p className="welcome-signin-error" role="alert">
-                {errorMessage}
-              </p>
-            ) : null}
+        {signInRedirectError ? (
+          <p className="welcome-signin-error" role="alert">
+            {signInRedirectError}
+          </p>
+        ) : null}
 
-            <button
-              type="button"
-              className="welcome-signin-google"
-              disabled={busy !== 'idle'}
-              onClick={() => signInWithGoogle()}
-            >
-              <GoogleMark />
-              <span>{busy === 'google' ? 'Redirecting…' : 'Continue with Google'}</span>
-            </button>
+        {errorMessage ? (
+          <p className="welcome-signin-error" role="alert">
+            {errorMessage}
+          </p>
+        ) : null}
 
-            <button
-              type="button"
-              className="welcome-signin-email"
-              disabled={busy !== 'idle'}
-              onClick={() => {
-                setView('email')
-                setEmailStatus('idle')
-                setErrorMessage('')
-              }}
-            >
-              <Mail size={18} strokeWidth={2} aria-hidden />
-              <span>Continue with email</span>
-            </button>
-
-            <p className="welcome-signin-note">
-              Sign-in runs through the Buzo API — no Supabase keys in the browser. You can still
-              explore first; guests get an anonymous session from the server.
-            </p>
-          </>
-        ) : (
-          <>
-            <p className="welcome-signin-lead">
-              We&apos;ll email you a magic link. It expires after a short time for security.
-            </p>
-
-            {emailStatus === 'sent' ? (
-              <p className="welcome-signin-success" role="status">
-                Check <strong>{email.trim()}</strong> for your login link, then return to this tab.
-              </p>
-            ) : (
-              <>
-                <label className="welcome-signin-email-label" htmlFor="sign-in-email">
-                  Email
-                </label>
-                <input
-                  id="sign-in-email"
-                  className="welcome-signin-email-input"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={busy !== 'idle'}
-                />
-                {errorMessage ? (
-                  <p className="welcome-signin-error" role="alert">
-                    {errorMessage}
-                  </p>
-                ) : null}
-                <button
-                  type="button"
-                  className="welcome-signin-google"
-                  disabled={busy !== 'idle'}
-                  onClick={() => void sendMagicLink()}
-                >
-                  <Mail size={18} strokeWidth={2} aria-hidden />
-                  <span>{busy === 'email' ? 'Sending…' : 'Send magic link'}</span>
-                </button>
-              </>
-            )}
-          </>
-        )}
+        <button
+          type="button"
+          className="welcome-signin-google"
+          disabled={busy !== 'idle'}
+          onClick={() => signInWithGoogle()}
+        >
+          <GoogleMark />
+          <span>{busy === 'google' ? 'Redirecting…' : 'Continue with Google'}</span>
+        </button>
       </div>
     </motion.div>
   )

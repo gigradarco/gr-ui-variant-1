@@ -2387,7 +2387,7 @@ body {
   color: var(--primary);
 }
 
-/* Hero — reference: broken ring, grayscale portrait, tight stack */
+/* Hero — experience ring, full-color portrait, soft accent glow */
 .profile-hero-new {
   --profile-accent: #e55b3c;
   --profile-ring-gap: rgba(42, 42, 44, 0.92);
@@ -2402,9 +2402,39 @@ body {
   --profile-ring-gap: rgba(180, 182, 188, 0.95);
 }
 
+.theme-light .profile-avatar-wrap::before {
+  opacity: 0.55;
+}
+
+.theme-light .profile-avatar-ring {
+  box-shadow:
+    0 6px 20px color-mix(in oklab, #000 18%, transparent),
+    0 0 0 1px color-mix(in oklab, var(--profile-accent) 28%, transparent);
+}
+
 .profile-avatar-wrap {
   position: relative;
   margin-bottom: 10px;
+  z-index: 0;
+}
+
+.profile-avatar-wrap::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(
+    ellipse 55% 50% at 50% 50%,
+    color-mix(in oklab, var(--profile-accent) 32%, transparent) 0%,
+    color-mix(in oklab, var(--profile-accent) 8%, transparent) 42%,
+    transparent 72%
+  );
+  pointer-events: none;
+  filter: blur(2px);
 }
 
 /*
@@ -2413,8 +2443,8 @@ body {
  */
 .profile-avatar-ring {
   --ring-fill: 0.75;
-  width: 124px;
-  height: 124px;
+  width: 128px;
+  height: 128px;
   border-radius: 50%;
   padding: 3px;
   background: conic-gradient(
@@ -2422,23 +2452,112 @@ body {
     var(--profile-ring-gap) calc(var(--ring-fill) * 360deg) 360deg
   );
   box-sizing: border-box;
+  box-shadow:
+    0 8px 28px color-mix(in oklab, #000 45%, transparent),
+    0 0 0 1px color-mix(in oklab, var(--profile-accent) 35%, transparent),
+    0 0 40px color-mix(in oklab, var(--profile-accent) 22%, transparent);
 }
 
 .profile-avatar-inner {
+  position: relative;
   width: 100%;
   height: 100%;
   border-radius: 50%;
   overflow: hidden;
   background: var(--bg);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, #fff 18%, transparent),
+    inset 0 -12px 28px color-mix(in oklab, #000 28%, transparent),
+    inset 0 1px 0 color-mix(in oklab, #fff 25%, transparent);
 }
 
 .profile-avatar-img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
-  filter: grayscale(1) contrast(1.08);
+  filter: saturate(1.06) contrast(1.03);
 }
+
+/* Glass sheen: −45° band drifts fully past the circle (translate % = self height). */
+@keyframes profile-avatar-glass-sheen {
+  0% {
+    transform: translate(-50%, -290%) rotate(-45deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.72;
+  }
+  50% {
+    transform: translate(-50%, 290%) rotate(-45deg);
+    opacity: 0.72;
+  }
+  58% {
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, 290%) rotate(-45deg);
+    opacity: 0;
+  }
+}
+
+/**
+ * Gloss layer: static soft pool + animated shine (`::after`).
+ */
+.profile-avatar-gloss {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 50%;
+  pointer-events: none;
+  overflow: hidden;
+  background: radial-gradient(
+    ellipse 130% 95% at 28% 16%,
+    rgba(255, 255, 255, 0.32) 0%,
+    rgba(255, 255, 255, 0.07) 38%,
+    rgba(255, 255, 255, 0) 62%
+  );
+  mix-blend-mode: screen;
+  opacity: 0.88;
+}
+
+.profile-avatar-gloss::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 210%;
+  height: 36%;
+  transform: translate(-50%, -290%) rotate(-45deg);
+  transform-origin: center center;
+  border-radius: 50%;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.09) 32%,
+    rgba(255, 255, 255, 0.38) 50%,
+    rgba(255, 255, 255, 0.1) 68%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  mix-blend-mode: screen;
+  animation: profile-avatar-glass-sheen 9.5s ease-in-out infinite;
+}
+
+.theme-light .profile-avatar-img {
+  filter: saturate(1.04) contrast(1.02);
+}
+
+.theme-light .profile-avatar-gloss {
+  opacity: 0.76;
+  mix-blend-mode: soft-light;
+}
+
+.theme-light .profile-avatar-gloss::after {
+  mix-blend-mode: soft-light;
+  animation-duration: 10.5s;
+}
+
 
 .profile-rank-badge {
   position: absolute;
@@ -3650,6 +3769,18 @@ button.profile-stat-btn {
   background: transparent;
 }
 
+.settings-row--destructive .settings-row-label {
+  color: #f87171;
+}
+
+.settings-row--destructive .settings-row-icon {
+  color: #f87171;
+}
+
+.settings-row--destructive:hover {
+  background: color-mix(in oklab, #ef4444 12%, transparent);
+}
+
 .settings-row-icon {
   display: grid;
   place-items: center;
@@ -4315,19 +4446,98 @@ button.profile-stat-btn {
 }
 
 .edit-profile-avatar-wrap {
-  width: 96px;
-  height: 96px;
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  padding: 3px;
+  box-sizing: border-box;
+  background: conic-gradient(
+    var(--primary) 0deg 265deg,
+    color-mix(in oklab, var(--stroke) 85%, var(--primary)) 265deg 360deg
+  );
+  box-shadow:
+    0 6px 22px color-mix(in oklab, var(--primary) 20%, transparent),
+    0 0 0 1px color-mix(in oklab, var(--primary) 28%, var(--stroke));
+}
+
+.edit-profile-avatar-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
   border-radius: 999px;
   overflow: hidden;
-  border: 2px solid var(--stroke);
-  flex-shrink: 0;
+  background: var(--bg);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, #fff 16%, transparent),
+    inset 0 1px 0 color-mix(in oklab, #fff 22%, transparent),
+    inset 0 -8px 20px color-mix(in oklab, #000 20%, transparent);
+}
+
+.edit-profile-avatar-gloss {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 999px;
+  pointer-events: none;
+  overflow: hidden;
+  background: radial-gradient(
+    ellipse 130% 95% at 28% 16%,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.06) 38%,
+    rgba(255, 255, 255, 0) 62%
+  );
+  mix-blend-mode: screen;
+  opacity: 0.86;
+}
+
+.edit-profile-avatar-gloss::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 210%;
+  height: 36%;
+  transform: translate(-50%, -290%) rotate(-45deg);
+  transform-origin: center center;
+  border-radius: 50%;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.08) 32%,
+    rgba(255, 255, 255, 0.36) 50%,
+    rgba(255, 255, 255, 0.09) 68%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  mix-blend-mode: screen;
+  animation: profile-avatar-glass-sheen 9.5s ease-in-out infinite;
 }
 
 .edit-profile-avatar {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
+  filter: saturate(1.05) contrast(1.02);
+}
+
+.theme-light .edit-profile-avatar-gloss {
+  opacity: 0.72;
+  mix-blend-mode: soft-light;
+}
+
+.theme-light .edit-profile-avatar-gloss::after {
+  mix-blend-mode: soft-light;
+  animation-duration: 10.5s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-avatar-gloss::after,
+  .edit-profile-avatar-gloss::after {
+    animation: none;
+    opacity: 0;
+  }
 }
 
 .edit-profile-change-photo {
@@ -4353,6 +4563,301 @@ button.profile-stat-btn {
 .edit-profile-change-photo:hover {
   border-color: color-mix(in oklab, var(--primary) 35%, var(--stroke));
   background: color-mix(in oklab, var(--primary) 10%, transparent);
+}
+
+.edit-profile-change-photo:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.edit-profile-photo-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.edit-profile-photo-hint {
+  margin: 0;
+  max-width: 280px;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+/* Avatar crop (edit profile photo) */
+.avatar-crop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 12px;
+  pointer-events: auto;
+}
+
+.avatar-crop-backdrop {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in oklab, #000 55%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+.avatar-crop-sheet {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;
+  max-height: min(92vh, 720px);
+  overflow: auto;
+  border-radius: 20px;
+  border: 1px solid var(--stroke);
+  background: var(--bg);
+  box-shadow: 0 24px 48px color-mix(in oklab, #000 45%, transparent);
+  padding: 0 16px 16px;
+}
+
+.avatar-crop-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0 8px;
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 2;
+}
+
+.avatar-crop-icon-btn {
+  border: 1px solid var(--stroke);
+  background: transparent;
+  color: var(--text);
+  border-radius: 999px;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.avatar-crop-icon-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.avatar-crop-title {
+  flex: 1;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+.avatar-crop-header-spacer {
+  width: 38px;
+  flex-shrink: 0;
+}
+
+.avatar-crop-help {
+  margin: 0 0 14px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--muted);
+  text-align: center;
+}
+
+.avatar-crop-viewport {
+  touch-action: none;
+  width: 280px;
+  height: 280px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  border: 2px solid var(--stroke);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--text) 8%, transparent);
+  cursor: grab;
+  background: #121212;
+}
+
+.avatar-crop-viewport:active {
+  cursor: grabbing;
+}
+
+.avatar-crop-loading {
+  margin: 0 0 12px;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.avatar-crop-load-error {
+  margin: 0 0 12px;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: color-mix(in oklab, #f87171 85%, var(--text));
+}
+
+.avatar-crop-img {
+  display: block;
+  max-width: none;
+}
+
+.avatar-crop-zoom-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.avatar-crop-zoom-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.avatar-crop-zoom-slider {
+  flex: 1;
+  accent-color: var(--primary);
+  min-height: 28px;
+}
+
+.avatar-crop-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.avatar-crop-btn {
+  flex: 1;
+  border-radius: 999px;
+  padding: 12px 16px;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 1px solid var(--stroke);
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    opacity 0.15s;
+}
+
+.avatar-crop-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.avatar-crop-btn--ghost {
+  background: transparent;
+  color: var(--text);
+}
+
+.avatar-crop-btn--primary {
+  background: color-mix(in oklab, var(--primary) 22%, var(--card));
+  border-color: color-mix(in oklab, var(--primary) 40%, var(--stroke));
+  color: var(--text);
+}
+
+/* Toast: profile photo upload (sits above crop modal) */
+.upload-toast-host {
+  position: fixed;
+  left: 50%;
+  bottom: max(24px, env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 50;
+  width: min(360px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+.upload-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--stroke);
+  background: color-mix(in oklab, var(--card) 94%, var(--bg));
+  box-shadow: 0 12px 40px color-mix(in oklab, #000 35%, transparent);
+  color: var(--text);
+}
+
+.upload-toast--success {
+  border-color: color-mix(in oklab, #4ade80 35%, var(--stroke));
+}
+
+.upload-toast--error {
+  border-color: color-mix(in oklab, #f87171 40%, var(--stroke));
+}
+
+.upload-toast-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.upload-toast--success .upload-toast-icon {
+  color: #4ade80;
+}
+
+.upload-toast--error .upload-toast-icon {
+  color: #f87171;
+}
+
+.upload-toast-text {
+  flex: 1;
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.upload-toast-dismiss {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  margin: -4px -6px -4px 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.upload-toast-dismiss:hover {
+  color: var(--text);
+  background: color-mix(in oklab, var(--stroke) 50%, transparent);
+}
+
+.edit-profile-photo-error {
+  margin: 0;
+  max-width: 260px;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: color-mix(in oklab, #f87171 85%, var(--text));
 }
 
 .edit-profile-fields {
