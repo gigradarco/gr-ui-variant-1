@@ -71,6 +71,8 @@ type AppState = {
   userProfile: UserProfile
   /** After the Layla-style welcome, user can explore before optional sign-in. */
   welcomeDismissed: boolean
+  /** Show "Welcome Back" transition screen after successful sign-in */
+  showWelcomeBack: boolean
   /** Demo flag — replace with real session. */
   isAuthenticated: boolean
   tab: Tab
@@ -100,6 +102,7 @@ type AppState = {
   showEditProfile: boolean
   showSubscription: boolean
   dismissWelcome: () => void
+  dismissWelcomeBack: () => void
   openSignIn: () => void
   closeSignIn: () => void
   /** Demo only — call after OAuth / email auth succeeds. */
@@ -161,6 +164,7 @@ type AppState = {
 export const useAppState = create<AppState>((set) => ({
   userProfile: defaultUserProfile,
   welcomeDismissed: readWelcomeDismissed(),
+  showWelcomeBack: false,
   isAuthenticated: false,
   tab: 'discover',
   theme: 'dark',
@@ -187,6 +191,7 @@ export const useAppState = create<AppState>((set) => ({
     persistWelcomeDismissed()
     set({ welcomeDismissed: true, showSignIn: false, signInRedirectError: null })
   },
+  dismissWelcomeBack: () => set({ showWelcomeBack: false }),
   openSignIn: () => set({ showSignIn: true, signInRedirectError: null }),
   closeSignIn: () => set({ showSignIn: false, signInRedirectError: null }),
   completeSignInDemo: () => {
@@ -228,6 +233,7 @@ export const useAppState = create<AppState>((set) => ({
       defaultUserProfile.avatarUrl
     const bio = profile?.bio?.trim() ?? ''
 
+    const wasAuthenticated = useAppState.getState().isAuthenticated
     set({
       isAuthenticated: isRealUser,
       userProfile: {
@@ -241,6 +247,7 @@ export const useAppState = create<AppState>((set) => ({
             showSignIn: false,
             signInRedirectError: null,
             welcomeDismissed: true,
+            showWelcomeBack: !wasAuthenticated, // Show welcome back on new sign-in
             tab: 'discover' as Tab,
           }
         : {}),

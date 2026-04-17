@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import { useEffect, useState, type CSSProperties } from 'react'
 import { motion } from 'framer-motion'
 import { ChevronRight, Lock, LogOut, Settings } from 'lucide-react'
 import { BUZO_PRO_UPSELL_CTA } from '../../config/pricing'
@@ -39,6 +39,8 @@ export function ProfileTab({
     openProfileStats,
     returnToLanding,
     userProfile,
+    isAuthenticated,
+    setTab,
   } = useAppState()
   const { current: buzzTier } = getBuzzTierState(buzzSummary.total)
   const headline =
@@ -50,11 +52,29 @@ export function ProfileTab({
   const ringFill = Math.min(1, Math.max(0, experienceRingFill))
   const ringPercent = Math.round(ringFill * 100)
   const ringStyle = { '--ring-fill': ringFill } as CSSProperties
+  const [avatarLoaded, setAvatarLoaded] = useState(false)
 
   const tastePreview = tasteIdentityTags.slice(0, PROFILE_TASTE_PREVIEW_COUNT)
   const badgesPreview = reputationBadges.slice(0, PROFILE_REPUTATION_PREVIEW_COUNT)
   const tasteCount = tasteIdentityTags.length
   const badgeCount = reputationBadges.length
+
+  // Redirect unauthenticated users to discover with sign-in prompt
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setTab('discover')
+      setTimeout(() => {
+        useAppState.setState({
+          showSignIn: true,
+          signInRedirectError: 'Please sign in to view your profile.',
+        })
+      }, 300)
+    }
+  }, [isAuthenticated, setTab])
+
+  useEffect(() => {
+    setAvatarLoaded(false)
+  }, [userProfile.avatarUrl])
 
   return (
     <motion.div
@@ -96,13 +116,17 @@ export function ProfileTab({
             aria-label={`Experience toward next tier, ${ringPercent} percent`}
             style={ringStyle}
           >
-            <div className="profile-avatar-inner">
+            <div className={`profile-avatar-inner${avatarLoaded ? ' is-loaded' : ''}`}>
+              <span className="profile-avatar-placeholder" aria-hidden />
               <img
                 src={userProfile.avatarUrl}
                 alt={avatarLabel}
                 className="profile-avatar-img"
                 decoding="async"
                 fetchPriority="high"
+                loading="eager"
+                onLoad={() => setAvatarLoaded(true)}
+                onError={() => setAvatarLoaded(true)}
               />
               <span className="profile-avatar-gloss" aria-hidden />
             </div>

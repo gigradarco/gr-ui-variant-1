@@ -2471,12 +2471,34 @@ body {
     inset 0 1px 0 color-mix(in oklab, #fff 25%, transparent);
 }
 
+.profile-avatar-placeholder {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 24%, color-mix(in oklab, #fff 24%, transparent), transparent 52%),
+    linear-gradient(
+      120deg,
+      color-mix(in oklab, var(--card) 70%, var(--bg)) 0%,
+      color-mix(in oklab, var(--primary) 22%, var(--bg)) 48%,
+      color-mix(in oklab, var(--card) 68%, var(--bg)) 100%
+    );
+}
+
 .profile-avatar-img {
+  position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
   filter: saturate(1.06) contrast(1.03);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.profile-avatar-inner.is-loaded .profile-avatar-img {
+  opacity: 1;
 }
 
 /* Glass sheen: −45° band drifts fully past the circle (translate % = self height). */
@@ -2564,6 +2586,7 @@ body {
   bottom: -9px;
   left: 50%;
   transform: translateX(-50%);
+  z-index: 3;
   background: var(--profile-accent);
   color: #fff;
   font-size: 0.56rem;
@@ -4945,12 +4968,15 @@ button.profile-stat-btn {
   border: none;
 }
 
-.edit-profile-username-actions {
+.edit-profile-username-row {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px 14px;
-  margin-top: 10px;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.edit-profile-username-row .edit-profile-username-field {
+  flex: 1;
+  min-width: 0;
 }
 
 .edit-profile-verify-username {
@@ -4982,9 +5008,7 @@ button.profile-stat-btn {
 }
 
 .edit-profile-username-hint {
-  flex: 1;
-  min-width: 200px;
-  margin: 0;
+  margin: 10px 0 0;
   font-size: 0.78rem;
   line-height: 1.35;
   color: var(--muted);
@@ -10601,4 +10625,41 @@ button.profile-stat-btn {
     backdrop-filter: none;
     background: var(--bg);
   }
+}
+
+/* ============================================================================
+   Welcome Back Screen - Post sign-in transition
+   ============================================================================ */
+
+.welcome-back-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.welcome-back-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.welcome-back-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+.welcome-back-name {
+  font-size: 2rem;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: var(--text);
 }

@@ -27,7 +27,7 @@ import {
   EmailLoginScreen,
   SubscriptionScreen,
 } from './views/profile/settings'
-import { WelcomeScreen, SignInSheet } from './views/welcome'
+import { WelcomeScreen, SignInSheet, WelcomeBackScreen } from './views/welcome'
 import { DesignThemePage } from './views/design-theme/DesignThemePage'
 import { DesignThemeOrangePage } from './views/design-theme/DesignThemeOrangePage'
 import { DesignThemePurplePage } from './views/design-theme/DesignThemePurplePage'
@@ -65,6 +65,7 @@ function MainApp() {
     theme,
     welcomeDismissed,
     showSignIn,
+    showWelcomeBack,
     activeEventId,
     showBuzzPoints,
     showProfileTasteAll,
@@ -326,6 +327,10 @@ function MainApp() {
 
       <AnimatePresence>
         {showSignIn ? <SignInSheet key="welcome-sign-in" /> : null}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showWelcomeBack ? <WelcomeBackScreen key="welcome-back" /> : null}
       </AnimatePresence>
 
       <AnimatePresence>

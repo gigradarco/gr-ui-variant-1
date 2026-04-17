@@ -17,6 +17,7 @@ export function EditProfileScreen() {
   const setUserProfile = useAppState((s) => s.setUserProfile)
   const avatarUrl = useAppState((s) => s.userProfile.avatarUrl)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const closeTimerRef = useRef<number | null>(null)
   const [photoBusy, setPhotoBusy] = useState(false)
   const [photoError, setPhotoError] = useState<string | null>(null)
   const [pendingCropFile, setPendingCropFile] = useState<File | null>(null)
@@ -48,6 +49,15 @@ export function EditProfileScreen() {
     const n = normalizeProfileUsername(username)
     setVerifiedFor((prev) => (prev !== null && n !== prev ? null : prev))
   }, [username])
+
+  useEffect(
+    () => () => {
+      if (closeTimerRef.current !== null) {
+        window.clearTimeout(closeTimerRef.current)
+      }
+    },
+    [],
+  )
 
   const normalizedNow = normalizeProfileUsername(username)
   const usernameChanged = normalizedNow !== initialNormalized.current
@@ -149,8 +159,10 @@ export function EditProfileScreen() {
         bio: String(data.bio ?? '').trim(),
         avatarUrl: String(data.avatar_url ?? avatarUrl),
       })
-      closeEditProfile()
       pushUploadToast('Profile saved.', 'success')
+      closeTimerRef.current = window.setTimeout(() => {
+        closeEditProfile()
+      }, 900)
     } catch (err) {
       pushUploadToast(err instanceof Error ? err.message : 'Could not save profile.', 'error')
     }
@@ -243,26 +255,26 @@ export function EditProfileScreen() {
             <label className="edit-profile-label" htmlFor="edit-profile-username">
               Username
             </label>
-            <div className="edit-profile-username-field">
-              <span className="edit-profile-username-prefix" aria-hidden>
-                @
-              </span>
-              <input
-                id="edit-profile-username"
-                className="edit-profile-input edit-profile-input--username"
-                aria-describedby="edit-profile-username-hint"
-                value={username}
-                onChange={(e) =>
-                  setUsername(e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, ''))
-                }
-                autoCapitalize="characters"
-                autoCorrect="off"
-                spellCheck={false}
-                maxLength={30}
-                placeholder="HANDLE"
-              />
-            </div>
-            <div className="edit-profile-username-actions">
+            <div className="edit-profile-username-row">
+              <div className="edit-profile-username-field">
+                <span className="edit-profile-username-prefix" aria-hidden>
+                  @
+                </span>
+                <input
+                  id="edit-profile-username"
+                  className="edit-profile-input edit-profile-input--username"
+                  aria-describedby="edit-profile-username-hint"
+                  value={username}
+                  onChange={(e) =>
+                    setUsername(e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, ''))
+                  }
+                  autoCapitalize="characters"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  maxLength={30}
+                  placeholder="HANDLE"
+                />
+              </div>
               <button
                 type="button"
                 className="edit-profile-verify-username"
@@ -271,14 +283,14 @@ export function EditProfileScreen() {
               >
                 {checkUsernameMu.isPending ? 'Checking…' : 'Verify username'}
               </button>
-              <p className="edit-profile-username-hint" id="edit-profile-username-hint">
-                {usernameChanged
-                  ? verifiedFor === normalizedNow
-                    ? 'Verified — you can save.'
-                    : 'New handle: 4–30 characters · verify before save.'
-                  : '4–30 characters. Change handle to verify before save.'}
-              </p>
             </div>
+            <p className="edit-profile-username-hint" id="edit-profile-username-hint">
+              {usernameChanged
+                ? verifiedFor === normalizedNow
+                  ? 'Verified — you can save.'
+                  : 'New handle: 4–30 characters · verify before save.'
+                : '4–30 characters. Change handle to verify before save.'}
+            </p>
           </div>
         </div>
 
