@@ -1,12 +1,17 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
 import { useAppState } from '../../../store/appStore'
 
 export function FeedbackScreen() {
-  const { closeFeedback } = useAppState()
+  const closeFeedback = useAppState((s) => s.closeFeedback)
+  const authEmail = useAppState((s) => s.authEmail)
   const [message, setMessage] = useState('')
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(() => useAppState.getState().authEmail ?? '')
+
+  useEffect(() => {
+    setEmail(authEmail ?? '')
+  }, [authEmail])
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
@@ -18,7 +23,7 @@ export function FeedbackScreen() {
     closeFeedback()
     window.alert('Thanks — your feedback was captured. (Demo: wire to your backend or support tool.)')
     setMessage('')
-    setEmail('')
+    setEmail(useAppState.getState().authEmail ?? '')
   }
 
   return (

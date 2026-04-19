@@ -15,6 +15,7 @@ import {
   Trash2,
   User,
 } from 'lucide-react'
+import { TASTE_AND_RECOMMENDATIONS_TITLE } from '../../../data/profileIdentity'
 import { postDeleteAccount } from '../../../lib/auth-api'
 import { useAppState } from '../../../store/appStore'
 
@@ -77,6 +78,7 @@ export function SettingsScreen() {
     openFeedback,
     openEditProfile,
     openSubscription,
+    openProfileTasteAll,
     returnToLanding,
     theme,
     setTheme,
@@ -131,7 +133,14 @@ export function SettingsScreen() {
 
         <SettingsGroup title="Preferences">
           <SettingsRow icon={MapPin} label="Location & gigs near you" onClick={noop} />
-          <SettingsRow icon={Fingerprint} label="Taste & recommendations" onClick={noop} />
+          <SettingsRow
+            icon={Fingerprint}
+            label={TASTE_AND_RECOMMENDATIONS_TITLE}
+            onClick={() => {
+              closeSettings()
+              openProfileTasteAll()
+            }}
+          />
           <SettingsRow
             icon={theme === 'dark' ? Moon : Sun}
             label="Appearance"

@@ -3,7 +3,7 @@ import { ArrowLeft, ChevronRight } from 'lucide-react'
 import { useAppState } from '../../../store/appStore'
 
 export function PrivacySafetyScreen() {
-  const { closePrivacySafety } = useAppState()
+  const { closePrivacySafety, openPrivacyPolicy } = useAppState()
 
   const stub = () => {
     window.alert('Demo: connect to your privacy tools or policy URLs.')
@@ -38,11 +38,7 @@ export function PrivacySafetyScreen() {
             recommendations—never sold to third parties.
           </p>
           <div className="privacy-safety-card">
-            <button type="button" className="privacy-safety-row" onClick={stub}>
-              <span>Download my data</span>
-              <ChevronRight size={16} className="privacy-safety-row-chevron" aria-hidden />
-            </button>
-            <button type="button" className="privacy-safety-row" onClick={stub}>
+            <button type="button" className="privacy-safety-row" onClick={openPrivacyPolicy}>
               <span>Privacy policy</span>
               <ChevronRight size={16} className="privacy-safety-row-chevron" aria-hidden />
             </button>

@@ -1,5 +1,13 @@
 import { create } from 'zustand'
+import {
+  buildTasteIdentityItemsFromSession,
+  cycleTasteAccent,
+  getDefaultTasteIdentityItems,
+  type TasteCategoryRow,
+  type TasteIdentityItem,
+} from '../data/profileIdentity'
 import { DEFAULT_LOCATION_CITY_ID } from '../data/locationRegions'
+import { schedulePersistUserTasteCategories } from '../lib/persist-user-taste'
 import type { Tab, Theme } from '../types'
 
 const WELCOME_SESSION_KEY = 'buzo-welcome-dismissed'
@@ -75,6 +83,8 @@ type AppState = {
   showWelcomeBack: boolean
   /** Demo flag — replace with real session. */
   isAuthenticated: boolean
+  /** Email from auth session for signed-in (non-anonymous) users; null otherwise. */
+  authEmail: string | null
   tab: Tab
   theme: Theme
   /** Which plan the signed-in user is on (drives subscription screen highlights). */
@@ -85,6 +95,8 @@ type AppState = {
   /** Feed location pill — Plan explore detail defaults country/city filter to this. */
   feedLocationCityId: string
   showBuzzPoints: boolean
+  /** Editable copy of demo taste tags — profile + taste screen read this. */
+  tasteIdentityItems: TasteIdentityItem[]
   showProfileTasteAll: boolean
   showProfileReputationAll: boolean
   showProfileStats: boolean
@@ -93,6 +105,7 @@ type AppState = {
   showSettings: boolean
   showLanguage: boolean
   showPrivacySafety: boolean
+  showPrivacyPolicy: boolean
   showFeedback: boolean
   showEmailLogin: boolean
   /** Pre-app sign-in sheet from the welcome screen. */
@@ -118,8 +131,9 @@ type AppState = {
       username?: string | null
       avatar_url?: string | null
       bio?: string | null
+      user_taste_categories?: Array<{ label: string; accent: string }> | null
     } | null,
-    options?: { isFreshSignIn?: boolean },
+    options?: { isFreshSignIn?: boolean; tasteCategories?: TasteCategoryRow[] },
   ) => void
   /** Sign out demo session and show the pre-login welcome again. */
   returnToLanding: () => void
@@ -137,6 +151,7 @@ type AppState = {
   closeBuzzPoints: () => void
   openProfileTasteAll: () => void
   closeProfileTasteAll: () => void
+  cycleTasteIdentityTag: (label: string) => void
   openProfileReputationAll: () => void
   closeProfileReputationAll: () => void
   openProfileStats: (focus?: ProfileStatsFocus | null) => void
@@ -147,6 +162,8 @@ type AppState = {
   closeLanguage: () => void
   openPrivacySafety: () => void
   closePrivacySafety: () => void
+  openPrivacyPolicy: () => void
+  closePrivacyPolicy: () => void
   openFeedback: () => void
   closeFeedback: () => void
   openEmailLogin: () => void
@@ -167,6 +184,7 @@ export const useAppState = create<AppState>((set) => ({
   welcomeDismissed: readWelcomeDismissed(),
   showWelcomeBack: false,
   isAuthenticated: false,
+  authEmail: null,
   tab: 'discover',
   theme: 'dark',
   subscriptionTier: 'pro',
@@ -174,6 +192,7 @@ export const useAppState = create<AppState>((set) => ({
   pendingPlanDetail: null,
   feedLocationCityId: DEFAULT_LOCATION_CITY_ID,
   showBuzzPoints: false,
+  tasteIdentityItems: getDefaultTasteIdentityItems(),
   showProfileTasteAll: false,
   showProfileReputationAll: false,
   showProfileStats: false,
@@ -181,6 +200,7 @@ export const useAppState = create<AppState>((set) => ({
   showSettings: false,
   showLanguage: false,
   showPrivacySafety: false,
+  showPrivacyPolicy: false,
   showFeedback: false,
   showEmailLogin: false,
   showSignIn: false,
@@ -210,12 +230,15 @@ export const useAppState = create<AppState>((set) => ({
       set({
         isAuthenticated: false,
         userProfile: defaultUserProfile,
+        authEmail: null,
+        tasteIdentityItems: getDefaultTasteIdentityItems(),
       })
       return
     }
 
     const u = user
     const isRealUser = !u.is_anonymous
+    const authEmail = isRealUser ? (u.email?.trim() || null) : null
     const isFreshSignIn = options?.isFreshSignIn === true
     const meta = (u.user_metadata ?? {}) as Record<string, string | undefined>
     const displayName =
@@ -241,15 +264,24 @@ export const useAppState = create<AppState>((set) => ({
       defaultUserProfile.avatarUrl
     const bio = profile?.bio?.trim() ?? ''
 
+    const catalog = options?.tasteCategories ?? []
+    const tasteIdentityItems = buildTasteIdentityItemsFromSession(
+      isRealUser,
+      catalog,
+      profile?.user_taste_categories,
+    )
+
     const wasAuthenticated = useAppState.getState().isAuthenticated
     set({
       isAuthenticated: isRealUser,
+      authEmail,
       userProfile: {
         displayName,
         username,
         bio,
         avatarUrl,
       },
+      tasteIdentityItems,
       ...(isRealUser
         ? {
             showSignIn: false,
@@ -271,12 +303,14 @@ export const useAppState = create<AppState>((set) => ({
     set({
       welcomeDismissed: false,
       isAuthenticated: false,
+      authEmail: null,
       showSignIn: false,
       signInRedirectError: null,
       tab: 'discover',
       activeEventId: null,
       pendingPlanDetail: null,
       showBuzzPoints: false,
+      tasteIdentityItems: getDefaultTasteIdentityItems(),
       showProfileTasteAll: false,
       showProfileReputationAll: false,
       showProfileStats: false,
@@ -284,6 +318,7 @@ export const useAppState = create<AppState>((set) => ({
       showSettings: false,
       showLanguage: false,
       showPrivacySafety: false,
+      showPrivacyPolicy: false,
       showFeedback: false,
       showEmailLogin: false,
       showEditProfile: false,
@@ -307,6 +342,17 @@ export const useAppState = create<AppState>((set) => ({
   closeBuzzPoints: () => set({ showBuzzPoints: false }),
   openProfileTasteAll: () => set({ showProfileTasteAll: true }),
   closeProfileTasteAll: () => set({ showProfileTasteAll: false }),
+  cycleTasteIdentityTag: (label) => {
+    set((s) => ({
+      tasteIdentityItems: s.tasteIdentityItems.map((item) =>
+        item.label === label ? { ...item, accent: cycleTasteAccent(item.accent) } : item,
+      ),
+    }))
+    schedulePersistUserTasteCategories(
+      () => useAppState.getState().tasteIdentityItems,
+      () => useAppState.getState().isAuthenticated,
+    )
+  },
   openProfileReputationAll: () => set({ showProfileReputationAll: true }),
   closeProfileReputationAll: () => set({ showProfileReputationAll: false }),
   openProfileStats: (focus) =>
@@ -320,7 +366,9 @@ export const useAppState = create<AppState>((set) => ({
   openLanguage: () => set({ showLanguage: true }),
   closeLanguage: () => set({ showLanguage: false }),
   openPrivacySafety: () => set({ showPrivacySafety: true }),
-  closePrivacySafety: () => set({ showPrivacySafety: false }),
+  closePrivacySafety: () => set({ showPrivacySafety: false, showPrivacyPolicy: false }),
+  openPrivacyPolicy: () => set({ showPrivacyPolicy: true }),
+  closePrivacyPolicy: () => set({ showPrivacyPolicy: false }),
   openFeedback: () => set({ showFeedback: true }),
   closeFeedback: () => set({ showFeedback: false }),
   openEmailLogin: () => set({ showEmailLogin: true }),

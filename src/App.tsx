@@ -23,6 +23,7 @@ import {
   EditProfileScreen,
   LanguageScreen,
   PrivacySafetyScreen,
+  PrivacyPolicyScreen,
   FeedbackScreen,
   EmailLoginScreen,
   SubscriptionScreen,
@@ -74,6 +75,7 @@ function MainApp() {
     showSettings,
     showLanguage,
     showPrivacySafety,
+    showPrivacyPolicy,
     showFeedback,
     showEmailLogin,
     showEditProfile,
@@ -282,6 +284,7 @@ function MainApp() {
             {showEditProfile && <EditProfileScreen key="edit-profile" />}
             {showLanguage && <LanguageScreen key="language" />}
             {showPrivacySafety && <PrivacySafetyScreen key="privacy-safety" />}
+            {showPrivacyPolicy && <PrivacyPolicyScreen key="privacy-policy" />}
             {showFeedback && <FeedbackScreen key="feedback" />}
             {showEmailLogin && <EmailLoginScreen key="email-login" />}
             {showSubscription && <SubscriptionScreen key="subscription" />}

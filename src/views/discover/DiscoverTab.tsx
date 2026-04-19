@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ChevronDown,
+  ChevronLeft,
   ChevronRight,
   Maximize2,
   Minimize2,
@@ -94,6 +95,12 @@ export function DiscoverTab({
 
   const requestCounter = useRef(0)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
+  const chipScrollerRef = useRef<HTMLDivElement | null>(null)
+  const [chipScrollHints, setChipScrollHints] = useState({
+    overflow: false,
+    canLeft: false,
+    canRight: false,
+  })
   const newChatMenuRef = useRef<HTMLDivElement | null>(null)
   const discoverMoreRef = useRef<HTMLDivElement | null>(null)
   const agentEvent = useMemo(
@@ -352,6 +359,54 @@ export function DiscoverTab({
   useLayoutEffect(() => {
     syncTextareaHeight()
   }, [syncTextareaHeight])
+
+  const updateChipScrollHints = useCallback(() => {
+    const el = chipScrollerRef.current
+    if (!el) {
+      return
+    }
+    const { scrollLeft, scrollWidth, clientWidth } = el
+    const maxScroll = scrollWidth - clientWidth
+    const epsilon = 2
+    const overflow = maxScroll > epsilon
+    setChipScrollHints({
+      overflow,
+      canLeft: overflow && scrollLeft > epsilon,
+      canRight: overflow && scrollLeft < maxScroll - epsilon,
+    })
+  }, [])
+
+  const scrollChipsToStart = useCallback(() => {
+    chipScrollerRef.current?.scrollTo({ left: 0, behavior: 'smooth' })
+  }, [])
+
+  const scrollChipsToEnd = useCallback(() => {
+    const el = chipScrollerRef.current
+    if (!el) {
+      return
+    }
+    el.scrollTo({ left: el.scrollWidth - el.clientWidth, behavior: 'smooth' })
+  }, [])
+
+  useLayoutEffect(() => {
+    if (hasThread) {
+      return
+    }
+    updateChipScrollHints()
+    const el = chipScrollerRef.current
+    if (!el) {
+      return
+    }
+    el.addEventListener('scroll', updateChipScrollHints, { passive: true })
+    const ro = new ResizeObserver(updateChipScrollHints)
+    ro.observe(el)
+    window.addEventListener('resize', updateChipScrollHints)
+    return () => {
+      el.removeEventListener('scroll', updateChipScrollHints)
+      ro.disconnect()
+      window.removeEventListener('resize', updateChipScrollHints)
+    }
+  }, [hasThread, updateChipScrollHints])
 
   useEffect(() => {
     if (!newChatMenuOpen && !discoverMoreOpen) {
@@ -697,6 +752,54 @@ export function DiscoverTab({
 
       <div className="discover-layla-footer">
         <div className="welcome-layla-prompt-stack discover-layla-prompt-stack">
+          {!hasThread && (
+            <div className="discover-layla-chip-row-wrap">
+              {chipScrollHints.overflow && (
+                <button
+                  type="button"
+                  className="discover-layla-chip-scroll-btn"
+                  aria-label="Scroll quick prompts to the start"
+                  disabled={!chipScrollHints.canLeft}
+                  onClick={scrollChipsToStart}
+                >
+                  <ChevronLeft size={18} strokeWidth={2.25} aria-hidden />
+                </button>
+              )}
+              <div
+                ref={chipScrollerRef}
+                className="welcome-chip-scroller welcome-layla-chip-row"
+                role="list"
+                aria-label="Quick prompts"
+              >
+                {discoverSuggestedPrompts.map((prompt) => (
+                  <button
+                    key={prompt}
+                    type="button"
+                    className="welcome-layla-shortcut"
+                    role="listitem"
+                    onClick={() => {
+                      setInputValue(prompt)
+                      void submitPrompt(prompt)
+                    }}
+                  >
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+              {chipScrollHints.overflow && (
+                <button
+                  type="button"
+                  className="discover-layla-chip-scroll-btn"
+                  aria-label="Scroll quick prompts to the end"
+                  disabled={!chipScrollHints.canRight}
+                  onClick={scrollChipsToEnd}
+                >
+                  <ChevronRight size={18} strokeWidth={2.25} aria-hidden />
+                </button>
+              )}
+            </div>
+          )}
+
           <div
             className={[
               'welcome-layla-composer',
@@ -751,29 +854,6 @@ export function DiscoverTab({
               </button>
             </div>
           </div>
-
-          {!hasThread && (
-            <div
-              className="welcome-chip-scroller welcome-layla-chip-row"
-              role="list"
-              aria-label="Quick prompts"
-            >
-              {discoverSuggestedPrompts.map((prompt) => (
-                <button
-                  key={prompt}
-                  type="button"
-                  className="welcome-layla-shortcut"
-                  role="listitem"
-                  onClick={() => {
-                    setInputValue(prompt)
-                    void submitPrompt(prompt)
-                  }}
-                >
-                  {prompt}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
       </div>
     </motion.div>

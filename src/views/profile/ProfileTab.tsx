@@ -7,7 +7,7 @@ import {
   PROFILE_REPUTATION_PREVIEW_COUNT,
   PROFILE_TASTE_PREVIEW_COUNT,
   reputationBadges,
-  tasteIdentityTags,
+  TASTE_AND_RECOMMENDATIONS_TITLE,
 } from '../../data/profileIdentity'
 import {
   PROFILE_CITIES_COUNT,
@@ -15,6 +15,7 @@ import {
   PROFILE_GIGS_TOTAL,
 } from '../../data/profileStats'
 import { postSignOut } from '../../lib/auth-api'
+import { flushPersistUserTasteCategories } from '../../lib/persist-user-taste'
 import { useAppState } from '../../store/appStore'
 
 type ProfileTabProps = {
@@ -34,13 +35,14 @@ export function ProfileTab({
   const {
     openSettings,
     openBuzzPoints,
-    openProfileTasteAll,
     openProfileReputationAll,
     openProfileStats,
     returnToLanding,
     userProfile,
     isAuthenticated,
     setTab,
+    tasteIdentityItems,
+    cycleTasteIdentityTag,
   } = useAppState()
   const { current: buzzTier } = getBuzzTierState(buzzSummary.total)
   const headline =
@@ -53,10 +55,12 @@ export function ProfileTab({
   const ringPercent = Math.round(ringFill * 100)
   const ringStyle = { '--ring-fill': ringFill } as CSSProperties
   const [avatarLoaded, setAvatarLoaded] = useState(false)
+  const [tasteEditMode, setTasteEditMode] = useState(false)
 
-  const tastePreview = tasteIdentityTags.slice(0, PROFILE_TASTE_PREVIEW_COUNT)
+  const tastePreview = tasteIdentityItems.slice(0, PROFILE_TASTE_PREVIEW_COUNT)
+  const tasteTagsShown = tasteEditMode ? tasteIdentityItems : tastePreview
   const badgesPreview = reputationBadges.slice(0, PROFILE_REPUTATION_PREVIEW_COUNT)
-  const tasteCount = tasteIdentityTags.length
+  const tasteCount = tasteIdentityItems.length
   const badgeCount = reputationBadges.length
 
   // Redirect unauthenticated users to discover with sign-in prompt
@@ -193,30 +197,65 @@ export function ProfileTab({
         </button>
       </div>
 
-      {/* Taste Identity */}
-      <section className="profile-section" aria-labelledby="profile-taste-heading">
+      {/* Taste & recommendations */}
+      <section
+        className="profile-section"
+        aria-labelledby="profile-taste-heading"
+        {...(tasteEditMode
+          ? { 'aria-describedby': 'profile-taste-edit-hint' as const }
+          : {})}
+      >
         <div className="section-title-rule section-title-rule--with-action" id="profile-taste-heading">
           <span className="section-title-rule__text">
-            Taste identity <span className="section-title-count">({tasteCount})</span>
+            {TASTE_AND_RECOMMENDATIONS_TITLE}{' '}
+            <span className="section-title-count">({tasteCount})</span>
           </span>
           <span className="section-title-rule__line" aria-hidden />
           <button
             type="button"
             className="section-title-action"
-            onClick={openProfileTasteAll}
+            onClick={() => {
+              if (tasteEditMode) {
+                void flushPersistUserTasteCategories(
+                  () => useAppState.getState().tasteIdentityItems,
+                  () => useAppState.getState().isAuthenticated,
+                ).finally(() => setTasteEditMode(false))
+              } else {
+                setTasteEditMode(true)
+              }
+            }}
+            aria-expanded={tasteEditMode}
           >
-            Show all
+            {tasteEditMode ? 'Done' : 'Edit'}
           </button>
         </div>
-        <div className="taste-tags">
-          {tastePreview.map((g) => (
-            <span
-              key={g.label}
-              className={`taste-tag${g.accent === true ? ' taste-tag--primary' : g.accent === 'muted' ? ' taste-tag--muted' : ''}`}
-            >
-              {g.label}
-            </span>
-          ))}
+        {tasteEditMode ? (
+          <p id="profile-taste-edit-hint" className="profile-taste-edit-hint">
+            Tap a tag to cycle highlight, default, and soft styles.
+          </p>
+        ) : null}
+        <div className={`taste-tags${tasteEditMode ? ' taste-tags--editing' : ''}`}>
+          {tasteTagsShown.map((g) => {
+            const cls = `taste-tag${g.accent === true ? ' taste-tag--primary' : g.accent === 'muted' ? ' taste-tag--muted' : ''}`
+            if (tasteEditMode) {
+              return (
+                <button
+                  key={g.label}
+                  type="button"
+                  className={cls}
+                  onClick={() => cycleTasteIdentityTag(g.label)}
+                  aria-label={`Update style for ${g.label}`}
+                >
+                  {g.label}
+                </button>
+              )
+            }
+            return (
+              <span key={g.label} className={cls}>
+                {g.label}
+              </span>
+            )
+          })}
         </div>
       </section>
 

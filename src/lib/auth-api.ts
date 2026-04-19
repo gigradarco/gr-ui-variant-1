@@ -7,11 +7,15 @@ type ProfileRow = {
   username?: string | null
   avatar_url?: string | null
   bio?: string | null
+  user_taste_categories?: Array<{ label: string; accent: string }> | null
 } | null
+
+export type TasteCategorySessionRow = { label: string; accent: string }
 
 export async function fetchAuthSession(): Promise<{
   user: AuthUserPayload | null
   profile: ProfileRow
+  taste_categories: TasteCategorySessionRow[]
 }> {
   const token = getAccessToken()
   const r = await fetch(`${apiBase()}/api/auth/session`, {
@@ -20,7 +24,11 @@ export async function fetchAuthSession(): Promise<{
   if (!r.ok) {
     throw new Error(`session ${r.status}`)
   }
-  return r.json() as Promise<{ user: AuthUserPayload | null; profile: ProfileRow }>
+  return r.json() as Promise<{
+    user: AuthUserPayload | null
+    profile: ProfileRow
+    taste_categories: TasteCategorySessionRow[]
+  }>
 }
 
 export async function postAnonymousSession(): Promise<void> {
@@ -42,6 +50,33 @@ export async function postAnonymousSession(): Promise<void> {
 export function googleOAuthRedirectUrl(returnTo: string): string {
   const q = encodeURIComponent(returnTo)
   return `${apiBase()}/api/auth/oauth/google?return_to=${q}`
+}
+
+export async function postProfileTastePreferences(
+  userTasteCategories: Array<{ label: string; accent: 'true' | 'false' | 'muted' }>,
+): Promise<void> {
+  const token = getAccessToken()
+  if (!token) {
+    throw new Error('Not signed in')
+  }
+  const r = await fetch(`${apiBase()}/api/profile/taste`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ userTasteCategories }),
+  })
+  if (!r.ok) {
+    let msg = `HTTP ${r.status}`
+    try {
+      const j = (await r.json()) as { error?: string }
+      if (j.error) msg = j.error
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg)
+  }
 }
 
 export async function postSignOut(): Promise<void> {
