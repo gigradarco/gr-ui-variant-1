@@ -1976,7 +1976,7 @@ body {
   justify-content: flex-end;
   align-items: center;
   gap: 8px;
-  padding: 14px 16px 0;
+  padding: 14px 12px 0 30px;
 }
 
 .profile-toolbar-logout {
@@ -2005,7 +2005,7 @@ body {
 }
 
 .profile-section {
-  padding: 32px 16px 28px;
+  padding: 32px 30px 28px;
   display: grid;
   gap: 32px;
 }
@@ -2403,7 +2403,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px 16px 22px;
+  padding: 10px 30px 22px;
   gap: 2px;
 }
 
@@ -2928,7 +2928,7 @@ button.taste-tag:focus-visible {
 
 /* Go Pro card */
 .gopro-card {
-  margin: 20px 16px 0;
+  margin: 20px 30px 0;
   border: 1px solid color-mix(in oklab, var(--primary) 50%, var(--stroke));
   border-radius: 18px;
   padding: 24px 20px 20px;
@@ -6703,6 +6703,10 @@ button.taste-tag:focus-visible {
   word-break: break-word;
 }
 
+.plan-explore-detail-emphasis {
+  color: color-mix(in oklab, var(--primary-soft) 85%, var(--text));
+}
+
 .plan-explore-detail-filter-key {
   flex-shrink: 0;
   font-size: 0.65rem;
@@ -7001,7 +7005,7 @@ button.taste-tag:focus-visible {
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 18px 16px 22px;
+  padding: 18px 30px 22px;
   display: grid;
   gap: 10px;
 }
@@ -7060,7 +7064,7 @@ button.taste-tag:focus-visible {
 }
 
 .plan-body {
-  padding: 18px 14px 20px;
+  padding: 18px 30px 20px;
   display: grid;
   gap: 20px;
   background: var(--bg);
@@ -7372,7 +7376,7 @@ button.taste-tag:focus-visible {
 .plan-cta-rail {
   flex-shrink: 0;
   margin-top: auto;
-  padding: 12px 14px calc(12px + env(safe-area-inset-bottom, 0px));
+  padding: 12px 30px calc(12px + env(safe-area-inset-bottom, 0px));
   display: grid;
   gap: 10px;
   background: linear-gradient(180deg, transparent 0%, color-mix(in oklab, var(--bg) 55%, black) 28%, var(--bg) 100%);
@@ -7583,6 +7587,79 @@ button.taste-tag:focus-visible {
   font-size: 0.85rem;
   line-height: 1.45;
   color: var(--muted);
+}
+
+.favorites-tab {
+  gap: 14px;
+}
+
+.favorites-empty {
+  margin-top: 8px;
+  border: 1px dashed color-mix(in oklab, var(--primary) 35%, var(--stroke));
+  border-radius: 16px;
+  background: color-mix(in oklab, var(--card) 90%, black);
+  padding: 22px 16px;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.favorites-empty-title {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.favorites-empty-copy {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.favorites-list-card {
+  position: relative;
+}
+
+.favorites-list-item-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.favorites-list-remove {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--primary) 45%, var(--stroke));
+  background: color-mix(in oklab, var(--bg-elev) 84%, transparent);
+  color: var(--primary-soft);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.favorites-list-card {
+  width: 100%;
+}
+
+.favorites-list-card-body {
+  padding-right: 48px;
+}
+
+.favorites-list-remove:hover {
+  background: color-mix(in oklab, var(--primary) 14%, var(--bg-elev));
+  border-color: color-mix(in oklab, var(--primary) 70%, var(--stroke));
+}
+
+.favorites-list-remove:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--primary) 72%, #ffffff 28%);
+  outline-offset: 2px;
 }
 
 .plan-segments {
@@ -9488,7 +9565,7 @@ button.taste-tag:focus-visible {
 /* Layla-like hero + prompt stage (deep plum field, light composer card). */
 .welcome-layla-stage {
   margin: 0 -36px;
-  padding: 22px clamp(20px, 5vw, 32px) 26px;
+  padding: 34px clamp(20px, 5vw, 32px) 26px;
   border-radius: 0 0 22px 22px;
   background:
     radial-gradient(120% 90% at 15% -5%, rgba(226, 67, 37, 0.22), transparent 52%),
@@ -9510,6 +9587,10 @@ button.taste-tag:focus-visible {
 }
 
 .welcome-hero--layla {
+  width: 100%;
+  max-width: min(100%, 42rem);
+  margin-left: auto;
+  margin-right: auto;
   gap: 12px;
 }
 
@@ -10765,7 +10846,7 @@ button.taste-tag:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin: 6px auto 0;
+  margin: 16px auto 14px;
   padding: 10px 14px;
   border: none;
   background: transparent;

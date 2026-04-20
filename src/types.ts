@@ -1,4 +1,4 @@
-export type Tab = 'feed' | 'discover' | 'plan' | 'profile'
+export type Tab = 'feed' | 'discover' | 'plan' | 'favorites' | 'profile'
 export type Theme = 'dark' | 'light'
 
 export type GigEntry = {

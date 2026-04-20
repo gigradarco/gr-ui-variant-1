@@ -12,6 +12,7 @@ import type { Tab, Theme } from '../types'
 
 const WELCOME_SESSION_KEY = 'buzo-welcome-dismissed'
 const DEFAULT_CITY_STORAGE_KEY = 'buzo-default-city-id'
+const FAVORITES_STORAGE_KEY = 'buzo-favorite-events'
 
 function readWelcomeDismissed(): boolean {
   if (typeof window === 'undefined') {
@@ -48,6 +49,50 @@ function clearPersistedDefaultCityId() {
   if (typeof window === 'undefined') return
   try {
     window.localStorage.removeItem(DEFAULT_CITY_STORAGE_KEY)
+  } catch {
+    /* ignore quota / private mode */
+  }
+}
+
+export type FavoriteEvent = {
+  id: string
+  title: string
+  venueLine: string
+  timeLabel: string
+  image: string
+  variant: 'upcoming' | 'past'
+}
+
+function readPersistedFavoriteEvents(): FavoriteEvent[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const raw = window.localStorage.getItem(FAVORITES_STORAGE_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw) as unknown
+    if (!Array.isArray(parsed)) return []
+    return parsed
+      .filter((row): row is FavoriteEvent => {
+        if (!row || typeof row !== 'object') return false
+        const r = row as Record<string, unknown>
+        return (
+          typeof r.id === 'string' &&
+          typeof r.title === 'string' &&
+          typeof r.venueLine === 'string' &&
+          typeof r.timeLabel === 'string' &&
+          typeof r.image === 'string' &&
+          (r.variant === 'upcoming' || r.variant === 'past')
+        )
+      })
+      .slice(0, 100)
+  } catch {
+    return []
+  }
+}
+
+function persistFavoriteEvents(items: FavoriteEvent[]) {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(items))
   } catch {
     /* ignore quota / private mode */
   }
@@ -129,6 +174,7 @@ type AppState = {
   activeEventId: string | null
   /** When set, Plan tab opens this detail (same as tapping a plan list card). */
   pendingPlanDetail: PendingPlanDetail | null
+  favoriteEvents: FavoriteEvent[]
   /** Feed location pill — Plan explore detail defaults country/city filter to this. */
   feedLocationCityId: string
   /** Nullable profile-level default city preference from local storage / profiles.default_city_id. */
@@ -197,6 +243,8 @@ type AppState = {
     returnTab?: Tab,
   ) => void
   clearPendingPlanDetail: () => void
+  toggleFavoriteEvent: (event: FavoriteEvent) => void
+  isEventFavorited: (eventId: string) => boolean
   openBuzzPoints: () => void
   closeBuzzPoints: () => void
   openProfileTasteAll: () => void
@@ -238,7 +286,7 @@ type AppState = {
   toggleDiscoverExpanded: () => void
 }
 
-export const useAppState = create<AppState>((set) => ({
+export const useAppState = create<AppState>((set, get) => ({
   userProfile: defaultUserProfile,
   welcomeDismissed: readWelcomeDismissed(),
   showWelcomeBack: false,
@@ -249,6 +297,7 @@ export const useAppState = create<AppState>((set) => ({
   subscriptionTier: 'pro',
   activeEventId: null,
   pendingPlanDetail: null,
+  favoriteEvents: readPersistedFavoriteEvents(),
   feedLocationCityId: readPersistedDefaultCityId() ?? DEFAULT_LOCATION_CITY_ID,
   profileDefaultCityId: readPersistedDefaultCityId(),
   locationPreferenceMode: 'city',
@@ -346,7 +395,7 @@ export const useAppState = create<AppState>((set) => ({
       profile?.user_taste_categories,
     )
 
-    const wasAuthenticated = useAppState.getState().isAuthenticated
+    const wasAuthenticated = get().isAuthenticated
     set({
       isAuthenticated: isRealUser,
       authEmail,
@@ -419,6 +468,16 @@ export const useAppState = create<AppState>((set) => ({
       },
     }),
   clearPendingPlanDetail: () => set({ pendingPlanDetail: null }),
+  toggleFavoriteEvent: (event) =>
+    set((state) => {
+      const alreadyFavorited = state.favoriteEvents.some((item) => item.id === event.id)
+      const next = alreadyFavorited
+        ? state.favoriteEvents.filter((item) => item.id !== event.id)
+        : [event, ...state.favoriteEvents.filter((item) => item.id !== event.id)]
+      persistFavoriteEvents(next)
+      return { favoriteEvents: next }
+    }),
+  isEventFavorited: (eventId) => get().favoriteEvents.some((item) => item.id === eventId),
   openBuzzPoints: () => set({ showBuzzPoints: true }),
   closeBuzzPoints: () => set({ showBuzzPoints: false }),
   openProfileTasteAll: () => set({ showProfileTasteAll: true }),
@@ -430,8 +489,8 @@ export const useAppState = create<AppState>((set) => ({
       ),
     }))
     schedulePersistUserTasteCategories(
-      () => useAppState.getState().tasteIdentityItems,
-      () => useAppState.getState().isAuthenticated,
+      () => get().tasteIdentityItems,
+      () => get().isAuthenticated,
     )
   },
   openProfileReputationAll: () => set({ showProfileReputationAll: true }),

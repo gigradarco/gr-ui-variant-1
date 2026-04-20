@@ -16,6 +16,8 @@ type PlanEventDetailProps = {
   backAriaLabel?: string
   onBack: () => void
   onOpenEvent: (eventId: string) => void
+  isFavorited: boolean
+  onToggleFavorite: () => void
   /** Past events only: opens post-event review flow. */
   onOpenReview?: () => void
 }
@@ -30,9 +32,10 @@ export function PlanEventDetail({
   backAriaLabel = 'Back to plan list',
   onBack,
   onOpenEvent,
+  isFavorited,
+  onToggleFavorite,
   onOpenReview,
 }: PlanEventDetailProps) {
-  const [favorited, setFavorited] = useState(false)
   const [playing, setPlaying] = useState(false)
 
   const elitePreview = useMemo(
@@ -65,15 +68,15 @@ export function PlanEventDetail({
         <button
           type="button"
           className="plan-toolbar-btn"
-          aria-label={favorited ? 'Remove favorite' : 'Save event'}
-          aria-pressed={favorited}
-          onClick={() => setFavorited((v) => !v)}
+          aria-label={isFavorited ? 'Remove favorite' : 'Save event'}
+          aria-pressed={isFavorited}
+          onClick={onToggleFavorite}
         >
           <Heart
             size={20}
             strokeWidth={2}
-            className={favorited ? 'plan-heart--on' : undefined}
-            fill={favorited ? 'currentColor' : 'none'}
+            className={isFavorited ? 'plan-heart--on' : undefined}
+            fill={isFavorited ? 'currentColor' : 'none'}
           />
         </button>
       </header>

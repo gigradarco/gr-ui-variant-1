@@ -7,7 +7,7 @@ import {
   getPlanDetailUpcoming,
   planPastEvents,
 } from '../../data/demoData'
-import { useAppState } from '../../store/appStore'
+import { useAppState, type FavoriteEvent } from '../../store/appStore'
 import type { Tab } from '../../types'
 import { PlanEventDetail } from './PlanEventDetail'
 import { PlanExploreEvents } from './PlanExploreEvents'
@@ -28,6 +28,8 @@ function tabReturnAriaLabel(t: Tab): string {
       return 'Back to feed'
     case 'discover':
       return 'Back to discover'
+    case 'favorites':
+      return 'Back to saved events'
     case 'plan':
       return 'Back to plan list'
     case 'profile':
@@ -39,6 +41,8 @@ export function PlanTab({ onOpenEvent }: PlanTabProps) {
   const pendingPlanDetail = useAppState((s) => s.pendingPlanDetail)
   const clearPendingPlanDetail = useAppState((s) => s.clearPendingPlanDetail)
   const setTab = useAppState((s) => s.setTab)
+  const toggleFavoriteEvent = useAppState((s) => s.toggleFavoriteEvent)
+  const isEventFavorited = useAppState((s) => s.isEventFavorited)
 
   const [segment, setSegment] = useState<'upcoming' | 'past'>('upcoming')
   const [detail, setDetail] = useState<DetailRoute | null>(null)
@@ -54,6 +58,19 @@ export function PlanTab({ onOpenEvent }: PlanTabProps) {
     setDetailReturnTab(null)
     if (go) setTab(go)
   }
+
+  const toFavoriteEvent = (
+    id: string,
+    kind: 'upcoming' | 'past',
+    data: ReturnType<typeof getPlanDetailUpcoming> | ReturnType<typeof getPlanDetailPast>,
+  ): FavoriteEvent => ({
+    id,
+    title: data?.displayTitle ?? 'Event',
+    venueLine: data?.venueLine ?? '',
+    timeLabel: data?.timeRange ?? '',
+    image: data?.heroImage ?? '',
+    variant: kind,
+  })
 
   useEffect(() => {
     if (!pendingPlanDetail) return
@@ -137,6 +154,10 @@ export function PlanTab({ onOpenEvent }: PlanTabProps) {
         }
         onBack={exitEventDetail}
         onOpenEvent={onOpenEvent}
+        isFavorited={isEventFavorited(data.eventId)}
+        onToggleFavorite={() =>
+          toggleFavoriteEvent(toFavoriteEvent(data.eventId, detail.kind, data))
+        }
         onOpenReview={detail.kind === 'past' ? () => setReviewPastId(detail.id) : undefined}
       />
     )

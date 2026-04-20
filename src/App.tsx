@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Info, Moon, Sun, User, X, Zap } from 'lucide-react'
+import { Heart, Info, Moon, Sun, User, X, Zap } from 'lucide-react'
 import {
   events as demoEvents,
   getPlanDetailPast,
@@ -9,11 +9,12 @@ import {
 } from './data/demoData'
 import { mapDbEventToEventItem } from './lib/map-event'
 import { api } from './lib/trpc'
-import { useAppState } from './store/appStore'
+import { useAppState, type FavoriteEvent } from './store/appStore'
 import type { Tab } from './types'
 import { PlanEventDetail } from './views/plan/PlanEventDetail'
 import { tabNavItems } from './config/tabNavigation'
 import { FeedTab } from './views'
+import { FavoritesTab } from './views/favorites/FavoritesTab'
 import { BuzzPointsScreen } from './views/profile/BuzzPointsScreen'
 import { ProfileReputationScreen } from './views/profile/ProfileReputationScreen'
 import { ProfileStatsScreen } from './views/profile/ProfileStatsScreen'
@@ -55,6 +56,8 @@ function tabReturnAriaLabel(t: Tab): string {
       return 'Back to feed'
     case 'discover':
       return 'Back to discover'
+    case 'favorites':
+      return 'Back to saved events'
     case 'plan':
       return 'Back to plan list'
     case 'profile':
@@ -90,6 +93,8 @@ function MainApp() {
     openEvent,
     closeEvent,
     requestPlanDetail,
+    toggleFavoriteEvent,
+    isEventFavorited,
     pendingPlanDetail,
     clearPendingPlanDetail,
     isDiscoverExpanded,
@@ -163,6 +168,22 @@ function MainApp() {
     setSheetPlanReturnTab(null)
   }, [])
 
+  const toFavoriteEvent = useCallback(
+    (
+      eventId: string,
+      variant: 'upcoming' | 'past',
+      data: ReturnType<typeof getPlanDetailUpcoming> | ReturnType<typeof getPlanDetailPast>,
+    ): FavoriteEvent => ({
+      id: eventId,
+      title: data?.displayTitle ?? 'Event',
+      venueLine: data?.venueLine ?? '',
+      timeLabel: data?.timeRange ?? '',
+      image: data?.heroImage ?? '',
+      variant,
+    }),
+    [],
+  )
+
   const activeEvent = useMemo(
     () => mergedEvents.find((event) => event.id === activeEventId) ?? null,
     [activeEventId, mergedEvents],
@@ -197,9 +218,21 @@ function MainApp() {
         }
         onBack={closeSheetPlanOverlay}
         onOpenEvent={openEvent}
+        isFavorited={isEventFavorited(data.eventId)}
+        onToggleFavorite={() =>
+          toggleFavoriteEvent(toFavoriteEvent(data.eventId, sheetPlanOverlay.kind, data))
+        }
       />
     )
-  }, [sheetPlanOverlay, sheetPlanReturnTab, closeSheetPlanOverlay, openEvent])
+  }, [
+    sheetPlanOverlay,
+    sheetPlanReturnTab,
+    closeSheetPlanOverlay,
+    openEvent,
+    isEventFavorited,
+    toggleFavoriteEvent,
+    toFavoriteEvent,
+  ])
 
   return (
     <div className={`app theme-${theme}`}>
@@ -257,6 +290,15 @@ function MainApp() {
                       {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
                     </button>
                     <button
+                      className={`icon-btn${tab === 'favorites' ? ' icon-btn--active' : ''}`}
+                      type="button"
+                      onClick={() => setTab('favorites')}
+                      aria-label="Saved events"
+                      aria-current={tab === 'favorites' ? 'page' : undefined}
+                    >
+                      <Heart size={18} strokeWidth={tab === 'favorites' ? 2.25 : 2} aria-hidden />
+                    </button>
+                    <button
                       className={`icon-btn${tab === 'profile' ? ' icon-btn--active' : ''}`}
                       type="button"
                       onClick={() => setTab('profile')}
@@ -284,6 +326,14 @@ function MainApp() {
                   prefillPrompt={discoverPrefill}
                   onConsumePrefill={consumeDiscoverPrefill}
                   events={mergedEvents}
+                />
+              )}
+              {tab === 'favorites' && (
+                <FavoritesTab
+                  onOpenFavorite={(event) => {
+                    requestPlanDetail(event.id, event.variant, 'favorites')
+                    setTab('plan')
+                  }}
                 />
               )}
               {tab === 'plan' && <PlanTab onOpenEvent={openEvent} />}

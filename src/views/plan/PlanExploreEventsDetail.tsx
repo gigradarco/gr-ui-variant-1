@@ -155,9 +155,9 @@ export function PlanExploreEventsDetail({
 
       <div className="plan-explore-events-body">
         <p className="plan-explore-events-sub">
-          Use <strong>Category</strong> and <strong>country / city</strong> together — they match{' '}
-          <code className="plan-explore-detail-code">exploreCategoryId</code> and{' '}
-          <code className="plan-explore-detail-code">locationCityId</code> on each event in data.
+          Use <strong className="plan-explore-detail-emphasis">Category</strong> and{' '}
+          <strong className="plan-explore-detail-emphasis">Country / City</strong> together to
+          narrow your results faster.
         </p>
 
         <div className="plan-explore-detail-filters" aria-label="Filters">
