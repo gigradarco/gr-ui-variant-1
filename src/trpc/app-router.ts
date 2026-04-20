@@ -63,7 +63,7 @@ export const appRouter = t.router({
             .array(
               z.object({
                 label: z.string(),
-                accent: z.enum(['true', 'false', 'muted']),
+                accent: z.enum(['true', 'false']),
               }),
             )
             .optional(),

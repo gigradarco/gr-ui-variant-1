@@ -1,13 +1,13 @@
-import { useEffect, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { motion } from 'framer-motion'
 import { ChevronRight, Lock, LogOut, Settings } from 'lucide-react'
 import { BUZO_PRO_UPSELL_CTA } from '../../config/pricing'
 import { buzzSummary, getBuzzTierState } from '../../data/demoData'
 import {
   PROFILE_REPUTATION_PREVIEW_COUNT,
-  PROFILE_TASTE_PREVIEW_COUNT,
   reputationBadges,
   TASTE_AND_RECOMMENDATIONS_TITLE,
+  type TasteIdentityItem,
 } from '../../data/profileIdentity'
 import {
   PROFILE_CITIES_COUNT,
@@ -56,9 +56,9 @@ export function ProfileTab({
   const ringStyle = { '--ring-fill': ringFill } as CSSProperties
   const [avatarLoaded, setAvatarLoaded] = useState(false)
   const [tasteEditMode, setTasteEditMode] = useState(false)
+  const tasteEditBaselineRef = useRef<TasteIdentityItem[] | null>(null)
 
-  const tastePreview = tasteIdentityItems.slice(0, PROFILE_TASTE_PREVIEW_COUNT)
-  const tasteTagsShown = tasteEditMode ? tasteIdentityItems : tastePreview
+  const tasteTagsShown = tasteIdentityItems
   const badgesPreview = reputationBadges.slice(0, PROFILE_REPUTATION_PREVIEW_COUNT)
   const tasteCount = tasteIdentityItems.length
   const badgeCount = reputationBadges.length
@@ -219,8 +219,15 @@ export function ProfileTab({
                 void flushPersistUserTasteCategories(
                   () => useAppState.getState().tasteIdentityItems,
                   () => useAppState.getState().isAuthenticated,
-                ).finally(() => setTasteEditMode(false))
+                  { baseline: tasteEditBaselineRef.current },
+                ).finally(() => {
+                  tasteEditBaselineRef.current = null
+                  setTasteEditMode(false)
+                })
               } else {
+                tasteEditBaselineRef.current = useAppState
+                  .getState()
+                  .tasteIdentityItems.map((t) => ({ ...t }))
                 setTasteEditMode(true)
               }
             }}
@@ -231,12 +238,12 @@ export function ProfileTab({
         </div>
         {tasteEditMode ? (
           <p id="profile-taste-edit-hint" className="profile-taste-edit-hint">
-            Tap a tag to cycle highlight, default, and soft styles.
+            Tap a tag to highlight it on your profile or turn the highlight off.
           </p>
         ) : null}
         <div className={`taste-tags${tasteEditMode ? ' taste-tags--editing' : ''}`}>
           {tasteTagsShown.map((g) => {
-            const cls = `taste-tag${g.accent === true ? ' taste-tag--primary' : g.accent === 'muted' ? ' taste-tag--muted' : ''}`
+            const cls = `taste-tag${g.accent ? ' taste-tag--primary' : ''}`
             if (tasteEditMode) {
               return (
                 <button

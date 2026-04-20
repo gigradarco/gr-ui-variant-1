@@ -53,7 +53,7 @@ export function googleOAuthRedirectUrl(returnTo: string): string {
 }
 
 export async function postProfileTastePreferences(
-  userTasteCategories: Array<{ label: string; accent: 'true' | 'false' | 'muted' }>,
+  userTasteCategories: Array<{ label: string; accent: 'true' | 'false' }>,
 ): Promise<void> {
   const token = getAccessToken()
   if (!token) {

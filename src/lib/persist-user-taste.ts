@@ -1,4 +1,8 @@
-import { tasteAccentToDb, type TasteIdentityItem } from '../data/profileIdentity'
+import {
+  tasteAccentToDb,
+  tasteIdentityItemsEqual,
+  type TasteIdentityItem,
+} from '../data/profileIdentity'
 import { postProfileTastePreferences } from './auth-api'
 
 let persistTimer: ReturnType<typeof setTimeout> | null = null
@@ -16,19 +20,30 @@ export function schedulePersistUserTasteCategories(
   }, 450)
 }
 
+export type FlushPersistTasteOptions = {
+  /** If set and current items match, skips the API call (e.g. user opened edit then tapped Done unchanged). */
+  baseline?: TasteIdentityItem[] | null
+}
+
 /**
  * Cancel pending debounced save and write immediately (e.g. user tapped Done).
  */
 export function flushPersistUserTasteCategories(
   getItems: () => TasteIdentityItem[],
   isSignedInRealUser: () => boolean,
+  options?: FlushPersistTasteOptions,
 ): Promise<void> {
   if (persistTimer !== null) {
     clearTimeout(persistTimer)
     persistTimer = null
   }
   if (!isSignedInRealUser()) return Promise.resolve()
-  return persistUserTasteCategories(getItems())
+  const items = getItems()
+  const baseline = options?.baseline
+  if (baseline != null && tasteIdentityItemsEqual(baseline, items)) {
+    return Promise.resolve()
+  }
+  return persistUserTasteCategories(items)
 }
 
 export async function persistUserTasteCategories(items: TasteIdentityItem[]): Promise<void> {

@@ -2822,13 +2822,6 @@ button.taste-tag:focus-visible {
   color: #fff;
 }
 
-.taste-tag--muted {
-  background: transparent;
-  border-color: transparent;
-  color: var(--primary-soft);
-  font-style: italic;
-}
-
 /* Reputation badges */
 .badges-row {
   display: flex;

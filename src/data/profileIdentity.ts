@@ -1,21 +1,29 @@
 import type { LucideIcon } from 'lucide-react'
 import { Building2, Crown, Flame, Headphones, Moon, Music, Star, Trophy, Zap } from 'lucide-react'
 
-export type TasteAccent = true | false | 'muted'
+/** Highlighted on profile (`true`) vs standard chip (`false`). Tap toggles while editing. */
+export type TasteAccent = boolean
 
 export type TasteIdentityItem = {
   label: string
   accent: TasteAccent
 }
 
+/** Deep compare for skipping no-op taste saves (order matches store / catalog). */
+export function tasteIdentityItemsEqual(a: TasteIdentityItem[], b: TasteIdentityItem[]): boolean {
+  if (a.length !== b.length) return false
+  for (let i = 0; i < a.length; i++) {
+    if (a[i].label !== b[i].label || a[i].accent !== b[i].accent) return false
+  }
+  return true
+}
+
 /** Profile section, full-screen list, and Settings — keep in sync. */
 export const TASTE_AND_RECOMMENDATIONS_TITLE = 'Taste & recommendations'
 
-/** Cycles tag style when editing: default → primary → muted → default. */
+/** Toggle highlight while editing (show on / show off). */
 export function cycleTasteAccent(accent: TasteAccent): TasteAccent {
-  if (accent === false) return true
-  if (accent === true) return 'muted'
-  return false
+  return !accent
 }
 
 /** Full taste map — profile preview shows a slice. */
@@ -24,13 +32,13 @@ export const tasteIdentityTags: TasteIdentityItem[] = [
   { label: 'MINIMAL TECHNO', accent: false },
   { label: 'INDUSTRIAL', accent: false },
   { label: 'EBM', accent: false },
-  { label: 'POST-PUNK', accent: 'muted' },
+  { label: 'POST-PUNK', accent: false },
   { label: 'ACID HOUSE', accent: false },
   { label: 'ITALO DISCO', accent: false },
   { label: 'NEW BEAT', accent: false },
   { label: 'SYNTHWAVE', accent: false },
   { label: 'TECH HOUSE', accent: false },
-  { label: 'DEEP HOUSE', accent: 'muted' },
+  { label: 'DEEP HOUSE', accent: false },
   { label: 'BREAKBEAT', accent: false },
   { label: 'DRUM & BASS', accent: false },
   { label: 'GABBER', accent: false },
@@ -44,15 +52,11 @@ export function getDefaultTasteIdentityItems(): TasteIdentityItem[] {
 export type TasteCategoryRow = { label: string; accent: string }
 
 export function tasteAccentFromDb(accent: string): TasteAccent {
-  if (accent === 'muted') return 'muted'
-  if (accent === 'true') return true
-  return false
+  return accent === 'true'
 }
 
-export function tasteAccentToDb(accent: TasteAccent): 'true' | 'false' | 'muted' {
-  if (accent === 'muted') return 'muted'
-  if (accent === true) return 'true'
-  return 'false'
+export function tasteAccentToDb(accent: TasteAccent): 'true' | 'false' {
+  return accent ? 'true' : 'false'
 }
 
 /** Merge catalog order + defaults with saved `profiles.user_taste_categories`. */
@@ -114,6 +118,4 @@ export const reputationBadges: ReputationBadgeItem[] = [
   { icon: Star, label: 'EARLY\nBIRD' },
 ]
 
-/** How many tags/badges to show on the main profile when not editing taste. */
-export const PROFILE_TASTE_PREVIEW_COUNT = 6
 export const PROFILE_REPUTATION_PREVIEW_COUNT = 5
