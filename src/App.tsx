@@ -276,10 +276,6 @@ function MainApp() {
               {tab === 'feed' && (
                 <FeedTab
                   onOpenEvent={openEvent}
-                  onAsk={(prompt) => {
-                    setDiscoverPrefill(prompt)
-                    setTab('discover')
-                  }}
                 />
               )}
               {tab === 'discover' && (

@@ -98,24 +98,173 @@ export function buildTasteIdentityItemsFromSession(
   return getDefaultTasteIdentityItems()
 }
 
+export type ReputationBadgeStatus = 'locked' | 'in_progress' | 'earned'
+
 export type ReputationBadgeItem = {
+  id: string
+  code: string
   icon: LucideIcon
   label: string
-  accent?: boolean
+  status: ReputationBadgeStatus
+  unlockHint: string
+  progressValue: number
+  progressTarget: number
+  earnedAt: string | null
 }
 
-/** Full reputation list — profile preview shows a slice. */
-export const reputationBadges: ReputationBadgeItem[] = [
-  { icon: Star, label: 'FIRST\nCHECK-IN', accent: true },
-  { icon: Building2, label: 'CITY\nCURATOR' },
-  { icon: Moon, label: 'NIGHT\nOWL', accent: true },
-  { icon: Zap, label: 'STREAK\nMASTER' },
-  { icon: Trophy, label: 'LEGEND' },
-  { icon: Crown, label: 'SCENE\nROYALTY' },
-  { icon: Flame, label: 'DANCEFLOOR\nVIP' },
-  { icon: Headphones, label: 'LINEUP\nSAGE' },
-  { icon: Music, label: 'RECORD\nVULTURE' },
-  { icon: Star, label: 'EARLY\nBIRD' },
+export type ReputationBadgeApiRow = {
+  id: string
+  code: string
+  name: string
+  icon_key: string
+  status: ReputationBadgeStatus
+  unlock_hint: string
+  progress_value: number
+  progress_target: number
+  earned_at: string | null
+}
+
+const defaultReputationIcon = Star
+
+const reputationIconByKey: Record<string, LucideIcon> = {
+  star: Star,
+  'star-outline': Star,
+  building2: Building2,
+  moon: Moon,
+  zap: Zap,
+  trophy: Trophy,
+  crown: Crown,
+  flame: Flame,
+  headphones: Headphones,
+  music: Music,
+}
+
+/** Fallback list while backend data loads or is unavailable. */
+export const reputationBadgesFallback: ReputationBadgeItem[] = [
+  {
+    id: 'first-checkin',
+    code: 'first_checkin',
+    icon: Star,
+    label: 'FIRST\nCHECK-IN',
+    status: 'earned',
+    unlockHint: 'Attend your first gig to unlock this badge.',
+    progressValue: 1,
+    progressTarget: 1,
+    earnedAt: null,
+  },
+  {
+    id: 'city-curator',
+    code: 'city_curator',
+    icon: Building2,
+    label: 'CITY\nCURATOR',
+    status: 'locked',
+    unlockHint: 'Attend 3 gigs in the same city.',
+    progressValue: 0,
+    progressTarget: 3,
+    earnedAt: null,
+  },
+  {
+    id: 'night-owl',
+    code: 'night_owl',
+    icon: Moon,
+    label: 'NIGHT\nOWL',
+    status: 'earned',
+    unlockHint: 'Attend 5 gigs that start at 11 PM or later.',
+    progressValue: 5,
+    progressTarget: 5,
+    earnedAt: null,
+  },
+  {
+    id: 'streak-master',
+    code: 'streak_master',
+    icon: Zap,
+    label: 'STREAK\nMASTER',
+    status: 'locked',
+    unlockHint: 'Attend gigs in 3 consecutive weeks.',
+    progressValue: 0,
+    progressTarget: 3,
+    earnedAt: null,
+  },
+  {
+    id: 'legend',
+    code: 'legend',
+    icon: Trophy,
+    label: 'LEGEND',
+    status: 'locked',
+    unlockHint: 'Attend 50 gigs in total.',
+    progressValue: 0,
+    progressTarget: 50,
+    earnedAt: null,
+  },
+  {
+    id: 'scene-royalty',
+    code: 'scene_royalty',
+    icon: Crown,
+    label: 'SCENE\nROYALTY',
+    status: 'locked',
+    unlockHint: 'Earn 5 reputation badges.',
+    progressValue: 0,
+    progressTarget: 5,
+    earnedAt: null,
+  },
+  {
+    id: 'dancefloor-vip',
+    code: 'dancefloor_vip',
+    icon: Flame,
+    label: 'DANCEFLOOR\nVIP',
+    status: 'locked',
+    unlockHint: 'Attend 10 gigs in any rolling 30-day window.',
+    progressValue: 0,
+    progressTarget: 10,
+    earnedAt: null,
+  },
+  {
+    id: 'lineup-sage',
+    code: 'lineup_sage',
+    icon: Headphones,
+    label: 'LINEUP\nSAGE',
+    status: 'locked',
+    unlockHint: 'Attend gigs across 5 different genres.',
+    progressValue: 0,
+    progressTarget: 5,
+    earnedAt: null,
+  },
+  {
+    id: 'record-vulture',
+    code: 'record_vulture',
+    icon: Music,
+    label: 'RECORD\nVULTURE',
+    status: 'locked',
+    unlockHint: 'Attend 5 gigs featuring the same artist or promoter.',
+    progressValue: 0,
+    progressTarget: 5,
+    earnedAt: null,
+  },
+  {
+    id: 'early-bird',
+    code: 'early_bird',
+    icon: Star,
+    label: 'EARLY\nBIRD',
+    status: 'locked',
+    unlockHint: 'Check in before start time 5 times.',
+    progressValue: 0,
+    progressTarget: 5,
+    earnedAt: null,
+  },
 ]
+
+export function mapReputationBadgeFromApi(row: ReputationBadgeApiRow): ReputationBadgeItem {
+  return {
+    id: row.id,
+    code: row.code,
+    icon: reputationIconByKey[row.icon_key] ?? defaultReputationIcon,
+    label: row.name,
+    status: row.status,
+    unlockHint: row.unlock_hint,
+    progressValue: row.progress_value,
+    progressTarget: row.progress_target,
+    earnedAt: row.earned_at,
+  }
+}
 
 export const PROFILE_REPUTATION_PREVIEW_COUNT = 5

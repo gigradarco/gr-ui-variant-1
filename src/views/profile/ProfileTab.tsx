@@ -4,8 +4,8 @@ import { ChevronRight, Lock, LogOut, Settings } from 'lucide-react'
 import { BUZO_PRO_UPSELL_CTA } from '../../config/pricing'
 import { buzzSummary, getBuzzTierState } from '../../data/demoData'
 import {
-  PROFILE_REPUTATION_PREVIEW_COUNT,
-  reputationBadges,
+  mapReputationBadgeFromApi,
+  reputationBadgesFallback,
   TASTE_AND_RECOMMENDATIONS_TITLE,
   type TasteIdentityItem,
 } from '../../data/profileIdentity'
@@ -16,6 +16,7 @@ import {
 } from '../../data/profileStats'
 import { postSignOut } from '../../lib/auth-api'
 import { flushPersistUserTasteCategories } from '../../lib/persist-user-taste'
+import { api } from '../../lib/trpc'
 import { useAppState } from '../../store/appStore'
 
 type ProfileTabProps = {
@@ -57,12 +58,35 @@ export function ProfileTab({
   const [avatarLoaded, setAvatarLoaded] = useState(false)
   const [avatarFailed, setAvatarFailed] = useState(false)
   const [tasteEditMode, setTasteEditMode] = useState(false)
+  const [tooltipBadgeId, setTooltipBadgeId] = useState<string | null>(null)
   const tasteEditBaselineRef = useRef<TasteIdentityItem[] | null>(null)
+  const reputationQuery = api.profile.reputation.useQuery(undefined, {
+    enabled: isAuthenticated,
+    staleTime: 60_000,
+  })
 
   const tasteTagsShown = tasteIdentityItems
-  const badgesPreview = reputationBadges.slice(0, PROFILE_REPUTATION_PREVIEW_COUNT)
+  const reputationBadges =
+    reputationQuery.data?.badges.map(mapReputationBadgeFromApi) ?? reputationBadgesFallback
+  const earnedReputationBadges = reputationBadges.filter((badge) => badge.status === 'earned')
+  const recentEarnedReputationBadges = [...earnedReputationBadges].sort((a, b) => {
+    const aTs = a.earnedAt ? Date.parse(a.earnedAt) : Number.NaN
+    const bTs = b.earnedAt ? Date.parse(b.earnedAt) : Number.NaN
+    const aValid = Number.isFinite(aTs)
+    const bValid = Number.isFinite(bTs)
+    if (aValid && bValid) return bTs - aTs
+    if (aValid) return -1
+    if (bValid) return 1
+    return 0
+  })
+  const badgesPreview =
+    (recentEarnedReputationBadges.length > 0 ? recentEarnedReputationBadges : reputationBadges).slice(0, 5)
   const tasteHighlightedCount = tasteIdentityItems.filter((t) => t.accent).length
-  const badgeCount = reputationBadges.length
+  const badgeCount = earnedReputationBadges.length
+  const reputationPreviewCopy =
+    earnedReputationBadges.length > 0
+      ? `Showing latest ${badgesPreview.length} earned badge${badgesPreview.length === 1 ? '' : 's'} (up to 5).`
+      : 'No earned badges yet. Showing starter badges.'
 
   // Redirect unauthenticated users to discover with sign-in prompt
   useEffect(() => {
@@ -296,18 +320,37 @@ export function ProfileTab({
           </button>
         </div>
         <div className="badges-row">
-          {badgesPreview.map(({ icon: Icon, label, accent }, i) => {
-            const active = accent === true
+          {badgesPreview.map(({ id, icon: Icon, label, status, unlockHint, progressValue, progressTarget }, i) => {
+            const active = status === 'earned'
+            const inProgress = status === 'in_progress'
+            const tooltipText =
+              status === 'earned'
+                ? `Earned. ${unlockHint}`
+                : `${unlockHint} (${progressValue}/${progressTarget})`
             return (
-              <div key={`${i}-${label}`} className="badge-item">
-                <div className={`badge-icon${active ? ' badge-icon--active' : ''}`}>
-                  <Icon size={22} />
-                </div>
+              <div key={`${id}-${i}`} className="badge-item">
+                <button
+                  type="button"
+                  className={`badge-icon badge-icon-btn${active ? ' badge-icon--active' : ''}${
+                    inProgress ? ' badge-icon--in-progress' : ''
+                  }`}
+                  title={tooltipText}
+                  aria-label={`${label.replace('\n', ' ')}: ${tooltipText}`}
+                  onClick={() => setTooltipBadgeId((current) => (current === id ? null : id))}
+                >
+                  <Icon size={28} />
+                </button>
                 <span className="badge-label">{label}</span>
+                {tooltipBadgeId === id ? (
+                  <div className="badge-tooltip" role="status">
+                    {tooltipText}
+                  </div>
+                ) : null}
               </div>
             )
           })}
         </div>
+        <p className="profile-reputation-preview-note">{reputationPreviewCopy}</p>
       </section>
 
       {/* Go Pro upsell */}

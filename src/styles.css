@@ -225,6 +225,7 @@ body {
   align-items: flex-start;
   justify-content: flex-start;
   gap: 8px;
+  margin-bottom: 12px;
 }
 
 .feed-filter-wrap {
@@ -699,6 +700,11 @@ body {
   padding-bottom: 24px;
 }
 
+.screen-content.feed-wf {
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
 .feed-prompt-card {
   display: flex;
   align-items: stretch;
@@ -751,7 +757,8 @@ body {
 
 .feed-wf-stack {
   display: grid;
-  gap: 22px;
+  gap: 36px;
+  padding-top: 8px;
 }
 
 .feed-wf-post {
@@ -1879,6 +1886,7 @@ body {
 
   .feed-filters-row {
     gap: 6px;
+    margin-bottom: 8px;
   }
 
   .feed-filter-pill {
@@ -1905,7 +1913,7 @@ body {
   }
 
   .feed-wf-post {
-    gap: 10px;
+    gap: 14px;
   }
 
   .feed-wf-card--hero {
@@ -2159,8 +2167,9 @@ body {
 .profile-reputation-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 22px 12px;
+  gap: 28px 18px;
   justify-items: center;
+  padding: 6px 4px 10px;
 }
 
 @media (min-width: 420px) {
@@ -2835,12 +2844,18 @@ button.taste-tag:focus-visible {
 }
 
 /* Reputation badges */
+.profile-reputation-preview-note {
+  margin: 2px 0 0;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
 .badges-row {
   display: flex;
-  gap: 14px;
+  gap: 24px;
   overflow-x: auto;
   scrollbar-width: none;
-  padding-bottom: 4px;
+  padding: 8px 6px 10px;
 }
 
 .badges-row::-webkit-scrollbar {
@@ -2852,12 +2867,12 @@ button.taste-tag:focus-visible {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  min-width: 62px;
+  min-width: 86px;
 }
 
 .badge-icon {
-  width: 62px;
-  height: 62px;
+  width: 86px;
+  height: 86px;
   border-radius: 999px;
   border: 1.5px solid var(--stroke);
   background: color-mix(in oklab, var(--bg-elev) 80%, transparent);
@@ -2866,10 +2881,25 @@ button.taste-tag:focus-visible {
   color: var(--muted);
 }
 
+.badge-icon-btn {
+  cursor: pointer;
+  padding: 0;
+}
+
+.badge-icon-btn:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--primary) 72%, #ffffff 28%);
+  outline-offset: 2px;
+}
+
 .badge-icon--active {
   border-color: var(--primary);
   border-width: 2px;
   color: var(--primary-soft);
+}
+
+.badge-icon--in-progress {
+  border-color: color-mix(in oklab, var(--primary) 48%, var(--stroke));
+  color: color-mix(in oklab, var(--primary-soft) 72%, var(--muted));
 }
 
 .badge-label {
@@ -2881,6 +2911,19 @@ button.taste-tag:focus-visible {
   white-space: pre-line;
   line-height: 1.35;
   text-transform: uppercase;
+}
+
+.badge-tooltip {
+  margin-top: 4px;
+  max-width: 150px;
+  border: 1px solid color-mix(in oklab, var(--primary) 36%, var(--stroke));
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--card) 92%, var(--bg));
+  padding: 6px 8px;
+  color: var(--text);
+  font-size: 0.62rem;
+  line-height: 1.35;
+  text-align: center;
 }
 
 /* Go Pro card */
@@ -7457,7 +7500,7 @@ button.taste-tag:focus-visible {
 
 /* Plan tab: list (home) */
 .plan-home {
-  padding: 16px 14px 24px;
+  padding: 16px 30px 24px;
   display: grid;
   gap: 16px;
 }

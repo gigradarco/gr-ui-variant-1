@@ -78,6 +78,20 @@ export const appRouter = t.router({
     checkUsername: t.procedure
       .input(z.object({ username: z.string() }))
       .mutation(() => ({ available: true })),
+    reputation: t.procedure.query(() => ({
+      badges: [] as Array<{
+        id: string
+        code: string
+        name: string
+        icon_key: string
+        sort_order: number
+        unlock_hint: string
+        status: 'locked' | 'in_progress' | 'earned'
+        progress_value: number
+        progress_target: number
+        earned_at: string | null
+      }>,
+    })),
   }),
   stripe: t.router({
     createCheckout: t.procedure

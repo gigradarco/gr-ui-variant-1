@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { CalendarClock, ChevronDown, ChevronRight, MapPin, Search, X, Zap } from 'lucide-react'
+import { CalendarClock, ChevronDown, MapPin, Search, X, Zap } from 'lucide-react'
 import { feedWireframePosts } from '../../data/demoData'
 import { filterLocationRegionsByQuery, getLocationCityById } from '../../data/locationRegions'
 import { mapFeedRowToWireframe, type FeedPostRow } from '../../lib/map-feed'
@@ -11,10 +11,7 @@ import type { FeedWireframePost } from '../../types'
 
 type FeedTabProps = {
   onOpenEvent: (eventId: string) => void
-  onAsk: (prompt: string) => void
 }
-
-const HIDDEN_BASEMENT_PROMPT = 'Where is the hidden basement tonight?'
 
 const FEED_TIME_OPTIONS = [
   'Tonight',
@@ -125,7 +122,7 @@ function FeedPostCard({
   )
 }
 
-export function FeedTab({ onOpenEvent, onAsk }: FeedTabProps) {
+export function FeedTab({ onOpenEvent }: FeedTabProps) {
   const reduceMotion = useReducedMotion()
   const openSubscription = useAppState((s) => s.openSubscription)
   const locationCityId = useAppState((s) => s.feedLocationCityId)
@@ -283,19 +280,6 @@ export function FeedTab({ onOpenEvent, onAsk }: FeedTabProps) {
           ) : null}
         </div>
       </div>
-
-      <button
-        type="button"
-        className="feed-prompt-card"
-        onClick={() => onAsk(HIDDEN_BASEMENT_PROMPT)}
-      >
-        <span className="feed-prompt-accent" aria-hidden />
-        <div className="feed-prompt-body">
-          <p className="feed-prompt-title">Ask Buzo for tonight&apos;s vibe...</p>
-          <p className="feed-prompt-example">&ldquo;{HIDDEN_BASEMENT_PROMPT}&rdquo;</p>
-        </div>
-        <ChevronRight className="feed-prompt-arrow" size={20} strokeWidth={2} aria-hidden />
-      </button>
 
       <div className="feed-wf-stack">
         {feedPosts.map((post, index) => (

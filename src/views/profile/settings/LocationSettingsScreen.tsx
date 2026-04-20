@@ -1,5 +1,7 @@
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Crosshair, MapPin, Navigation } from 'lucide-react'
+import { UploadToast, type UploadToastState } from '../../../components/UploadToast'
 import { getLocationCityById } from '../../../data/locationRegions'
 import { postProfileDefaultCity } from '../../../lib/auth-api'
 import { useAppState } from '../../../store/appStore'
@@ -19,8 +21,26 @@ export function LocationSettingsScreen() {
     updateLocationSettingsDraft,
     setLocationPermission,
     isAuthenticated,
-    profileDefaultCityId,
   } = useAppState()
+  const [saveToast, setSaveToast] = useState<UploadToastState>(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const toastIdRef = useRef(0)
+  const closeTimerRef = useRef<number | null>(null)
+
+  const dismissSaveToast = useCallback(() => setSaveToast(null), [])
+  const pushSaveToast = useCallback((message: string, variant: 'success' | 'error') => {
+    toastIdRef.current += 1
+    setSaveToast({ id: toastIdRef.current, variant, message })
+  }, [])
+
+  useEffect(
+    () => () => {
+      if (closeTimerRef.current !== null) {
+        window.clearTimeout(closeTimerRef.current)
+      }
+    },
+    [],
+  )
 
   const draft =
     locationSettingsDraft ?? {
@@ -29,20 +49,33 @@ export function LocationSettingsScreen() {
       radiusKm: nearbyRadiusKm,
     }
 
-  const hasExplicitDefaultCity = !isAuthenticated || profileDefaultCityId != null
-  const cityName = hasExplicitDefaultCity
-    ? (getLocationCityById(draft.cityId)?.name ?? 'Singapore')
-    : 'Not set'
+  const cityName = getLocationCityById(draft.cityId)?.name ?? 'Not set'
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (isSaving) return
+    setIsSaving(true)
     const cityIdToPersist = draft.cityId
-    commitLocationSettingsDraft()
-    if (!isAuthenticated) return
-    void postProfileDefaultCity(cityIdToPersist).catch((e) => {
-      if (import.meta.env.DEV) {
-        console.warn('[gigradar] Could not persist default_city_id to profile', e)
+
+    if (isAuthenticated) {
+      try {
+        await postProfileDefaultCity(cityIdToPersist)
+      } catch (e) {
+        pushSaveToast(
+          e instanceof Error ? e.message : 'Could not save location. Please try again.',
+          'error',
+        )
+        if (import.meta.env.DEV) {
+          console.warn('[gigradar] Could not persist default_city_id to profile', e)
+        }
+        setIsSaving(false)
+        return
       }
-    })
+    }
+
+    pushSaveToast('Location settings saved.', 'success')
+    closeTimerRef.current = window.setTimeout(() => {
+      commitLocationSettingsDraft()
+    }, 700)
   }
 
   const requestPreciseLocation = () => {
@@ -93,8 +126,10 @@ export function LocationSettingsScreen() {
           type="button"
           className="location-settings-screen-save"
           onClick={handleSave}
+          disabled={isSaving}
+          aria-busy={isSaving}
         >
-          Save
+          {isSaving ? 'Saving…' : 'Save'}
         </button>
       </header>
 
@@ -190,6 +225,8 @@ export function LocationSettingsScreen() {
           </p>
         </section>
       </div>
+
+      <UploadToast toast={saveToast} onDismiss={dismissSaveToast} />
     </motion.div>
   )
 }
