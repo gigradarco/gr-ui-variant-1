@@ -1,302 +1,221 @@
-import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
-import { createPortal } from 'react-dom'
-import { AnimatePresence, motion, usePresence, useReducedMotion } from 'framer-motion'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { ChevronDown, MapPin, Search, X } from 'lucide-react'
 import {
   filterLocationRegionsByQuery,
   getLocationCityById,
-  type LocationRegion,
 } from '../data/locationRegions'
 import { useAppState } from '../store/appStore'
 
-/** Stable DOM id prefix for the city picker (Discover). */
-const PICKER_DOM_ID = 'discover'
-
-function portalTarget(): HTMLElement {
-  if (typeof document === 'undefined') {
-    return null as unknown as HTMLElement
-  }
-  return (document.querySelector('main.phone-shell') ??
-    document.getElementById('root')) as HTMLElement
-}
-
-/** UI heading only: "Asia & Pacific" → "Asia Pacific" */
-function displayRegionHeading(label: string): string {
-  return label.replace(/\s*&\s*/g, ' ').trim()
-}
-
-type LocationCityPickerCurtainProps = {
-  curtainId: string
-  titleId: string
-  searchId: string
-  listboxId: string
-  triggerId: string
-  reduceMotion: boolean | null
-  locationCurtainRef: RefObject<HTMLDivElement | null>
-  locationSearchInputRef: RefObject<HTMLInputElement | null>
-  locationSearchQuery: string
-  setLocationSearchQuery: (q: string) => void
-  filteredRegions: LocationRegion[]
-  locationCityId: string
-  setLocationCityId: (id: string) => void
-  setLocationMenuOpen: (open: boolean) => void
-}
-
-/** Child of `AnimatePresence` — `usePresence` flips off as soon as exit starts so hit targets don’t block the app. */
-function LocationCityPickerCurtain({
-  curtainId,
-  titleId,
-  searchId,
-  listboxId,
-  triggerId,
-  reduceMotion,
-  locationCurtainRef,
-  locationSearchInputRef,
-  locationSearchQuery,
-  setLocationSearchQuery,
-  filteredRegions,
-  locationCityId,
-  setLocationCityId,
-  setLocationMenuOpen,
-}: LocationCityPickerCurtainProps) {
-  const [isPresent] = usePresence()
-  const pointerEvents = isPresent ? 'auto' : 'none'
-
-  return (
-    <motion.div
-      ref={locationCurtainRef}
-      id={curtainId}
-      className="feed-location-curtain"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby={titleId}
-      initial={{ opacity: reduceMotion ? 1 : 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: reduceMotion ? 1 : 0 }}
-      transition={{ duration: reduceMotion ? 0 : 0.22 }}
-    >
-      <motion.button
-        type="button"
-        className="feed-location-curtain__backdrop"
-        aria-label="Close city picker"
-        style={{ pointerEvents }}
-        initial={{ opacity: reduceMotion ? 1 : 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: reduceMotion ? 1 : 0 }}
-        transition={{ duration: reduceMotion ? 0 : 0.2 }}
-        onClick={() => setLocationMenuOpen(false)}
-      />
-      <motion.div
-        className="feed-location-curtain__panel"
-        style={{ pointerEvents }}
-        initial={{ y: reduceMotion ? 0 : '-100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: reduceMotion ? 0 : '-100%' }}
-        transition={{
-          duration: reduceMotion ? 0 : 0.34,
-          ease: [0.32, 0.72, 0, 1],
-        }}
-      >
-        <header className="feed-location-curtain__header">
-          <h2 id={titleId} className="feed-location-curtain__title">
-            Choose a city
-          </h2>
-          <button
-            type="button"
-            className="feed-location-curtain__close"
-            onClick={() => setLocationMenuOpen(false)}
-            aria-label="Close"
-          >
-            <X size={20} strokeWidth={2.25} aria-hidden />
-          </button>
-        </header>
-
-        <div className="feed-location-curtain__search-wrap" role="presentation">
-          <input
-            ref={locationSearchInputRef}
-            id={searchId}
-            type="search"
-            className="feed-filter-menu-search feed-location-curtain__search"
-            placeholder="Search cities or regions…"
-            value={locationSearchQuery}
-            onChange={(e) => setLocationSearchQuery(e.target.value)}
-            aria-label="Search cities and regions"
-            autoComplete="off"
-            onKeyDown={(e) => {
-              e.stopPropagation()
-            }}
-          />
-        </div>
-
-        <div
-          className="feed-location-curtain__scroll"
-          id={listboxId}
-          role="listbox"
-          aria-labelledby={triggerId}
-        >
-          {filteredRegions.length === 0 ? (
-            <p className="feed-location-curtain__empty">No cities match</p>
-          ) : (
-            filteredRegions.map((region) => (
-              <section
-                key={region.id}
-                className="feed-location-curtain__section"
-                aria-labelledby={`${PICKER_DOM_ID}-region-${region.id}`}
-              >
-                <h3
-                  className="feed-location-curtain__region-heading"
-                  id={`${PICKER_DOM_ID}-region-${region.id}`}
-                >
-                  {displayRegionHeading(region.label)}
-                </h3>
-                <ul className="feed-location-curtain__chip-row">
-                  {region.cities.map((city) => (
-                    <li key={city.id} role="presentation" className="feed-location-curtain__chip-item">
-                      <button
-                        type="button"
-                        className={
-                          city.id === locationCityId
-                            ? 'feed-location-curtain__chip is-active'
-                            : 'feed-location-curtain__chip'
-                        }
-                        role="option"
-                        aria-selected={city.id === locationCityId}
-                        onClick={() => {
-                          setLocationCityId(city.id)
-                          setLocationMenuOpen(false)
-                        }}
-                      >
-                        {city.name}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ))
-          )}
-        </div>
-      </motion.div>
-    </motion.div>
-  )
-}
-
+/** ── Trigger button only — sheet is rendered by the parent via createPortal ── */
 export type LocationCityPickerControlProps = {
-  /** Class names for the trigger button (e.g. ecf-chip-btn) */
   triggerClassName: string
-  /** Optional class on the wrapper around the trigger */
   wrapClassName?: string
+  onOpen: () => void
 }
 
 export function LocationCityPickerControl({
   triggerClassName,
   wrapClassName,
+  onOpen,
 }: LocationCityPickerControlProps) {
-  const reduceMotion = useReducedMotion()
   const locationCityId = useAppState((s) => s.feedLocationCityId)
+  const locationLabel  = getLocationCityById(locationCityId)?.name ?? 'Singapore'
+  const wrapClass      = wrapClassName ?? 'feed-filter-wrap'
+
+  return (
+    <div className={wrapClass}>
+      <button
+        type="button"
+        className={triggerClassName}
+        aria-haspopup="dialog"
+        aria-label={`Location: ${locationLabel}. Choose city`}
+        onClick={onOpen}
+      >
+        <MapPin className="feed-filter-pill-icon feed-filter-pill-icon--pin" size={16} strokeWidth={2.25} aria-hidden />
+        <span>{locationLabel}</span>
+        <Search className="feed-filter-pill-search-hint" size={14} strokeWidth={2.25} aria-hidden />
+        <ChevronDown className="feed-filter-pill-chevron" size={14} strokeWidth={2.25} aria-hidden />
+      </button>
+    </div>
+  )
+}
+
+/** ── Sheet content — rendered by parent via createPortal inside AnimatePresence ── */
+const PICKER_DOM_ID = 'discover'
+
+function displayRegionHeading(label: string) {
+  return label.replace(/\s*&\s*/g, ' ').trim()
+}
+
+/** Short version used in the dot-nav so long names fit comfortably */
+function shortRegionLabel(label: string): string {
+  const full = displayRegionHeading(label)
+  return full
+    .replace(/^North\s+/i, 'N. ')
+    .replace(/^South\s+/i, 'S. ')
+    .replace(/^Asia\s+Pacific$/i, 'Asia Pac.')
+    .replace(/^Central\s+/i, 'C. ')
+    .replace(/^Middle\s+East/i, 'Mid. East')
+}
+
+type CityPickerSheetProps = {
+  onClose: () => void
+}
+
+export function CityPickerSheet({ onClose }: CityPickerSheetProps) {
+  const locationCityId    = useAppState((s) => s.feedLocationCityId)
   const setLocationCityId = useAppState((s) => s.setFeedLocationCityId)
-  const locationCity = getLocationCityById(locationCityId)
-  const locationLabel = locationCity?.name ?? 'Singapore'
+  const [query, setQuery] = useState('')
+  const listboxId         = `${PICKER_DOM_ID}-location-listbox`
+  const titleId           = `${PICKER_DOM_ID}-location-curtain-title`
 
-  const [locationMenuOpen, setLocationMenuOpen] = useState(false)
-  const [locationSearchQuery, setLocationSearchQuery] = useState('')
-  const locationWrapRef = useRef<HTMLDivElement>(null)
-  const locationCurtainRef = useRef<HTMLDivElement>(null)
-  const locationSearchInputRef = useRef<HTMLInputElement>(null)
-
-  const triggerId = `${PICKER_DOM_ID}-location-trigger`
-  const curtainId = `${PICKER_DOM_ID}-location-curtain`
-  const titleId = `${PICKER_DOM_ID}-location-curtain-title`
-  const searchId = `${PICKER_DOM_ID}-location-search`
-  const listboxId = `${PICKER_DOM_ID}-location-listbox`
-
-  const filteredLocationRegions = useMemo(
-    () => filterLocationRegionsByQuery(locationSearchQuery),
-    [locationSearchQuery],
+  const filteredRegions = useMemo(
+    () => filterLocationRegionsByQuery(query),
+    [query],
   )
 
-  useEffect(() => {
-    if (!locationMenuOpen) {
-      setLocationSearchQuery('')
-      return
+  // ── Scroll-spy (same pattern as filter sheet) ──────────────────────────────
+  const [activeIdx, setActiveIdx] = useState(0)
+  const scrollRef   = useRef<HTMLDivElement>(null)
+  const sectionRefs = useRef<(HTMLElement | null)[]>([])
+
+  // Reset active index when query changes (regions list may shrink/reorder)
+  useMemo(() => { setActiveIdx(0) }, [query])
+
+  const cascadeTargetRef = useRef(0)
+  const cascadeTimers    = useRef<ReturnType<typeof setTimeout>[]>([])
+  const activeIdxRef     = useRef(0)
+
+  const cascadeTo = useCallback((target: number) => {
+    if (cascadeTargetRef.current === target) return
+    cascadeTimers.current.forEach(clearTimeout)
+    cascadeTimers.current = []
+    cascadeTargetRef.current = target
+
+    const from = activeIdxRef.current
+    if (target === from) return
+
+    const dir   = target > from ? 1 : -1
+    const steps: number[] = []
+    for (let i = from + dir; dir > 0 ? i <= target : i >= target; i += dir) {
+      steps.push(i)
     }
-    const id = requestAnimationFrame(() => locationSearchInputRef.current?.focus())
-    return () => cancelAnimationFrame(id)
-  }, [locationMenuOpen])
+    steps.forEach((idx, i) => {
+      const t = setTimeout(() => {
+        activeIdxRef.current = idx
+        setActiveIdx(idx)
+      }, (i + 1) * 220)
+      cascadeTimers.current.push(t)
+    })
+  }, [])
 
-  useEffect(() => {
-    if (!locationMenuOpen) return
+  const handleScroll = useCallback(() => {
+    const body = scrollRef.current
+    if (!body) return
+    const maxScroll = body.scrollHeight - body.clientHeight
+    if (maxScroll <= 0) return
+    const progress = body.scrollTop / maxScroll
+    const idx = Math.min(
+      Math.floor(progress * filteredRegions.length),
+      filteredRegions.length - 1,
+    )
+    cascadeTo(idx)
+  }, [filteredRegions.length, cascadeTo])
 
-    const onPointerDown = (e: MouseEvent | TouchEvent) => {
-      const t = e.target as Node
-      if (
-        locationWrapRef.current &&
-        !locationWrapRef.current.contains(t) &&
-        !locationCurtainRef.current?.contains(t)
-      ) {
-        setLocationMenuOpen(false)
-      }
+  const scrollToRegion = useCallback((idx: number) => {
+    const el = sectionRefs.current[idx]
+    if (el && scrollRef.current) {
+      scrollRef.current.scrollTo({ top: el.offsetTop, behavior: 'smooth' })
     }
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setLocationMenuOpen(false)
-    }
-
-    document.addEventListener('mousedown', onPointerDown)
-    document.addEventListener('touchstart', onPointerDown, { passive: true })
-    document.addEventListener('keydown', onKeyDown)
-    return () => {
-      document.removeEventListener('mousedown', onPointerDown)
-      document.removeEventListener('touchstart', onPointerDown)
-      document.removeEventListener('keydown', onKeyDown)
-    }
-  }, [locationMenuOpen])
-
-  const wrapClass = wrapClassName ?? 'feed-filter-wrap'
+  }, [])
 
   return (
     <>
-      <div className={wrapClass} ref={locationWrapRef}>
-        <button
-          type="button"
-          className={triggerClassName}
-          aria-expanded={locationMenuOpen}
-          aria-haspopup="dialog"
-          aria-controls={curtainId}
-          id={triggerId}
-          aria-label={`Location: ${locationLabel}. Choose city`}
-          onClick={() => setLocationMenuOpen((open) => !open)}
-        >
-          <MapPin className="feed-filter-pill-icon feed-filter-pill-icon--pin" size={16} strokeWidth={2.25} aria-hidden />
-          <span>{locationLabel}</span>
-          <Search className="feed-filter-pill-search-hint" size={14} strokeWidth={2.25} aria-hidden />
-          <ChevronDown className="feed-filter-pill-chevron" size={14} strokeWidth={2.25} aria-hidden />
+      <div className="lcp-handle" aria-hidden />
+
+      {/* Section indicator dots — same as ecf-filter-nav */}
+      {filteredRegions.length > 1 && (
+        <div className="ecf-filter-nav" aria-hidden>
+          {filteredRegions.map((region, idx) => (
+            <button
+              key={region.id}
+              type="button"
+              className={`ecf-filter-nav-dot${activeIdx === idx ? ' ecf-filter-nav-dot--active' : ''}`}
+              onClick={() => scrollToRegion(idx)}
+              tabIndex={-1}
+            >
+              <span className="ecf-filter-nav-label">
+                {shortRegionLabel(region.label)}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      <header className="lcp-header">
+        <h2 id={titleId} className="lcp-title">Choose a city</h2>
+        <button type="button" className="lcp-close" onClick={onClose} aria-label="Close">
+          <X size={18} strokeWidth={2.5} aria-hidden />
         </button>
+      </header>
+
+      <div className="lcp-search-wrap" role="presentation">
+        <input
+          type="search"
+          className="feed-filter-menu-search lcp-search"
+          placeholder="Search cities or regions…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          aria-label="Search cities and regions"
+          autoComplete="off"
+          onKeyDown={(e) => e.stopPropagation()}
+        />
       </div>
 
-      {createPortal(
-        <AnimatePresence>
-          {locationMenuOpen ? (
-            <LocationCityPickerCurtain
-              key={`${PICKER_DOM_ID}-location-curtain`}
-              curtainId={curtainId}
-              titleId={titleId}
-              searchId={searchId}
-              listboxId={listboxId}
-              triggerId={triggerId}
-              reduceMotion={reduceMotion}
-              locationCurtainRef={locationCurtainRef}
-              locationSearchInputRef={locationSearchInputRef}
-              locationSearchQuery={locationSearchQuery}
-              setLocationSearchQuery={setLocationSearchQuery}
-              filteredRegions={filteredLocationRegions}
-              locationCityId={locationCityId}
-              setLocationCityId={setLocationCityId}
-              setLocationMenuOpen={setLocationMenuOpen}
-            />
-          ) : null}
-        </AnimatePresence>,
-        portalTarget(),
-      )}
+      <div
+        className="lcp-scroll"
+        id={listboxId}
+        role="listbox"
+        ref={scrollRef}
+        onScroll={handleScroll}
+      >
+        {filteredRegions.length === 0 ? (
+          <p className="lcp-empty">No cities match</p>
+        ) : (
+          filteredRegions.map((region, idx) => (
+            <section
+              key={region.id}
+              className="lcp-region"
+              aria-labelledby={`${PICKER_DOM_ID}-region-${region.id}`}
+              ref={(el) => { sectionRefs.current[idx] = el }}
+            >
+              <h3
+                className="lcp-region-heading"
+                id={`${PICKER_DOM_ID}-region-${region.id}`}
+              >
+                {displayRegionHeading(region.label)}
+              </h3>
+              <ul className="lcp-chip-row">
+                {region.cities.map((city) => (
+                  <li key={city.id} role="presentation">
+                    <button
+                      type="button"
+                      className={`feed-location-curtain__chip${city.id === locationCityId ? ' is-active' : ''}`}
+                      role="option"
+                      aria-selected={city.id === locationCityId}
+                      onClick={() => {
+                        setLocationCityId(city.id)
+                      }}
+                    >
+                      {city.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))
+        )}
+      </div>
     </>
   )
 }

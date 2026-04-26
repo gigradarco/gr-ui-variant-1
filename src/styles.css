@@ -395,127 +395,145 @@ body {
    Must sit above `.ecf-header` (z-index 20) and `.ecf-filter-backdrop` (50).
    Wrapper uses pointer-events: none so exit animations cannot leave an invisible
    full-screen hit target; only backdrop + panel capture input. */
-.feed-location-curtain {
-  position: absolute;
-  inset: 0;
-  z-index: 60;
+/* ── City picker — shares ecf-filter-backdrop for the overlay ── */
+
+/* legacy curtain outer wrapper — no longer rendered, kept for safety */
+.feed-location-curtain { display: contents; }
+
+/* ── lcp-sheet: same as ecf-filter-sheet ── */
+.lcp-sheet {
+  background: #121212;
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
+  padding: 8px 18px calc(20px + env(safe-area-inset-bottom, 0px));
+  border: 1px solid #252525;
+  border-bottom: none;
+  height: min(58vh, 480px);
   display: flex;
   flex-direction: column;
   min-height: 0;
-  pointer-events: none;
 }
 
-.feed-location-curtain__backdrop {
-  position: absolute;
-  inset: 0;
-  border: 0;
-  padding: 0;
-  margin: 0;
-  cursor: pointer;
-  pointer-events: auto;
-  background: rgba(0, 0, 0, 0.52);
-  -webkit-tap-highlight-color: transparent;
+.theme-light .lcp-sheet {
+  background: var(--card);
+  border-color: var(--stroke);
 }
 
-.theme-light .feed-location-curtain__backdrop {
-  background: rgba(20, 24, 35, 0.4);
+.lcp-handle {
+  width: 36px;
+  height: 3px;
+  background: #3a3a3a;
+  border-radius: 2px;
+  margin: 4px auto 10px;
+  flex-shrink: 0;
 }
 
-.feed-location-curtain__panel {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
-  width: 100%;
-  pointer-events: auto;
-  background: var(--bg);
-  box-shadow: 0 28px 64px rgba(0, 0, 0, 0.42);
+.theme-light .lcp-handle {
+  background: var(--stroke);
 }
 
-.feed-location-curtain__header {
+.lcp-header {
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: calc(10px + env(safe-area-inset-top, 0px)) max(36px, env(safe-area-inset-right, 0px)) 12px
-    max(36px, env(safe-area-inset-left, 0px));
-  border-bottom: 1px solid var(--stroke);
+  padding: 0 0 14px;
+  border-bottom: 1px solid #252525;
 }
 
-.feed-location-curtain__title {
+.theme-light .lcp-header {
+  border-bottom-color: var(--stroke);
+}
+
+.lcp-title {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 1.35rem;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  color: #fff;
 }
 
-.feed-location-curtain__close {
+.theme-light .lcp-title {
+  color: var(--text);
+}
+
+.lcp-close {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   padding: 0;
-  border: 1px solid var(--stroke);
+  border: 1px solid #2e2e2e;
   border-radius: 999px;
-  background: color-mix(in oklab, var(--card) 90%, var(--bg));
-  color: var(--text);
+  background: #1e1e1e;
+  color: #ccc;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition:
-    border-color 0.15s ease,
-    background 0.15s ease;
+  transition: border-color 0.15s, background 0.15s;
 }
 
-.feed-location-curtain__close:hover {
-  border-color: color-mix(in oklab, var(--primary) 40%, var(--stroke));
-  background: color-mix(in oklab, var(--primary) 10%, var(--card));
+.lcp-close:hover {
+  border-color: color-mix(in oklab, var(--primary) 40%, #2e2e2e);
+  background: color-mix(in oklab, var(--primary) 12%, #1e1e1e);
 }
 
-.feed-location-curtain__search-wrap {
+.theme-light .lcp-close {
+  border-color: var(--stroke);
+  background: var(--card);
+  color: var(--text);
+}
+
+.lcp-search-wrap {
   flex-shrink: 0;
-  padding: 12px max(36px, env(safe-area-inset-right, 0px)) 10px max(36px, env(safe-area-inset-left, 0px));
-  border-bottom: 1px solid color-mix(in oklab, var(--stroke) 85%, transparent);
+  padding: 12px 0 10px;
+  border-bottom: 1px solid #252525;
 }
 
-.feed-location-curtain__search {
+.theme-light .lcp-search-wrap {
+  border-bottom-color: var(--stroke);
+}
+
+.lcp-search {
   border-radius: 12px;
 }
 
-.feed-location-curtain__scroll {
+.lcp-scroll {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  padding: 4px max(36px, env(safe-area-inset-right, 0px)) calc(20px + env(safe-area-inset-bottom, 0px))
-    max(36px, env(safe-area-inset-left, 0px));
+  padding: 4px 0 calc(20px + env(safe-area-inset-bottom, 0px));
 }
 
-.feed-location-curtain__section {
+.lcp-region {
   margin: 0 0 22px;
 }
 
-.feed-location-curtain__section:last-child {
+.lcp-region:last-child {
   margin-bottom: 8px;
 }
 
-.feed-location-curtain__region-heading {
+.lcp-region-heading {
   margin: 0;
   padding: 6px 0 10px;
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--text);
-  border-bottom: 1px solid color-mix(in oklab, var(--stroke) 80%, transparent);
+  color: #6a6a6a;
+  border-bottom: 1px solid #252525;
 }
 
-.feed-location-curtain__chip-row {
+.theme-light .lcp-region-heading {
+  color: var(--muted);
+  border-bottom-color: var(--stroke);
+}
+
+.lcp-chip-row {
   list-style: none;
   margin: 0;
   padding: 12px 0 0;
@@ -525,27 +543,17 @@ body {
   align-items: center;
 }
 
-.feed-location-curtain__chip-item {
-  flex: 0 1 auto;
-  min-width: 0;
-  margin: 0;
-  padding: 0;
-}
-
 .feed-location-curtain__chip {
   display: inline-flex;
   align-items: center;
   max-width: 100%;
-  padding: 10px 14px;
+  padding: 9px 16px;
   border-radius: 999px;
-  border: 1px solid var(--stroke);
-  background: color-mix(in oklab, var(--card) 92%, var(--bg));
-  color: var(--text);
-  /* ≥16px: comfortable taps + no iOS focus zoom */
-  font-size: max(16px, 0.88rem);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  line-height: 1.2;
+  border: 1px solid #2a2a2a;
+  background: rgba(255, 255, 255, 0.05);
+  color: #9a9a9a;
+  font-size: 13px;
+  font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -558,23 +566,41 @@ body {
 }
 
 .feed-location-curtain__chip:hover {
-  border-color: color-mix(in oklab, var(--primary) 38%, var(--stroke));
-  background: color-mix(in oklab, var(--primary) 10%, var(--card));
+  border-color: #444;
+  color: #ccc;
 }
 
 .feed-location-curtain__chip.is-active {
-  border-color: color-mix(in oklab, var(--primary) 55%, var(--stroke));
-  color: var(--primary);
-  background: color-mix(in oklab, var(--primary) 14%, transparent);
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  font-weight: 700;
+}
+
+.theme-light .feed-location-curtain__chip {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: var(--stroke);
+  color: var(--muted);
+}
+
+.theme-light .feed-location-curtain__chip:hover {
+  border-color: color-mix(in oklab, var(--primary) 35%, var(--stroke));
+  color: var(--text);
 }
 
 .theme-light .feed-location-curtain__chip.is-active {
-  color: var(--primary-soft);
-  border-color: color-mix(in oklab, var(--primary-soft) 50%, var(--stroke));
-  background: color-mix(in oklab, var(--primary-soft) 12%, transparent);
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
 }
 
-.feed-location-curtain__empty {
+.theme-light .feed-location-curtain__chip.is-active:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.lcp-empty {
   margin: 0;
   padding: 36px max(36px, env(safe-area-inset-right, 0px)) 24px max(36px, env(safe-area-inset-left, 0px));
   text-align: center;
@@ -1523,6 +1549,12 @@ body {
   background: var(--bg-elev);
   border-top-color: var(--stroke);
   box-shadow: 0 -8px 28px rgba(20, 24, 35, 0.06);
+}
+
+.theme-light .topbar {
+  background: var(--bg-elev);
+  border-bottom-color: var(--stroke);
+  box-shadow: 0 4px 16px rgba(20, 24, 35, 0.06);
 }
 
 .nav-item {
@@ -11818,6 +11850,36 @@ button.taste-tag:focus-visible {
   background: linear-gradient(to bottom, rgba(8, 8, 8, 0.98) 65%, transparent);
 }
 
+.ecf-header-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ecf-map-view-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 13px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.07);
+  color: #d0d0d0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.ecf-map-view-btn:hover {
+  border-color: color-mix(in oklab, var(--primary) 45%, rgba(255, 255, 255, 0.2));
+  background: color-mix(in oklab, var(--primary) 12%, rgba(255, 255, 255, 0.08));
+  color: var(--primary-soft);
+}
+
 .ecf-header-top {
   display: flex;
   align-items: center;
@@ -11867,6 +11929,8 @@ button.taste-tag:focus-visible {
   gap: 6px;
   overflow-x: auto;
   scrollbar-width: none;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .ecf-chip-row::-webkit-scrollbar {
@@ -11950,15 +12014,15 @@ button.taste-tag:focus-visible {
 }
 
 .ecf-dot {
-  width: 3px;
-  height: 4px;
-  border-radius: 2px;
+  width: 4px;
+  height: 6px;
+  border-radius: 3px;
   background: #222;
   transition: all 0.3s;
 }
 
 .ecf-dot--active {
-  height: 18px;
+  height: 24px;
   background: var(--primary);
 }
 
@@ -12105,11 +12169,15 @@ button.taste-tag:focus-visible {
 }
 
 .ecf-meta-label {
-  color: #5a5a5a;
+  color: #999;
   font-size: 10px;
   margin: 0 0 4px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+
+.theme-light .ecf-meta-label {
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .ecf-meta-value {
@@ -12134,9 +12202,9 @@ button.taste-tag:focus-visible {
   border-radius: 6px;
   padding: 14px 0;
   color: #fff;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.10em;
   text-transform: uppercase;
   cursor: pointer;
   transition:
@@ -12177,9 +12245,9 @@ button.taste-tag:focus-visible {
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.06);
   color: rgba(255, 255, 255, 0.85);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.10em;
   text-transform: uppercase;
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s, background 0.15s;
@@ -12205,11 +12273,11 @@ button.taste-tag:focus-visible {
 .ecf-icon-btn {
   width: 46px;
   height: 46px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 6px;
   cursor: pointer;
-  color: #444;
+  color: rgba(255, 255, 255, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12222,14 +12290,26 @@ button.taste-tag:focus-visible {
 }
 
 .ecf-icon-btn:hover {
-  border-color: color-mix(in oklab, var(--primary) 45%, rgba(255, 255, 255, 0.2));
+  border-color: color-mix(in oklab, var(--primary) 55%, rgba(255, 255, 255, 0.3));
   color: var(--primary-soft);
-  background: color-mix(in oklab, var(--primary) 14%, rgba(255, 255, 255, 0.08));
+  background: color-mix(in oklab, var(--primary) 18%, rgba(255, 255, 255, 0.12));
 }
 
 .ecf-icon-btn:focus-visible {
   outline: 2px solid color-mix(in oklab, var(--primary) 55%, transparent);
   outline-offset: 2px;
+}
+
+.theme-light .ecf-icon-btn {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.theme-light .ecf-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #fff;
 }
 
 /* Empty state */
@@ -12251,7 +12331,7 @@ button.taste-tag:focus-visible {
 }
 
 .ecf-empty-text {
-  color: #6a6a6a;
+  color: #ccc;
   font-size: 15px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -12261,10 +12341,10 @@ button.taste-tag:focus-visible {
 }
 
 .ecf-empty-text span {
-  color: #9a9a9a;
+  color: #888;
   text-transform: none;
   letter-spacing: 0;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .ecf-empty-clear {
@@ -12333,7 +12413,7 @@ button.taste-tag:focus-visible {
   padding: 8px 18px calc(20px + env(safe-area-inset-bottom, 0px));
   border: 1px solid #252525;
   border-bottom: none;
-  max-height: min(88vh, 640px);
+  height: min(58vh, 480px);
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -12344,8 +12424,66 @@ button.taste-tag:focus-visible {
   height: 3px;
   background: #3a3a3a;
   border-radius: 2px;
-  margin: 4px auto 14px;
+  margin: 4px auto 10px;
   flex-shrink: 0;
+}
+
+/* ── Section scroll-spy indicator ── */
+.ecf-filter-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  margin: 0 0 12px;
+  flex-shrink: 0;
+}
+
+.ecf-filter-nav-dot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+}
+
+/* the dot itself */
+.ecf-filter-nav-dot::before {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3a3a3a;
+  transition: background 0.2s, transform 0.2s;
+  flex-shrink: 0;
+}
+
+.ecf-filter-nav-dot--active::before {
+  background: var(--primary, #e8470a);
+  transform: scale(1.35);
+}
+
+/* label appears only on active dot */
+.ecf-filter-nav-label {
+  font-size: 9px;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary, #e8470a);
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  transition: max-width 0.25s ease, opacity 0.2s;
+}
+
+.ecf-filter-nav-dot--active .ecf-filter-nav-label {
+  max-width: 120px;
+  opacity: 1;
 }
 
 .ecf-filter-title {
@@ -12394,16 +12532,19 @@ button.taste-tag:focus-visible {
 }
 
 .ecf-filter-chip {
+  display: inline-flex;
+  align-items: center;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid #2a2a2a;
-  border-radius: 8px;
-  padding: 9px 14px;
+  border-radius: 999px;
+  padding: 9px 16px;
   cursor: pointer;
   color: #9a9a9a;
-  font-size: 12px;
-  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 13px;
   font-weight: 500;
-  transition: all 0.15s;
+  white-space: nowrap;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .ecf-filter-chip:hover {
@@ -12436,29 +12577,56 @@ button.taste-tag:focus-visible {
 /* ─── EventCardFeed – light mode overrides ────────────────────────────────── */
 
 /* No gradient bleed — header is fully transparent, chips carry themselves */
+.theme-light .ecf-root {
+  background: var(--bg);
+}
+
 .theme-light .ecf-header {
   background: transparent;
 }
 
-/* Chips: frosted pill so they stay readable on the fading gradient */
+/* Map view button in light mode */
+.theme-light .ecf-map-view-btn {
+  border-color: rgba(0, 0, 0, 0.22);
+  background: #fff;
+  color: #111;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.theme-light .ecf-map-view-btn:hover {
+  background: #f4f4f4;
+  border-color: rgba(0, 0, 0, 0.32);
+}
+
+/* Chips: solid white pill, strong border and dark text in light mode */
 .theme-light .ecf-chip-btn {
-  background: rgba(255, 255, 255, 0.82);
-  border-color: rgba(20, 24, 35, 0.18);
-  color: #141823;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: #fff;
+  border-color: rgba(0, 0, 0, 0.22);
+  color: #111;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .theme-light .ecf-chip-btn:hover {
-  background: rgba(255, 255, 255, 0.96);
+  background: #f4f4f4;
+  border-color: rgba(0, 0, 0, 0.32);
 }
 
 .theme-light .ecf-chip-btn--active {
-  background: rgba(197, 59, 31, 0.1);
-  border-color: rgba(197, 59, 31, 0.32);
+  background: rgba(197, 59, 31, 0.08);
+  border-color: rgba(197, 59, 31, 0.45);
   color: var(--primary);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Full-opacity icons in light mode */
+.theme-light .ecf-chip-btn .feed-filter-pill-search-hint,
+.theme-light .ecf-chip-btn .feed-filter-pill-chevron,
+.theme-light .ecf-chip-btn .feed-filter-pill-icon,
+.theme-light .ecf-chip-btn .ecf-chip-filter-icon {
+  opacity: 1;
 }
 
 /* Much more vivid images in light mode */
@@ -12487,11 +12655,11 @@ button.taste-tag:focus-visible {
 
 /* Empty state */
 .theme-light .ecf-empty-text {
-  color: var(--muted);
+  color: var(--text);
 }
 
 .theme-light .ecf-empty-text span {
-  color: var(--text);
+  color: var(--muted);
 }
 
 /* Filter bottom sheet */
@@ -12502,6 +12670,18 @@ button.taste-tag:focus-visible {
 
 .theme-light .ecf-filter-handle {
   background: var(--stroke);
+}
+
+.theme-light .ecf-filter-nav-dot::before {
+  background: var(--stroke);
+}
+
+.theme-light .ecf-filter-nav-dot--active::before {
+  background: var(--primary);
+}
+
+.theme-light .ecf-filter-nav-dot--active .ecf-filter-nav-label {
+  color: var(--primary);
 }
 
 .theme-light .ecf-filter-title {
@@ -12521,4 +12701,24 @@ button.taste-tag:focus-visible {
 .theme-light .ecf-filter-chip:hover {
   border-color: color-mix(in oklab, var(--primary) 40%, var(--stroke));
   color: var(--text);
+}
+
+.theme-light .ecf-filter-chip--active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.theme-light .ecf-filter-chip--active:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+/*
+ * Vite dev HMR: error card lives in shadow DOM with rounded `.window` (see vite/dist/client).
+ * Flatten radius so the overlay is not a “floating card” on top of the app frame.
+ */
+vite-error-overlay::part(window) {
+  border-radius: 0;
 }

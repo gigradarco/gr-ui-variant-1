@@ -1,47 +1,59 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { Heart, Info, Share2, SlidersHorizontal } from 'lucide-react'
-import { LocationCityPickerControl } from '../../components/LocationCityPickerControl'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, useCallback } from 'react'
+import { createPortal } from 'react-dom'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Heart, Info, Map, Share2, SlidersHorizontal } from 'lucide-react'
+import { LocationCityPickerControl, CityPickerSheet } from '../../components/LocationCityPickerControl'
 import { useAppState } from '../../store/appStore'
 import type { EventItem } from '../../types'
 
-// ─── Genre → visual accent mapping ───────────────────────────────────────────
-const GENRE_ACCENT: Record<string, string> = {
-  Techno: '#ff4500',
-  'Club Nights': '#00aaff',
-  Jazz: '#00cc66',
-  Underground: '#cc00ff',
-  Electronic: '#ff6600',
-  'Cocktail Bar': '#ffaa00',
-  'Live Music': '#ff3d00',
-  'Hip-Hop': '#ffcc00',
-  House: '#ff6699',
+// ─── Category → visual accent mapping (keyed by exploreCategoryId) ───────────
+const CATEGORY_ACCENT: Record<string, string> = {
+  'live-music':  '#ff3d00',
+  'club-nights': '#00aaff',
+  'jazz-blues':  '#00cc66',
+  underground:   '#cc00ff',
+  arts:          '#00e5cc',
+  food:          '#ffaa00',
+  popups:        '#0d9488',
+  festivals:     '#9333ea',
 }
 const DEFAULT_ACCENT = '#ff3d00'
 
-const GENRE_BG: Record<string, string> = {
-  Techno: '#1a0a00',
-  'Club Nights': '#000d1a',
-  Jazz: '#000a05',
-  Underground: '#0d0010',
-  Electronic: '#0d0800',
-  'Cocktail Bar': '#1a0e00',
-  'Live Music': '#0d0500',
-  'Hip-Hop': '#0d0d00',
-  House: '#1a000d',
+const CATEGORY_BG: Record<string, string> = {
+  'live-music':  '#0d0500',
+  'club-nights': '#000d1a',
+  'jazz-blues':  '#000a05',
+  underground:   '#0d0010',
+  arts:          '#00100e',
+  food:          '#1a0e00',
+  popups:        '#001210',
+  festivals:     '#0d0020',
 }
 const DEFAULT_BG = '#0a0a0a'
 
-const GENRES_FILTER = [
-  'All',
-  'Techno',
-  'Club Nights',
-  'Jazz',
-  'Underground',
-  'Live Music',
-  'Electronic',
-  'Cocktail Bar',
+// Genre label → exploreCategoryId (for card visuals)
+const GENRE_TO_CATEGORY: Record<string, string> = {
+  Techno:        'club-nights',
+  'Club Nights': 'club-nights',
+  Jazz:          'jazz-blues',
+  Electronic:    'underground',
+  'Live Music':  'live-music',
+  'Cocktail Bar':'food',
+}
+
+const CATEGORIES_FILTER = [
+  { id: 'All',         label: 'All' },
+  { id: 'live-music',  label: 'Live Music' },
+  { id: 'club-nights', label: 'Club Nights' },
+  { id: 'jazz-blues',  label: 'Jazz & Blues' },
+  { id: 'underground', label: 'Underground' },
+  { id: 'arts',        label: 'Arts & Culture' },
+  { id: 'food',        label: 'Food & Drink' },
+  { id: 'popups',      label: 'Pop-ups' },
+  { id: 'festivals',   label: 'Festivals' },
 ]
 
+const DATE_FILTER = ['All', 'Tonight', 'Tomorrow', 'This Week', 'This Month', 'Next 90 Days'] as const
 const TIME_FILTER = ['All', 'Before 9PM', '9PM-11PM', 'After 11PM'] as const
 const AREA_FILTER = [
   'All',
@@ -54,14 +66,16 @@ const AREA_FILTER = [
 const PRICE_FILTER = ['All', 'Free', 'Under $20', '$20-$50', '$50+'] as const
 
 export type EventFeedFilters = {
-  genre: string
+  category: string
+  date: (typeof DATE_FILTER)[number]
   time: (typeof TIME_FILTER)[number]
   area: (typeof AREA_FILTER)[number]
   price: (typeof PRICE_FILTER)[number]
 }
 
 const DEFAULT_FILTERS: EventFeedFilters = {
-  genre: 'All',
+  category: 'All',
+  date: 'All',
   time: 'All',
   area: 'All',
   price: 'All',
@@ -82,7 +96,7 @@ function parsePriceAmount(ticketPrice: string): number | null {
 }
 
 function eventMatchesFilters(event: EventItem, f: EventFeedFilters): boolean {
-  if (f.genre !== 'All' && event.genre !== f.genre) return false
+  if (f.category !== 'All' && event.exploreCategoryId !== f.category) return false
 
   if (f.area !== 'All' && event.district !== f.area) return false
 
@@ -121,7 +135,8 @@ function eventMatchesFilters(event: EventItem, f: EventFeedFilters): boolean {
 
 function countActiveFilters(f: EventFeedFilters): number {
   let n = 0
-  if (f.genre !== 'All') n += 1
+  if (f.category !== 'All') n += 1
+  if (f.date !== 'All') n += 1
   if (f.time !== 'All') n += 1
   if (f.area !== 'All') n += 1
   if (f.price !== 'All') n += 1
@@ -129,11 +144,13 @@ function countActiveFilters(f: EventFeedFilters): number {
 }
 
 function getAccent(genre: string) {
-  return GENRE_ACCENT[genre] ?? DEFAULT_ACCENT
+  const catId = GENRE_TO_CATEGORY[genre] ?? genre
+  return CATEGORY_ACCENT[catId] ?? DEFAULT_ACCENT
 }
 
 function getBg(genre: string) {
-  return GENRE_BG[genre] ?? DEFAULT_BG
+  const catId = GENRE_TO_CATEGORY[genre] ?? genre
+  return CATEGORY_BG[catId] ?? DEFAULT_BG
 }
 
 function getTag(event: EventItem): string {
@@ -274,6 +291,9 @@ function EventCard({ event, isGoing, isSaved, onGoing, onSave, onMoreDetails }: 
 }
 
 // ─── Filter bottom sheet ──────────────────────────────────────────────────────
+const FILTER_SECTIONS = ['Category', 'Date', 'Time', 'Area', 'Price'] as const
+type FilterSectionName = (typeof FILTER_SECTIONS)[number]
+
 type FilterSheetProps = {
   applied: EventFeedFilters
   onApply: (next: EventFeedFilters) => void
@@ -282,16 +302,75 @@ type FilterSheetProps = {
 
 function FilterSheet({ applied, onApply, onClose }: FilterSheetProps) {
   const [draft, setDraft] = useState<EventFeedFilters>(applied)
+  const [activeSection, setActiveSection] = useState<FilterSectionName>('Category')
+  const bodyRef = useRef<HTMLDivElement>(null)
+  const sectionRefs = useRef<Partial<Record<FilterSectionName, HTMLElement>>>({})
+  const activeSectionRef = useRef<FilterSectionName>('Category')
+  const cascadeTargetRef = useRef<FilterSectionName>('Category')
+  const cascadeTimers = useRef<ReturnType<typeof setTimeout>[]>([])
 
   useLayoutEffect(() => {
     setDraft(applied)
   }, [applied])
 
-  const chip = (
-    active: boolean,
-    label: string,
-    onClick: () => void,
-  ) => (
+  // Cascade to a target section one step at a time with 120 ms between each.
+  // Guards against continuous scroll events restarting mid-cascade by only
+  // acting when the target actually changes.
+  const cascadeTo = useCallback((target: FilterSectionName) => {
+    if (cascadeTargetRef.current === target) return   // already heading there
+
+    cascadeTimers.current.forEach(clearTimeout)
+    cascadeTimers.current = []
+    cascadeTargetRef.current = target
+
+    const fromIdx = FILTER_SECTIONS.indexOf(activeSectionRef.current)
+    const toIdx   = FILTER_SECTIONS.indexOf(target)
+    if (toIdx === fromIdx) return
+
+    const dir = toIdx > fromIdx ? 1 : -1
+    const steps: FilterSectionName[] = []
+    for (let i = fromIdx + dir; dir > 0 ? i <= toIdx : i >= toIdx; i += dir) {
+      steps.push(FILTER_SECTIONS[i])
+    }
+
+    steps.forEach((section, i) => {
+      const t = setTimeout(() => {
+        activeSectionRef.current = section
+        setActiveSection(section)
+      }, (i + 1) * 220)           // 220 ms per step so each section is clearly visible
+      cascadeTimers.current.push(t)
+    })
+  }, [])
+
+  useEffect(() => {
+    return () => cascadeTimers.current.forEach(clearTimeout)
+  }, [])
+
+  // Scroll-spy: divide the full scroll range into N equal zones, one per
+  // section. This guarantees every section (including Area and Price) gets its
+  // own slice regardless of how much scrollable content is below it.
+  const handleBodyScroll = useCallback(() => {
+    const body = bodyRef.current
+    if (!body) return
+
+    const maxScroll = body.scrollHeight - body.clientHeight
+    if (maxScroll <= 0) return
+
+    const progress = body.scrollTop / maxScroll                        // 0 → 1
+    const idx = Math.min(
+      Math.floor(progress * FILTER_SECTIONS.length),
+      FILTER_SECTIONS.length - 1,
+    )
+    cascadeTo(FILTER_SECTIONS[idx])
+  }, [cascadeTo])
+
+  const scrollToSection = useCallback((name: FilterSectionName) => {
+    const el = sectionRefs.current[name]
+    if (!el || !bodyRef.current) return
+    bodyRef.current.scrollTo({ top: el.offsetTop, behavior: 'smooth' })
+  }, [])
+
+  const chip = (active: boolean, label: string, onClick: () => void) => (
     <button
       key={label}
       type="button"
@@ -303,22 +382,73 @@ function FilterSheet({ applied, onApply, onClose }: FilterSheetProps) {
   )
 
   return (
-    <div className="ecf-filter-backdrop" onClick={onClose}>
-      <div className="ecf-filter-sheet" onClick={(e) => e.stopPropagation()}>
+    <motion.div
+      className="ecf-filter-backdrop"
+      onClick={onClose}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.22 }}
+    >
+      <motion.div
+        className="ecf-filter-sheet"
+        onClick={(e) => e.stopPropagation()}
+        initial={{ y: '100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '100%' }}
+        transition={{ duration: 0.32, ease: [0.32, 0.72, 0, 1] }}
+      >
         <div className="ecf-filter-handle" />
+
+        {/* Section indicator dots */}
+        <div className="ecf-filter-nav" aria-hidden>
+          {FILTER_SECTIONS.map((name) => (
+            <button
+              key={name}
+              type="button"
+              className={`ecf-filter-nav-dot${activeSection === name ? ' ecf-filter-nav-dot--active' : ''}`}
+              onClick={() => scrollToSection(name)}
+              tabIndex={-1}
+            >
+              <span className="ecf-filter-nav-label">{name}</span>
+            </button>
+          ))}
+        </div>
+
         <h2 className="ecf-filter-title">Filter</h2>
 
-        <div className="ecf-filter-body">
-          <section className="ecf-filter-section">
-            <p className="ecf-filter-section-label">Genre</p>
+        <div className="ecf-filter-body" ref={bodyRef} onScroll={handleBodyScroll}>
+          <section
+            className="ecf-filter-section"
+            data-section="Category"
+            ref={(el) => { if (el) sectionRefs.current.Category = el }}
+          >
+            <p className="ecf-filter-section-label">Category</p>
             <div className="ecf-filter-chips">
-              {GENRES_FILTER.map((g) =>
-                chip(draft.genre === g, g, () => setDraft((d) => ({ ...d, genre: g }))),
+              {CATEGORIES_FILTER.map((c) =>
+                chip(draft.category === c.id, c.label, () => setDraft((d) => ({ ...d, category: c.id }))),
               )}
             </div>
           </section>
 
-          <section className="ecf-filter-section">
+          <section
+            className="ecf-filter-section"
+            data-section="Date"
+            ref={(el) => { if (el) sectionRefs.current.Date = el }}
+          >
+            <p className="ecf-filter-section-label">Date</p>
+            <div className="ecf-filter-chips">
+              {DATE_FILTER.map((d) =>
+                chip(draft.date === d, d, () => setDraft((prev) => ({ ...prev, date: d }))),
+              )}
+            </div>
+          </section>
+
+          <section
+            className="ecf-filter-section"
+            data-section="Time"
+            ref={(el) => { if (el) sectionRefs.current.Time = el }}
+          >
             <p className="ecf-filter-section-label">Time</p>
             <div className="ecf-filter-chips">
               {TIME_FILTER.map((t) =>
@@ -327,7 +457,11 @@ function FilterSheet({ applied, onApply, onClose }: FilterSheetProps) {
             </div>
           </section>
 
-          <section className="ecf-filter-section">
+          <section
+            className="ecf-filter-section"
+            data-section="Area"
+            ref={(el) => { if (el) sectionRefs.current.Area = el }}
+          >
             <p className="ecf-filter-section-label">Area</p>
             <div className="ecf-filter-chips">
               {AREA_FILTER.map((a) =>
@@ -336,7 +470,11 @@ function FilterSheet({ applied, onApply, onClose }: FilterSheetProps) {
             </div>
           </section>
 
-          <section className="ecf-filter-section">
+          <section
+            className="ecf-filter-section"
+            data-section="Price"
+            ref={(el) => { if (el) sectionRefs.current.Price = el }}
+          >
             <p className="ecf-filter-section-label">Price</p>
             <div className="ecf-filter-chips">
               {PRICE_FILTER.map((p) =>
@@ -353,8 +491,8 @@ function FilterSheet({ applied, onApply, onClose }: FilterSheetProps) {
         >
           Show Results
         </button>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }
 
@@ -362,12 +500,14 @@ function FilterSheet({ applied, onApply, onClose }: FilterSheetProps) {
 type EventCardFeedProps = {
   events: EventItem[]
   onMoreDetails: (eventId: string) => void
+  onMapView?: () => void
 }
 
-export function EventCardFeed({ events, onMoreDetails }: EventCardFeedProps) {
+export function EventCardFeed({ events, onMoreDetails, onMapView }: EventCardFeedProps) {
   const locationCityId = useAppState((s) => s.feedLocationCityId)
   const [filters, setFilters] = useState<EventFeedFilters>(DEFAULT_FILTERS)
   const [showFilter, setShowFilter] = useState(false)
+  const [showCityPicker, setShowCityPicker] = useState(false)
   const [going, setGoing] = useState<string[]>([])
   const [saved, setSaved] = useState<string[]>([])
   const [cardIdx, setCardIdx] = useState(0)
@@ -413,31 +553,45 @@ export function EventCardFeed({ events, onMoreDetails }: EventCardFeedProps) {
     <div className="ecf-root">
       {/* Header */}
       <div className="ecf-header">
-        {/* Genre chips row */}
-        <div className="ecf-chip-row">
-          <button
-            type="button"
-            className={`ecf-chip-btn ecf-chip-btn--filter${activeCount > 0 ? ' ecf-chip-btn--active' : ''}`}
-            onClick={() => setShowFilter(true)}
-          >
-            <SlidersHorizontal className="ecf-chip-filter-icon" size={14} strokeWidth={2.25} aria-hidden />
-            <span>
-              Filter{activeCount > 0 ? ` · ${activeCount}` : ''}
-            </span>
-          </button>
-          <LocationCityPickerControl
-            triggerClassName="ecf-chip-btn ecf-chip-btn--location"
-            wrapClassName="ecf-chip-wrap"
-          />
-          {activeCount > 0 && (
+        <div className="ecf-header-inner">
+          {/* Left: filter chips */}
+          <div className="ecf-chip-row">
             <button
               type="button"
-              className="ecf-chip-btn ecf-chip-btn--active"
-              onClick={() => setFilters(DEFAULT_FILTERS)}
+              className={`ecf-chip-btn ecf-chip-btn--filter${activeCount > 0 ? ' ecf-chip-btn--active' : ''}`}
+              onClick={() => setShowFilter(true)}
             >
-              Clear all
+              <SlidersHorizontal className="ecf-chip-filter-icon" size={14} strokeWidth={2.25} aria-hidden />
+              <span>
+                Filter{activeCount > 0 ? ` · ${activeCount}` : ''}
+              </span>
             </button>
-          )}
+            <LocationCityPickerControl
+              triggerClassName="ecf-chip-btn ecf-chip-btn--location"
+              wrapClassName="ecf-chip-wrap"
+              onOpen={() => setShowCityPicker(true)}
+            />
+            {activeCount > 0 && (
+              <button
+                type="button"
+                className="ecf-chip-btn ecf-chip-btn--active"
+                onClick={() => setFilters(DEFAULT_FILTERS)}
+              >
+                Clear all
+              </button>
+            )}
+          </div>
+
+          {/* Right: Map View */}
+          <button
+            type="button"
+            className="ecf-map-view-btn"
+            onClick={onMapView}
+            aria-label="Switch to map view"
+          >
+            <Map size={14} strokeWidth={2.25} aria-hidden />
+            <span>Map</span>
+          </button>
         </div>
       </div>
 
@@ -461,18 +615,28 @@ export function EventCardFeed({ events, onMoreDetails }: EventCardFeedProps) {
         {filtered.length === 0 ? (
           <div className="ecf-empty">
             <div className="ecf-empty-line" />
-            <p className="ecf-empty-text">
-              Nothing matches
-              <br />
-              <span>Try different filters</span>
-            </p>
-            <button
-              type="button"
-              className="ecf-empty-clear"
-              onClick={() => setFilters(DEFAULT_FILTERS)}
-            >
-              Clear filters
-            </button>
+            {activeCount > 0 ? (
+              <>
+                <p className="ecf-empty-text">
+                  No matching events
+                  <br />
+                  <span>Try adjusting your filters</span>
+                </p>
+                <button
+                  type="button"
+                  className="ecf-empty-clear"
+                  onClick={() => setFilters(DEFAULT_FILTERS)}
+                >
+                  Clear filters
+                </button>
+              </>
+            ) : (
+              <p className="ecf-empty-text">
+                Nothing on in this city yet
+                <br />
+                <span>Check back soon or try another city</span>
+              </p>
+            )}
           </div>
         ) : (
           <>
@@ -501,15 +665,48 @@ export function EventCardFeed({ events, onMoreDetails }: EventCardFeedProps) {
       </div>
 
       {/* Filter bottom sheet */}
-      {showFilter && (
-        <FilterSheet
-          applied={filters}
-          onApply={(next) => {
-            setFilters(next)
-            setShowFilter(false)
-          }}
-          onClose={() => setShowFilter(false)}
-        />
+      {createPortal(
+        <AnimatePresence>
+          {showFilter && (
+            <FilterSheet
+              applied={filters}
+              onApply={(next) => {
+                setFilters(next)
+                setShowFilter(false)
+              }}
+              onClose={() => setShowFilter(false)}
+            />
+          )}
+        </AnimatePresence>,
+        (document.querySelector('main.phone-shell') ?? document.getElementById('root')) as HTMLElement,
+      )}
+
+      {/* City picker — identical portal/animation structure as filter sheet */}
+      {createPortal(
+        <AnimatePresence>
+          {showCityPicker && (
+            <motion.div
+              className="ecf-filter-backdrop"
+              onClick={() => setShowCityPicker(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.22 }}
+            >
+              <motion.div
+                className="lcp-sheet"
+                onClick={(e) => e.stopPropagation()}
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ duration: 0.32, ease: [0.32, 0.72, 0, 1] }}
+              >
+                <CityPickerSheet onClose={() => setShowCityPicker(false)} />
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        (document.querySelector('main.phone-shell') ?? document.getElementById('root')) as HTMLElement,
       )}
     </div>
   )

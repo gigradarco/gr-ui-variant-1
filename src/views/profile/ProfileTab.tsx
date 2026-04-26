@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { motion } from 'framer-motion'
-import { ChevronRight, Lock, LogOut, Settings } from 'lucide-react'
+import { Lock, LogOut, Settings } from 'lucide-react'
 import { BUZO_PRO_UPSELL_CTA } from '../../config/pricing'
 import { buzzSummary, getBuzzTierState } from '../../data/demoData'
 import {
@@ -35,7 +35,6 @@ export function ProfileTab({
 }: ProfileTabProps) {
   const {
     openSettings,
-    openBuzzPoints,
     openProfileReputationAll,
     openProfileStats,
     returnToLanding,
@@ -184,17 +183,6 @@ export function ProfileTab({
           {headline}
         </h2>
         <span className="profile-handle-pill">@{userProfile.username}</span>
-        <button
-          type="button"
-          className="profile-buzz-row"
-          onClick={openBuzzPoints}
-          aria-label="Open buzz points details"
-        >
-          <span className="profile-buzz">
-            {buzzSummary.total.toLocaleString('en-US')} BUZZ POINTS
-          </span>
-          <ChevronRight size={16} className="profile-buzz-chevron" aria-hidden />
-        </button>
         <div className="profile-stats-row" role="group" aria-label="Scene stats">
           <button
             type="button"

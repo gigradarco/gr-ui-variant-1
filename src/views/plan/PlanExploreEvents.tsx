@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import { useMemo, useState } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import {
   ArrowLeft,
@@ -14,7 +13,6 @@ import {
   UtensilsCrossed,
 } from 'lucide-react'
 import { EXPLORE_CATEGORY_DEFS } from '../../data/exploreCategories'
-import { EXPLORE_LOCAL_REGIONS } from '../../data/locationRegionIcons'
 
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
   'live-music': Music,
@@ -38,13 +36,6 @@ export function PlanExploreEvents({
   onSelectCategory,
   onSelectCity,
 }: PlanExploreEventsProps) {
-  const [localRegionId, setLocalRegionId] = useState(EXPLORE_LOCAL_REGIONS[0]?.id ?? 'asia')
-  const localRegion = useMemo(
-    () => EXPLORE_LOCAL_REGIONS.find((r) => r.id === localRegionId) ?? EXPLORE_LOCAL_REGIONS[0],
-    [localRegionId],
-  )
-  const localCities = localRegion?.cities ?? []
-
   return (
     <motion.div
       className="screen-content plan-page plan-explore-events"
@@ -100,71 +91,6 @@ export function PlanExploreEvents({
           </div>
         </section>
 
-        <section className="plan-explore-local" aria-labelledby="plan-explore-local-heading">
-          <h2 id="plan-explore-local-heading" className="plan-explore-local-title">
-            Explore local events
-          </h2>
-          <div
-            className="plan-explore-local-tabs"
-            role="tablist"
-            aria-label="Regions"
-          >
-            {EXPLORE_LOCAL_REGIONS.map((r) => {
-              const isOn = r.id === localRegionId
-              return (
-                <button
-                  key={r.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={isOn}
-                  id={`plan-explore-tab-${r.id}`}
-                  aria-controls="plan-explore-local-cities"
-                  className={
-                    isOn ? 'plan-explore-local-tab plan-explore-local-tab--on' : 'plan-explore-local-tab'
-                  }
-                  onClick={() => setLocalRegionId(r.id)}
-                >
-                  {r.label}
-                </button>
-              )
-            })}
-          </div>
-          <div
-            role="tabpanel"
-            id="plan-explore-local-cities"
-            aria-labelledby={`plan-explore-tab-${localRegionId}`}
-            className="plan-explore-local-panel"
-          >
-            <div className="plan-explore-local-grid" role="list">
-              {localCities.map((city) => {
-                const CityIcon = city.Icon
-                return (
-                  <button
-                    key={city.id}
-                    type="button"
-                    className="plan-explore-local-cell"
-                    role="listitem"
-                    aria-label={`View events in ${city.name}`}
-                    onClick={() => onSelectCity(city.id)}
-                  >
-                    <span
-                      className="plan-explore-local-orb"
-                      style={{ ['--plan-orb' as string]: city.accent }}
-                    >
-                      <CityIcon size={17} strokeWidth={2} aria-hidden />
-                    </span>
-                    <span className="plan-explore-local-cell-copy">
-                      <span className="plan-explore-local-city">{city.name}</span>
-                      <span className="plan-explore-local-count">
-                        {city.events} {city.events === 1 ? 'event' : 'events'}
-                      </span>
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-        </section>
       </div>
     </motion.div>
   )

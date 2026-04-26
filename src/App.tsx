@@ -319,6 +319,7 @@ function MainApp() {
                 <EventCardFeed
                   events={mergedEvents}
                   onMoreDetails={(id) => requestPlanDetail(id, 'upcoming', 'discover')}
+                  onMapView={() => setTab('plan')}
                 />
               )}
               {tab === 'ask' && (

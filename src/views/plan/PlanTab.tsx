@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowUpRight, Clock, MapPin } from 'lucide-react'
+import { Clock, MapPin } from 'lucide-react'
 import {
   events,
   getPlanDetailPast,
@@ -10,8 +10,6 @@ import {
 import { useAppState, type FavoriteEvent } from '../../store/appStore'
 import type { Tab } from '../../types'
 import { PlanEventDetail } from './PlanEventDetail'
-import { PlanExploreEvents } from './PlanExploreEvents'
-import { PlanExploreEventsDetail, type PlanExploreDetailFocus } from './PlanExploreEventsDetail'
 import { PlanEventReview } from './PlanEventReview'
 
 type PlanTabProps = {
@@ -48,8 +46,6 @@ export function PlanTab({ onOpenEvent }: PlanTabProps) {
   const [detail, setDetail] = useState<DetailRoute | null>(null)
   const [detailReturnTab, setDetailReturnTab] = useState<Tab | null>(null)
   const [reviewPastId, setReviewPastId] = useState<string | null>(null)
-  const [exploreEventsOpen, setExploreEventsOpen] = useState(false)
-  const [exploreDetailFocus, setExploreDetailFocus] = useState<PlanExploreDetailFocus | null>(null)
 
   const exitEventDetail = () => {
     setReviewPastId(null)
@@ -81,28 +77,6 @@ export function PlanTab({ onOpenEvent }: PlanTabProps) {
     setDetailReturnTab(pendingPlanDetail.returnTab ?? null)
     clearPendingPlanDetail()
   }, [pendingPlanDetail, clearPendingPlanDetail])
-
-  if (exploreEventsOpen) {
-    if (exploreDetailFocus) {
-      return (
-        <PlanExploreEventsDetail
-          focus={exploreDetailFocus}
-          onBack={() => setExploreDetailFocus(null)}
-          onOpenEvent={onOpenEvent}
-        />
-      )
-    }
-    return (
-      <PlanExploreEvents
-        onBack={() => {
-          setExploreEventsOpen(false)
-          setExploreDetailFocus(null)
-        }}
-        onSelectCategory={(id) => setExploreDetailFocus({ type: 'category', id })}
-        onSelectCity={(id) => setExploreDetailFocus({ type: 'city', id })}
-      />
-    )
-  }
 
   if (reviewPastId) {
     const reviewData = getPlanDetailPast(reviewPastId)
@@ -171,20 +145,7 @@ export function PlanTab({ onOpenEvent }: PlanTabProps) {
       transition={{ duration: 0.2 }}
     >
       <header className="plan-home-header">
-        <div className="plan-home-header-row">
-          <h1 className="plan-home-title">Plan</h1>
-          <button
-            type="button"
-            className="plan-home-explore-events"
-            onClick={() => {
-              setExploreDetailFocus(null)
-              setExploreEventsOpen(true)
-            }}
-          >
-            <span>Explore Events</span>
-            <ArrowUpRight size={15} strokeWidth={2} className="plan-home-explore-events-icon" aria-hidden />
-          </button>
-        </div>
+        <h1 className="plan-home-title">Plan</h1>
         <p className="plan-home-sub">Upcoming nights and where you&apos;ve been.</p>
       </header>
 
