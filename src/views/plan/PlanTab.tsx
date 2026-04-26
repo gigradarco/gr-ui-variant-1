@@ -24,10 +24,10 @@ type DetailRoute =
 
 function tabReturnAriaLabel(t: Tab): string {
   switch (t) {
-    case 'feed':
-      return 'Back to feed'
     case 'discover':
       return 'Back to discover'
+    case 'ask':
+      return 'Back to Ask Buzo'
     case 'favorites':
       return 'Back to saved events'
     case 'plan':
@@ -74,7 +74,7 @@ export function PlanTab({ onOpenEvent }: PlanTabProps) {
 
   useEffect(() => {
     if (!pendingPlanDetail) return
-    // Feed / Explore / Profile: App shows full detail as an overlay; tab stays put.
+    // Discover / Ask / Profile: App shows full detail as an overlay; tab stays put.
     if (pendingPlanDetail.returnTab != null && pendingPlanDetail.returnTab !== 'plan') return
     setDetail({ kind: pendingPlanDetail.kind, id: pendingPlanDetail.id })
     setSegment(pendingPlanDetail.kind === 'past' ? 'past' : 'upcoming')

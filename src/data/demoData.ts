@@ -1,10 +1,4 @@
-import type {
-  EventItem,
-  FeedWireframePost,
-  GigEntry,
-  PlanPageEvent,
-  PlanPastEvent,
-} from '../types'
+import type { EventItem, GigEntry, PlanPageEvent, PlanPastEvent } from '../types'
 
 export const events: EventItem[] = [
   {
@@ -324,48 +318,6 @@ export const welcomePlaceholderYoutube = {
   embedTitle:
     'What Singapore Nightlife Looks Like at Marina Bay on a Saturday | 2025 Walking Tour [4K]',
 }
-
-export const feedSuggestedPrompts = [
-  'Any good jazz tonight near Tiong Bahru?',
-  'Best techno tonight in Marina Bay?',
-  'Rooftop vibes with friends tonight?',
-]
-
-/** Feed tab layout: `docs/ui-wireframe/01-social-feed.png`. */
-export const feedWireframePosts: FeedWireframePost[] = [
-  {
-    eventId: 'marquee',
-    host: 'Marcus',
-    hostAvatar:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
-    hostVerb: 'asked',
-    hostLine: 'any techno in Marina Bay tonight?',
-    bp: 15,
-    buzzPct: 98,
-    heroImage:
-      'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80',
-    kicker: 'UNDERGROUND CLUB',
-    kickerStyle: 'neon',
-    venueName: 'THE VAULT',
-    venueLine: 'WAREHOUSE 14 · MARINA BAY',
-  },
-  {
-    eventId: 'neon-noir',
-    host: 'Elena',
-    hostAvatar:
-      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80',
-    hostVerb: 'scrawled',
-    hostLine: 'Best cocktails, worst acoustics.',
-    bp: 12,
-    heroImage:
-      'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1200&q=80',
-    kicker: 'Try the smoked negroni',
-    kickerStyle: 'quote',
-    venueName: 'NEON NOIR',
-    venueLine: 'RAFFLES PLACE',
-    imageGrayscale: true,
-  },
-]
 
 export const telegramBotLink = 'http://t.me/gigradar123_bot?start=hello'
 

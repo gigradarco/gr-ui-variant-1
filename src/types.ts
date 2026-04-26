@@ -1,4 +1,4 @@
-export type Tab = 'feed' | 'discover' | 'plan' | 'favorites' | 'profile'
+export type Tab = 'discover' | 'ask' | 'plan' | 'favorites' | 'profile'
 export type Theme = 'dark' | 'light'
 
 export type GigEntry = {
@@ -32,28 +32,6 @@ export type EventItem = {
   bpReward?: number
   /** Top-right BUZZ % badge on event sheet hero (optional). */
   buzzPct?: number
-}
-
-/** One template for all feed cards: hero media + overlay + badges + CTA row. */
-export type FeedCardKickerStyle = 'neon' | 'quote'
-
-export type FeedWireframePost = {
-  eventId: string
-  host: string
-  hostAvatar: string
-  hostVerb: 'asked' | 'scrawled'
-  hostLine: string
-  bp: number
-  /** Omit to hide the BUZZ badge (same layout). */
-  buzzPct?: number
-  heroImage: string
-  /** Line above venue name (`neon`: uppercase glow; `quote`: serif italic with quotes). */
-  kicker: string
-  kickerStyle: FeedCardKickerStyle
-  venueName: string
-  venueLine: string
-  /** High-contrast / B&W treatment on the hero photo. */
-  imageGrayscale?: boolean
 }
 
 /** Rich mock for the Plan tab event-detail layout (wireframe). */

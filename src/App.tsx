@@ -13,7 +13,7 @@ import { useAppState, type FavoriteEvent } from './store/appStore'
 import type { Tab } from './types'
 import { PlanEventDetail } from './views/plan/PlanEventDetail'
 import { tabNavItems } from './config/tabNavigation'
-import { FeedTab } from './views'
+import { EventCardFeed } from './views/discover/EventCardFeed'
 import { FavoritesTab } from './views/favorites/FavoritesTab'
 import { BuzzPointsScreen } from './views/profile/BuzzPointsScreen'
 import { ProfileReputationScreen } from './views/profile/ProfileReputationScreen'
@@ -52,10 +52,10 @@ type SheetPlanOverlay =
 
 function tabReturnAriaLabel(t: Tab): string {
   switch (t) {
-    case 'feed':
-      return 'Back to feed'
     case 'discover':
       return 'Back to discover'
+    case 'ask':
+      return 'Back to Ask Buzo'
     case 'favorites':
       return 'Back to saved events'
     case 'plan':
@@ -241,7 +241,7 @@ function MainApp() {
 
       {!welcomeDismissed ? (
         <WelcomeScreen
-          onEnterApp={(prefill, initialTab = 'discover') => {
+          onEnterApp={(prefill, initialTab = 'ask') => {
             stashDiscoverPrefill(prefill)
             setTab(initialTab)
             dismissWelcome()
@@ -252,16 +252,16 @@ function MainApp() {
         <main
           className={
             activeEvent
-              ? 'phone-shell phone-shell--behind-event-sheet'
-              : sheetPlanOverlay
-                ? 'phone-shell phone-shell--behind-plan-overlay'
-                : tab === 'discover'
-                  ? `phone-shell phone-shell--discover ${isDiscoverExpanded ? 'phone-shell--expanded' : ''}`
-                  : 'phone-shell'
+                  ? 'phone-shell phone-shell--behind-event-sheet'
+                  : sheetPlanOverlay
+                    ? 'phone-shell phone-shell--behind-plan-overlay'
+                    : tab === 'ask'
+                      ? `phone-shell phone-shell--discover ${isDiscoverExpanded ? 'phone-shell--expanded' : ''}`
+                      : 'phone-shell'
           }
         >
           <AnimatePresence initial={false}>
-            {!isDiscoverExpanded && (
+            {!(isDiscoverExpanded && tab === 'ask') && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
@@ -315,12 +315,13 @@ function MainApp() {
 
           <section className="screen">
             <Suspense fallback={<div className="tab-suspense-fallback" aria-hidden />}>
-              {tab === 'feed' && (
-                <FeedTab
-                  onOpenEvent={openEvent}
+              {tab === 'discover' && (
+                <EventCardFeed
+                  events={mergedEvents}
+                  onMoreDetails={(id) => requestPlanDetail(id, 'upcoming', 'discover')}
                 />
               )}
-              {tab === 'discover' && (
+              {tab === 'ask' && (
                 <DiscoverTab
                   onOpenEvent={openEvent}
                   prefillPrompt={discoverPrefill}
@@ -371,7 +372,7 @@ function MainApp() {
           </AnimatePresence>
 
           <AnimatePresence initial={false}>
-            {!isDiscoverExpanded && (
+            {!(isDiscoverExpanded && tab === 'ask') && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}

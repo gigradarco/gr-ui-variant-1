@@ -33,17 +33,6 @@ export const appRouter = t.router({
       .query(() => [] as unknown[]),
     byId: t.procedure.input(z.object({ id: z.string() })).query(() => null as unknown),
   }),
-  feed: t.router({
-    get: t.procedure
-      .input(
-        z.object({
-          cursor: z.string().optional(),
-          limit: z.number().optional(),
-          cityId: z.string().optional(),
-        }),
-      )
-      .query(() => ({ items: [] as unknown[] })),
-  }),
   plan: t.router({
     upcoming: t.procedure.query(() => [] as unknown[]),
     past: t.procedure.query(() => [] as unknown[]),
