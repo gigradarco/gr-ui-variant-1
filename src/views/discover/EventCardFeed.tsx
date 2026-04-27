@@ -588,7 +588,7 @@ export function EventCardFeed({ events, onMoreDetails, onMapView }: EventCardFee
     }
   }, [])
 
-  const onScrollRef = useRef<() => void>()
+  const onScrollRef = useRef<(() => void) | undefined>(undefined)
   onScrollRef.current = () => {
     const el = scrollElRef.current
     if (!el) return

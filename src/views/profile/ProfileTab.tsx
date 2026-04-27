@@ -155,12 +155,6 @@ export function ProfileTab({
         <div className="profile-avatar-wrap">
           <div
             className="profile-avatar-ring"
-            role="progressbar"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={ringPercent}
-            aria-label={`Experience toward next tier, ${ringPercent} percent`}
-            style={ringStyle}
           >
             <div className={`profile-avatar-inner${avatarLoaded && !avatarFailed ? ' is-loaded' : ''}`}>
               <span className="profile-avatar-placeholder" aria-hidden>
@@ -193,7 +187,7 @@ export function ProfileTab({
               <span className="profile-avatar-gloss" aria-hidden />
             </div>
           </div>
-          <span className="profile-rank-badge">
+          <span className="profile-rank-badge" style={{ display: 'none' }} aria-hidden>
             Lv.{buzzTier.level} {buzzTier.label}
           </span>
         </div>

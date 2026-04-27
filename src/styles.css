@@ -2479,16 +2479,22 @@ body {
   left: 50%;
   top: 42%;
   transform: translate(-50%, -50%);
-  width: 200px;
-  height: 200px;
+  width: 220px;
+  height: 220px;
   background: radial-gradient(
-    ellipse 55% 50% at 50% 50%,
-    color-mix(in oklab, var(--profile-accent) 32%, transparent) 0%,
-    color-mix(in oklab, var(--profile-accent) 8%, transparent) 42%,
+    ellipse 60% 55% at 50% 50%,
+    color-mix(in oklab, #ff4500 22%, transparent) 0%,
+    color-mix(in oklab, #c0329a 10%, transparent) 45%,
     transparent 72%
   );
   pointer-events: none;
-  filter: blur(2px);
+  filter: blur(14px);
+  animation: avatar-halo-pulse 6s ease-in-out infinite;
+}
+
+@keyframes avatar-halo-pulse {
+  0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+  50%       { opacity: 1;   transform: translate(-50%, -50%) scale(1.08); }
 }
 
 /*
@@ -2501,15 +2507,36 @@ body {
   height: 128px;
   border-radius: 50%;
   padding: 3px;
-  background: conic-gradient(
-    var(--profile-accent) 0deg calc(var(--ring-fill) * 360deg),
-    var(--profile-ring-gap) calc(var(--ring-fill) * 360deg) 360deg
-  );
   box-sizing: border-box;
+  position: relative;
+  background: conic-gradient(
+    from var(--avatar-hue, 0deg),
+    #ff4500 0%,
+    #ff8c42 18%,
+    #c0329a 38%,
+    #6a3de8 55%,
+    #3a8ef6 70%,
+    #ff4500 100%
+  );
+  animation: avatar-ring-spin 6s linear infinite;
   box-shadow:
-    0 8px 28px color-mix(in oklab, #000 45%, transparent),
-    0 0 0 1px color-mix(in oklab, var(--profile-accent) 35%, transparent),
-    0 0 40px color-mix(in oklab, var(--profile-accent) 22%, transparent);
+    0 0 18px color-mix(in oklab, #ff4500 30%, transparent),
+    0 8px 28px color-mix(in oklab, #000 50%, transparent);
+}
+
+@keyframes avatar-ring-spin {
+  from { --avatar-hue: 0deg; }
+  to   { --avatar-hue: 360deg; }
+}
+
+@property --avatar-hue {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.profile-avatar-ring--hidden {
+  /* no overrides — ring is now always visible */
 }
 
 .profile-avatar-inner {
@@ -5184,12 +5211,29 @@ button.taste-tag:focus-visible {
   padding: 3px;
   box-sizing: border-box;
   background: conic-gradient(
-    var(--primary) 0deg 265deg,
-    color-mix(in oklab, var(--stroke) 85%, var(--primary)) 265deg 360deg
+    from var(--edit-avatar-hue, 0deg),
+    #ff4500 0%,
+    #ff8c42 18%,
+    #c0329a 38%,
+    #6a3de8 55%,
+    #3a8ef6 70%,
+    #ff4500 100%
   );
+  animation: edit-avatar-ring-spin 6s linear infinite;
   box-shadow:
-    0 6px 22px color-mix(in oklab, var(--primary) 20%, transparent),
-    0 0 0 1px color-mix(in oklab, var(--primary) 28%, var(--stroke));
+    0 0 14px color-mix(in oklab, #ff4500 25%, transparent),
+    0 6px 20px color-mix(in oklab, #000 40%, transparent);
+}
+
+@property --edit-avatar-hue {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes edit-avatar-ring-spin {
+  from { --edit-avatar-hue: 0deg; }
+  to   { --edit-avatar-hue: 360deg; }
 }
 
 .edit-profile-avatar-inner {
