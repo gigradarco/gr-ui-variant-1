@@ -2587,11 +2587,18 @@ body {
   object-fit: cover;
   filter: saturate(1.06) contrast(1.03);
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s ease;
+  /* Safety net: reveal after 800ms if onLoad never fires (e.g. cached image on mobile Safari) */
+  animation: profile-avatar-reveal 0s 0.8s forwards;
+}
+
+@keyframes profile-avatar-reveal {
+  to { opacity: 1; }
 }
 
 .profile-avatar-inner.is-loaded .profile-avatar-img {
   opacity: 1;
+  animation: none;
 }
 
 /* Glass sheen: −45° band drifts fully past the circle (translate % = self height). */
