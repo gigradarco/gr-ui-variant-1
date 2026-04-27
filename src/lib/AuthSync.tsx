@@ -61,7 +61,7 @@ export function AuthSync({ children }: { children: ReactNode }) {
       const isFreshSignIn = markNextSessionSyncAsFreshSignIn
       markNextSessionSyncAsFreshSignIn = false
       try {
-        const { user, profile, taste_categories } = await fetchAuthSession()
+        const { user, profile, taste_categories, taste_selections } = await fetchAuthSession()
         if (cancelled) return
         const avatarRemote = profile?.avatar_url?.trim()
         if (avatarRemote) {
@@ -71,6 +71,7 @@ export function AuthSync({ children }: { children: ReactNode }) {
         useAppState.getState().applySupabaseSession(user, profile, {
           isFreshSignIn,
           tasteCategories: taste_categories,
+          tasteSelections: taste_selections,
         })
         if (isFreshSignIn) {
           clearOAuthReturnPendingWelcome()

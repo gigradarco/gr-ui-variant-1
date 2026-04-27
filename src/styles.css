@@ -2915,6 +2915,90 @@ button.taste-tag:focus-visible {
   color: #fff;
 }
 
+/* Inline taste editing */
+.taste-tags--editing {
+  gap: 10px;
+}
+
+.taste-inline-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.section-title-action--muted {
+  background: transparent;
+  border-color: var(--stroke);
+  color: var(--muted);
+}
+
+.taste-tag--toggle {
+  font: inherit;
+  cursor: pointer;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease;
+}
+
+.taste-tag--toggle:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.taste-tag--toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.taste-tag--active {
+  background: color-mix(in oklab, var(--primary) 18%, var(--bg-elev));
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.profile-list-screen-action {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--primary);
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    opacity 0.15s ease,
+    background 0.15s ease;
+}
+
+.profile-list-screen-action:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.profile-taste-selection-count {
+  margin-left: 4px;
+  font-size: 0.8em;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.profile-taste-save-error {
+  margin: 16px 0 0;
+  font-size: 0.82rem;
+  color: #f87171;
+  text-align: center;
+}
+
 /* Reputation badges */
 .profile-reputation-preview-note {
   margin: 2px 0 0;

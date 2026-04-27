@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Lock, LogOut, Settings } from 'lucide-react'
+import { Check, Lock, LogOut, Settings } from 'lucide-react'
 import { BUZO_PRO_UPSELL_CTA } from '../../config/pricing'
 import { buzzSummary, getBuzzTierState } from '../../data/demoData'
 import {
@@ -13,7 +13,7 @@ import {
   persistAvatarToLocalCache,
   warmAvatarCacheIfEmpty,
 } from '../../lib/avatar-image-cache.ts'
-import { postSignOut } from '../../lib/auth-api'
+import { postProfileTastePreferences, postSignOut } from '../../lib/auth-api'
 import { api } from '../../lib/trpc'
 import { useAppState } from '../../store/appStore'
 
@@ -30,7 +30,60 @@ export function ProfileTab() {
     setTab,
     subscriptionTier,
     tasteIdentityItems,
+    savedTasteLabels,
+    setSavedTasteLabels,
   } = useAppState()
+
+  // ── Inline taste editing ────────────────────────────────────────────────
+  const [tasteEditing, setTasteEditing] = useState(false)
+  const [tasteSelected, setTasteSelected] = useState<Set<string>>(new Set())
+  const [tasteSaving, setTasteSaving] = useState(false)
+  const [tasteSaveError, setTasteSaveError] = useState<string | null>(null)
+  const saveTimerRef = useRef<number | null>(null)
+
+  const openTasteEdit = useCallback(() => {
+    setTasteSelected(new Set(savedTasteLabels))
+    setTasteSaveError(null)
+    setTasteEditing(true)
+  }, [savedTasteLabels])
+
+  const cancelTasteEdit = useCallback(() => {
+    setTasteEditing(false)
+    setTasteSaveError(null)
+  }, [])
+
+  const toggleTasteLabel = useCallback((label: string) => {
+    setTasteSelected((prev) => {
+      const next = new Set(prev)
+      if (next.has(label)) next.delete(label)
+      else next.add(label)
+      return next
+    })
+    setTasteSaveError(null)
+  }, [])
+
+  const saveTaste = useCallback(async () => {
+    setTasteSaving(true)
+    setTasteSaveError(null)
+    const labels = [...tasteSelected].sort()
+    try {
+      await postProfileTastePreferences(labels)
+      setSavedTasteLabels(labels)
+      setTasteEditing(false)
+    } catch (err) {
+      setTasteSaveError(err instanceof Error ? err.message : 'Could not save. Try again.')
+    } finally {
+      setTasteSaving(false)
+    }
+  }, [tasteSelected, setSavedTasteLabels])
+
+  // Clean up any pending timer on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current !== null) window.clearTimeout(saveTimerRef.current)
+    }
+  }, [])
+  // ───────────────────────────────────────────────────────────────────────
   const { current: buzzTier } = getBuzzTierState(buzzSummary.total)
   const headline =
     userProfile.displayName.trim() !== ''
@@ -51,7 +104,7 @@ export function ProfileTab() {
     staleTime: 60_000,
   })
 
-  const tasteTagsShown = tasteIdentityItems
+  const tasteCount = tasteEditing ? tasteSelected.size : savedTasteLabels.size
   const reputationBadges =
     reputationQuery.data?.badges.map(mapReputationBadgeFromApi) ?? reputationBadgesFallback
   const earnedReputationBadges = reputationBadges.filter((badge) => badge.status === 'earned')
@@ -67,7 +120,6 @@ export function ProfileTab() {
   })
   const badgesPreview =
     (recentEarnedReputationBadges.length > 0 ? recentEarnedReputationBadges : reputationBadges).slice(0, 5)
-  const tasteCount = tasteIdentityItems.length
   const badgeCount = earnedReputationBadges.length
   const reputationPreviewCopy =
     earnedReputationBadges.length > 0
@@ -183,20 +235,71 @@ export function ProfileTab() {
 
       {/* Taste & recommendations */}
       <section className="profile-section" aria-labelledby="profile-taste-heading">
-        <div className="section-title-rule" id="profile-taste-heading">
+        <div className="section-title-rule section-title-rule--with-action" id="profile-taste-heading">
           <span className="section-title-rule__text">
             {TASTE_AND_RECOMMENDATIONS_TITLE}{' '}
             <span className="section-title-count">({tasteCount})</span>
           </span>
           <span className="section-title-rule__line" aria-hidden />
-        </div>
-        <div className="taste-tags">
-          {tasteTagsShown.map((g) => (
-            <span key={g.label} className="taste-tag">
-              {g.label}
+          {tasteEditing ? (
+            <span className="taste-inline-actions">
+              <button
+                type="button"
+                className="section-title-action section-title-action--muted"
+                onClick={cancelTasteEdit}
+                disabled={tasteSaving}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="section-title-action"
+                onClick={saveTaste}
+                disabled={tasteSaving}
+                aria-busy={tasteSaving}
+              >
+                {tasteSaving ? 'Saving…' : 'Save'}
+              </button>
             </span>
-          ))}
+          ) : (
+            <button
+              type="button"
+              className="section-title-action"
+              onClick={openTasteEdit}
+            >
+              Edit
+            </button>
+          )}
         </div>
+        <div className={`taste-tags${tasteEditing ? ' taste-tags--editing' : ''}`}>
+          {tasteIdentityItems.map((g) => {
+            if (!tasteEditing) {
+              if (!savedTasteLabels.has(g.label)) return null
+              return (
+                <span key={g.label} className="taste-tag">
+                  {g.label}
+                </span>
+              )
+            }
+            const active = tasteSelected.has(g.label)
+            return (
+              <button
+                key={g.label}
+                type="button"
+                className={`taste-tag taste-tag--toggle${active ? ' taste-tag--active' : ''}`}
+                aria-pressed={active}
+                onClick={() => toggleTasteLabel(g.label)}
+                disabled={tasteSaving}
+              >
+                {active ? <Check size={11} aria-hidden /> : null}
+                {g.label}
+              </button>
+            )
+          })}
+        </div>
+        {tasteSaveError ? (
+          <p className="profile-taste-save-error" role="alert">{tasteSaveError}</p>
+        ) : null}
       </section>
 
       {/* Reputation */}

@@ -8,7 +8,6 @@ type ProfileRow = {
   avatar_url?: string | null
   bio?: string | null
   default_city_id?: string | null
-  user_taste_categories?: Array<{ label: string }> | null
 } | null
 
 export type TasteCategorySessionRow = { label: string }
@@ -17,6 +16,8 @@ export async function fetchAuthSession(): Promise<{
   user: AuthUserPayload | null
   profile: ProfileRow
   taste_categories: TasteCategorySessionRow[]
+  /** User's saved taste labels from user_taste_selections (replaces legacy profile.user_taste_categories). */
+  taste_selections: string[]
 }> {
   const token = getAccessToken()
   const r = await fetch(`${apiBase()}/api/auth/session`, {
@@ -29,6 +30,7 @@ export async function fetchAuthSession(): Promise<{
     user: AuthUserPayload | null
     profile: ProfileRow
     taste_categories: TasteCategorySessionRow[]
+    taste_selections: string[]
   }>
 }
 
@@ -54,7 +56,7 @@ export function googleOAuthRedirectUrl(returnTo: string): string {
 }
 
 export async function postProfileTastePreferences(
-  userTasteCategories: Array<{ label: string }>,
+  tasteLabels: string[],
 ): Promise<void> {
   const token = getAccessToken()
   if (!token) {
@@ -66,7 +68,7 @@ export async function postProfileTastePreferences(
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ userTasteCategories }),
+    body: JSON.stringify({ tasteLabels }),
   })
   if (!r.ok) {
     let msg = `HTTP ${r.status}`

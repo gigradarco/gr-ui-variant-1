@@ -179,8 +179,10 @@ type AppState = {
   /** Browser location permission state tracked from settings flow. */
   locationPermission: LocationPermissionState
   showBuzzPoints: boolean
-  /** Full catalog of taste tags from session (label-only). */
+  /** Full catalog of taste tags — drives the chip grid order in edit mode. */
   tasteIdentityItems: TasteIdentityItem[]
+  /** Labels the user has explicitly selected (subset of catalog). Used to seed edit state. */
+  savedTasteLabels: Set<string>
   showProfileTasteAll: boolean
   showProfileReputationAll: boolean
   showSettings: boolean
@@ -217,9 +219,13 @@ type AppState = {
       avatar_url?: string | null
       bio?: string | null
       default_city_id?: string | null
-      user_taste_categories?: Array<{ label: string }> | null
     } | null,
-    options?: { isFreshSignIn?: boolean; tasteCategories?: TasteCategoryRow[] },
+    options?: {
+      isFreshSignIn?: boolean
+      tasteCategories?: TasteCategoryRow[]
+      /** User's saved taste labels from user_taste_selections. */
+      tasteSelections?: string[]
+    },
   ) => void
   /** Sign out demo session and show the pre-login welcome again. */
   returnToLanding: () => void
@@ -260,6 +266,10 @@ type AppState = {
   /** Persist city from onboarding (local + profile when signed in). */
   applyOnboardingCity: (cityId: string) => void
   setUserProfile: (patch: Partial<UserProfile>) => void
+  /** Update the full catalog order (does not change the saved-selection set). */
+  setTasteIdentityItems: (items: TasteIdentityItem[]) => void
+  /** Update the saved selection labels after a successful save. */
+  setSavedTasteLabels: (labels: string[]) => void
   setSubscriptionTier: (tier: SubscriptionTier) => void
   setFeedLocationCityId: (cityId: string) => void
   setLocationPreferenceMode: (mode: LocationPreferenceMode) => void
@@ -288,6 +298,7 @@ export const useAppState = create<AppState>((set, get) => ({
   locationPermission: 'unknown',
   showBuzzPoints: false,
   tasteIdentityItems: getDefaultTasteIdentityItems(),
+  savedTasteLabels: new Set<string>(),
   showProfileTasteAll: false,
   showProfileReputationAll: false,
   showSettings: false,
@@ -327,6 +338,7 @@ export const useAppState = create<AppState>((set, get) => ({
         userProfile: defaultUserProfile,
         authEmail: null,
         tasteIdentityItems: getDefaultTasteIdentityItems(),
+        savedTasteLabels: new Set<string>(),
         profileDefaultCityId: readPersistedDefaultCityId(),
       })
       return
@@ -369,11 +381,14 @@ export const useAppState = create<AppState>((set, get) => ({
     }
 
     const catalog = options?.tasteCategories ?? []
+    const tasteSelections = options?.tasteSelections ?? []
+    const savedSelections = tasteSelections.map((label) => ({ label }))
     const tasteIdentityItems = buildTasteIdentityItemsFromSession(
       isRealUser,
       catalog,
-      profile?.user_taste_categories,
+      savedSelections,
     )
+    const savedTasteLabels = new Set<string>(tasteSelections)
 
     const wasAuthenticated = get().isAuthenticated
     set({
@@ -388,6 +403,7 @@ export const useAppState = create<AppState>((set, get) => ({
       profileDefaultCityId: resolvedDefaultCityId,
       ...(resolvedDefaultCityId ? { feedLocationCityId: resolvedDefaultCityId } : {}),
       tasteIdentityItems,
+      savedTasteLabels,
       ...(isRealUser
         ? {
             showSignIn: false,
@@ -425,6 +441,7 @@ export const useAppState = create<AppState>((set, get) => ({
       pendingPlanDetail: null,
       showBuzzPoints: false,
       tasteIdentityItems: getDefaultTasteIdentityItems(),
+      savedTasteLabels: new Set<string>(),
       showProfileTasteAll: false,
       showProfileReputationAll: false,
       showSettings: false,
@@ -465,6 +482,8 @@ export const useAppState = create<AppState>((set, get) => ({
   isEventFavorited: (eventId) => get().favoriteEvents.some((item) => item.id === eventId),
   openBuzzPoints: () => set({ showBuzzPoints: true }),
   closeBuzzPoints: () => set({ showBuzzPoints: false }),
+  setTasteIdentityItems: (items) => set({ tasteIdentityItems: items }),
+  setSavedTasteLabels: (labels) => set({ savedTasteLabels: new Set(labels) }),
   openProfileTasteAll: () => set({ showProfileTasteAll: true }),
   closeProfileTasteAll: () => set({ showProfileTasteAll: false }),
   openProfileReputationAll: () => set({ showProfileReputationAll: true }),
