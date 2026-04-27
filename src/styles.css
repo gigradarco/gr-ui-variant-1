@@ -1649,7 +1649,7 @@ body {
   position: fixed;
   z-index: 30;
   right: 22px;
-  bottom: 22px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 22px);
   width: min(92vw, 390px);
   max-height: 88vh;
   border: 1px solid var(--stroke);
