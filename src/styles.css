@@ -8032,7 +8032,7 @@ button.taste-tag:focus-visible {
 }
 
 .plan-list-card--past {
-  opacity: 0.95;
+  opacity: 0.7;
 }
 
 .plan-list-card-img {
@@ -8172,11 +8172,6 @@ button.taste-tag:focus-visible {
 /* Meta text (venue · time) — slightly more contrast */
 .theme-light .plan-list-card-meta {
   color: #6b7280;
-}
-
-/* Past card — subtler fade in light mode */
-.theme-light .plan-list-card--past {
-  opacity: 0.7;
 }
 
 /* Title — pure dark for max readability */
