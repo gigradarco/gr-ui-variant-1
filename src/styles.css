@@ -12968,6 +12968,103 @@ button.taste-tag:focus-visible {
   color: #fff;
 }
 
+/* iPhone SE & short viewports (~667px): not enough height for full card + snap — compact + in-card scroll */
+@media (max-height: 720px) {
+  @supports (height: 100cqh) {
+    .ecf-scroll {
+      container-type: normal;
+    }
+
+    .ecf-slide,
+    .ecf-end-card {
+      height: 100%;
+      min-height: 100%;
+    }
+  }
+
+  .phone-shell:has(.ecf-root) {
+    --ecf-body-bottom: 52px;
+  }
+
+  .ecf-tags {
+    top: max(96px, calc(70px + env(safe-area-inset-top, 0px)));
+  }
+
+  .ecf-body {
+    top: max(112px, calc(84px + env(safe-area-inset-top, 0px)));
+    padding: 0 16px 10px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+
+  .ecf-buzz-row {
+    margin-bottom: 8px;
+  }
+
+  .ecf-headline {
+    margin-bottom: 6px;
+  }
+
+  .ecf-genre {
+    margin: 0 0 4px;
+  }
+
+  .ecf-title {
+    font-size: clamp(22px, 9vw, 32px);
+    letter-spacing: -0.6px;
+    line-height: 1.05;
+  }
+
+  .ecf-lede {
+    margin: 0 0 8px;
+    gap: 4px;
+  }
+
+  .ecf-lede-primary {
+    font-size: 14px;
+    line-height: 1.3;
+  }
+
+  .ecf-lede-secondary {
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .ecf-meta-row {
+    margin-bottom: 8px;
+    padding-top: 6px;
+  }
+
+  .ecf-meta-label {
+    font-size: 8px;
+  }
+
+  .ecf-meta-value {
+    font-size: 12px;
+  }
+
+  .ecf-going-btn {
+    padding: 9px 10px;
+    font-size: 12px;
+  }
+
+  .ecf-details-btn {
+    min-height: 36px;
+    font-size: 11px;
+  }
+
+  .ecf-icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .ecf-scroll {
+    scroll-snap-type: y proximity;
+  }
+}
+
 /* Empty state */
 .ecf-empty {
   height: 100%;
