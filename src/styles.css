@@ -12600,13 +12600,28 @@ button.taste-tag:focus-visible {
   display: none;
 }
 
-/* Individual slide — min-height avoids sub-pixel snap gaps; fills scroll viewport */
+@supports (height: 100cqh) {
+  .ecf-scroll {
+    container-name: ecf-feed;
+    container-type: size;
+  }
+
+  .ecf-slide,
+  .ecf-end-card {
+    height: 100cqh;
+    min-height: 100cqh;
+  }
+}
+
+/* Individual slide — height: 100% + 100cqh in @supports (see above) for exact snap alignment */
 .ecf-slide {
-  height: 100%;
-  min-height: 100%;
   scroll-snap-align: start;
+  scroll-snap-stop: always;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 100%;
 }
 
 .ecf-bg-img {
@@ -12673,18 +12688,29 @@ button.taste-tag:focus-visible {
   border-radius: 4px;
 }
 
-/* Bottom content — fills from tag badge area down to nav, spacer pushes content to bottom.
-   Do not add safe-area-inset-bottom here: .app already pads the shell; double-counting shrinks
-   this box and clips the action row (especially with filters + long copy). */
+/* Bottom content — extra bottom inset clears iOS Safari + in-app tab bar overlap on the card */
+.phone-shell:has(.ecf-root) {
+  /* Lift actions above iOS browser chrome + tab bar overlap */
+  --ecf-body-bottom: 68px;
+}
+
+@media (min-width: 601px) {
+  .phone-shell:has(.ecf-root) {
+    --ecf-body-bottom: 32px;
+  }
+}
+
+/* Bottom content — fills from tag badge area down to nav, spacer pushes content to bottom */
 .ecf-body {
   position: absolute;
-  bottom: 28px;
+  bottom: var(--ecf-body-bottom, 40px);
   top: max(140px, calc(100px + env(safe-area-inset-top, 0px)));
   left: 0;
   right: 0;
-  padding: 0 20px 16px;
+  padding: 0 20px 12px;
   display: flex;
   flex-direction: column;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -12698,6 +12724,7 @@ button.taste-tag:focus-visible {
 /* Pushes buzz bar + content to the bottom of ecf-body */
 .ecf-body-spacer {
   flex: 1;
+  min-height: 0;
 }
 
 .ecf-buzz-track {
@@ -12819,6 +12846,7 @@ button.taste-tag:focus-visible {
   grid-template-columns: 1fr auto auto;
   gap: 8px;
   align-items: stretch;
+  flex-shrink: 0;
 }
 
 .ecf-going-btn {
@@ -12989,9 +13017,11 @@ button.taste-tag:focus-visible {
 
 /* End-of-feed card */
 .ecf-end-card {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  box-sizing: border-box;
   height: 100%;
   min-height: 100%;
-  scroll-snap-align: start;
   background: #080808;
   display: flex;
   flex-direction: column;
