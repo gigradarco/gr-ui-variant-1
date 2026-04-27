@@ -271,6 +271,15 @@ export function ProfileTab() {
             </button>
           )}
         </div>
+        {!tasteEditing && savedTasteLabels.size === 0 && (
+          <button
+            type="button"
+            className="taste-empty-prompt"
+            onClick={openTasteEdit}
+          >
+            Add your sound — pick the genres that move you.
+          </button>
+        )}
         <div className={`taste-tags${tasteEditing ? ' taste-tags--editing' : ''}`}>
           {tasteIdentityItems.map((g) => {
             if (!tasteEditing) {

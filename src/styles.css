@@ -2915,6 +2915,25 @@ button.taste-tag:focus-visible {
   color: #fff;
 }
 
+/* Empty taste prompt */
+.taste-empty-prompt {
+  display: block;
+  width: 100%;
+  padding: 14px 0 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.38);
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  transition: color 0.15s ease;
+}
+.taste-empty-prompt:hover {
+  color: rgba(255, 255, 255, 0.65);
+}
+
 /* Inline taste editing */
 .taste-tags--editing {
   gap: 10px;
