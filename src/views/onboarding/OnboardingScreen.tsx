@@ -4,10 +4,7 @@ import { ArrowLeft, Crosshair, MapPin, X } from 'lucide-react'
 import { UploadToast, type UploadToastState } from '../../components/UploadToast'
 import { CityCatalogPanel } from '../../components/CityCatalogPanel'
 import { OnboardingGeoPreviewMap } from '../../components/OnboardingGeoPreviewMap'
-import {
-  ONBOARDING_GENRES,
-  deriveOnboardingGenreIdsFromTastes,
-} from '../../data/onboarding'
+import { ONBOARDING_GENRES } from '../../data/onboarding'
 import {
   DEFAULT_LOCATION_CITY_ID,
   distanceKmToLocationCity,
@@ -61,7 +58,6 @@ export function OnboardingScreen() {
   const closeOnboarding = useAppState((s) => s.closeOnboarding)
   const applyOnboardingCity = useAppState((s) => s.applyOnboardingCity)
   const feedLocationCityId = useAppState((s) => s.feedLocationCityId)
-  const tasteIdentityItems = useAppState((s) => s.tasteIdentityItems)
   const setLocationPermission = useAppState((s) => s.setLocationPermission)
   const setLocationPreferenceMode = useAppState((s) => s.setLocationPreferenceMode)
   const theme = useAppState((s) => s.theme)
@@ -77,9 +73,7 @@ export function OnboardingScreen() {
     readInitialCitySelection(feedLocationCityId),
   )
   const [citySearchQuery, setCitySearchQuery] = useState('')
-  const [selectedGenres, setSelectedGenres] = useState<string[]>(() =>
-    deriveOnboardingGenreIdsFromTastes(tasteIdentityItems),
-  )
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([])
   const [vis, setVis] = useState(false)
   const [toast, setToast] = useState<UploadToastState>(null)
   useEffect(() => {

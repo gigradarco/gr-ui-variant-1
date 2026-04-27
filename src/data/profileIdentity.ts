@@ -1,84 +1,52 @@
 import type { LucideIcon } from 'lucide-react'
 import { Building2, Crown, Flame, Headphones, Moon, Music, Star, Trophy, Zap } from 'lucide-react'
 
-/** Highlighted on profile (`true`) vs standard chip (`false`). Tap toggles while editing. */
-export type TasteAccent = boolean
-
 export type TasteIdentityItem = {
   label: string
-  accent: TasteAccent
-}
-
-/** Deep compare for skipping no-op taste saves (order matches store / catalog). */
-export function tasteIdentityItemsEqual(a: TasteIdentityItem[], b: TasteIdentityItem[]): boolean {
-  if (a.length !== b.length) return false
-  for (let i = 0; i < a.length; i++) {
-    if (a[i].label !== b[i].label || a[i].accent !== b[i].accent) return false
-  }
-  return true
 }
 
 /** Profile section, full-screen list, and Settings — keep in sync. */
 export const TASTE_AND_RECOMMENDATIONS_TITLE = 'Taste & recommendations'
 
-/** Toggle highlight while editing (show on / show off). */
-export function cycleTasteAccent(accent: TasteAccent): TasteAccent {
-  return !accent
-}
-
 /** Full taste map — profile preview shows a slice. */
 export const tasteIdentityTags: TasteIdentityItem[] = [
-  { label: 'DARK DISCO', accent: true },
-  { label: 'MINIMAL TECHNO', accent: false },
-  { label: 'INDUSTRIAL', accent: false },
-  { label: 'EBM', accent: false },
-  { label: 'POST-PUNK', accent: false },
-  { label: 'ACID HOUSE', accent: false },
-  { label: 'ITALO DISCO', accent: false },
-  { label: 'NEW BEAT', accent: false },
-  { label: 'SYNTHWAVE', accent: false },
-  { label: 'TECH HOUSE', accent: false },
-  { label: 'DEEP HOUSE', accent: false },
-  { label: 'BREAKBEAT', accent: false },
-  { label: 'DRUM & BASS', accent: false },
-  { label: 'GABBER', accent: false },
+  { label: 'DARK DISCO' },
+  { label: 'MINIMAL TECHNO' },
+  { label: 'INDUSTRIAL' },
+  { label: 'EBM' },
+  { label: 'POST-PUNK' },
+  { label: 'ACID HOUSE' },
+  { label: 'ITALO DISCO' },
+  { label: 'NEW BEAT' },
+  { label: 'SYNTHWAVE' },
+  { label: 'TECH HOUSE' },
+  { label: 'DEEP HOUSE' },
+  { label: 'BREAKBEAT' },
+  { label: 'DRUM & BASS' },
+  { label: 'GABBER' },
 ]
 
 export function getDefaultTasteIdentityItems(): TasteIdentityItem[] {
   return tasteIdentityTags.map((t) => ({ ...t }))
 }
 
-/** Row from `taste_categories` or session `taste_categories` (snake_case accent strings). */
-export type TasteCategoryRow = { label: string; accent: string }
+/** Row from `taste_categories` or session `taste_categories`. */
+export type TasteCategoryRow = { label: string }
 
-export function tasteAccentFromDb(accent: string): TasteAccent {
-  return accent === 'true'
-}
-
-export function tasteAccentToDb(accent: TasteAccent): 'true' | 'false' {
-  return accent ? 'true' : 'false'
-}
-
-/** Merge catalog order + defaults with saved `profiles.user_taste_categories`. */
+/** Catalog order; `saved` kept for API compatibility (ignored). */
 export function mergeCatalogWithSavedTastes(
   catalog: TasteCategoryRow[],
-  saved: Array<{ label: string; accent: string }> | null | undefined,
+  _saved: Array<{ label: string }> | null | undefined,
 ): TasteIdentityItem[] {
-  const byLabel = new Map(
-    (saved ?? []).map((s) => [s.label, tasteAccentFromDb(s.accent)] as const),
-  )
   const ordered = [...catalog].sort((a, b) => a.label.localeCompare(b.label))
-  return ordered.map((row) => ({
-    label: row.label,
-    accent: byLabel.has(row.label) ? (byLabel.get(row.label) as TasteAccent) : tasteAccentFromDb(row.accent),
-  }))
+  return ordered.map((row) => ({ label: row.label }))
 }
 
 /** Session hydration: prefer API catalog; if missing, still apply saved tastes from profile. */
 export function buildTasteIdentityItemsFromSession(
   isRealUser: boolean,
   catalog: TasteCategoryRow[],
-  saved: Array<{ label: string; accent: string }> | null | undefined,
+  saved: Array<{ label: string }> | null | undefined,
 ): TasteIdentityItem[] {
   if (!isRealUser) return getDefaultTasteIdentityItems()
   if (catalog.length > 0) {
@@ -88,7 +56,7 @@ export function buildTasteIdentityItemsFromSession(
   if (rawSaved.length > 0) {
     const byLabel = new Map<string, TasteIdentityItem>()
     for (const s of rawSaved) {
-      byLabel.set(s.label, { label: s.label, accent: tasteAccentFromDb(s.accent) })
+      byLabel.set(s.label, { label: s.label })
     }
     for (const d of getDefaultTasteIdentityItems()) {
       if (!byLabel.has(d.label)) byLabel.set(d.label, d)

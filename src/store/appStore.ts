@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import {
   buildTasteIdentityItemsFromSession,
-  cycleTasteAccent,
   getDefaultTasteIdentityItems,
   type TasteCategoryRow,
   type TasteIdentityItem,
@@ -9,7 +8,6 @@ import {
 import { DEFAULT_LOCATION_CITY_ID, getLocationCityById } from '../data/locationRegions'
 import { postProfileDefaultCity } from '../lib/auth-api'
 import { persistSignupOnboardingDismissed, readSignupOnboardingDismissed } from '../lib/signup-onboarding-flag'
-import { schedulePersistUserTasteCategories } from '../lib/persist-user-taste'
 import type { Tab, Theme } from '../types'
 
 const WELCOME_SESSION_KEY = 'buzo-welcome-dismissed'
@@ -181,7 +179,7 @@ type AppState = {
   /** Browser location permission state tracked from settings flow. */
   locationPermission: LocationPermissionState
   showBuzzPoints: boolean
-  /** Editable copy of demo taste tags — profile + taste screen read this. */
+  /** Full catalog of taste tags from session (label-only). */
   tasteIdentityItems: TasteIdentityItem[]
   showProfileTasteAll: boolean
   showProfileReputationAll: boolean
@@ -219,7 +217,7 @@ type AppState = {
       avatar_url?: string | null
       bio?: string | null
       default_city_id?: string | null
-      user_taste_categories?: Array<{ label: string; accent: string }> | null
+      user_taste_categories?: Array<{ label: string }> | null
     } | null,
     options?: { isFreshSignIn?: boolean; tasteCategories?: TasteCategoryRow[] },
   ) => void
@@ -241,7 +239,6 @@ type AppState = {
   closeBuzzPoints: () => void
   openProfileTasteAll: () => void
   closeProfileTasteAll: () => void
-  cycleTasteIdentityTag: (label: string) => void
   openProfileReputationAll: () => void
   closeProfileReputationAll: () => void
   openSettings: () => void
@@ -470,17 +467,6 @@ export const useAppState = create<AppState>((set, get) => ({
   closeBuzzPoints: () => set({ showBuzzPoints: false }),
   openProfileTasteAll: () => set({ showProfileTasteAll: true }),
   closeProfileTasteAll: () => set({ showProfileTasteAll: false }),
-  cycleTasteIdentityTag: (label) => {
-    set((s) => ({
-      tasteIdentityItems: s.tasteIdentityItems.map((item) =>
-        item.label === label ? { ...item, accent: cycleTasteAccent(item.accent) } : item,
-      ),
-    }))
-    schedulePersistUserTasteCategories(
-      () => get().tasteIdentityItems,
-      () => get().isAuthenticated,
-    )
-  },
   openProfileReputationAll: () => set({ showProfileReputationAll: true }),
   closeProfileReputationAll: () => set({ showProfileReputationAll: false }),
   openSettings: () => set({ showSettings: true }),

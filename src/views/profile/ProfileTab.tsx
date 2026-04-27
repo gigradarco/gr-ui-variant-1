@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Lock, LogOut, Settings } from 'lucide-react'
 import { BUZO_PRO_UPSELL_CTA } from '../../config/pricing'
@@ -7,7 +7,6 @@ import {
   mapReputationBadgeFromApi,
   reputationBadgesFallback,
   TASTE_AND_RECOMMENDATIONS_TITLE,
-  type TasteIdentityItem,
 } from '../../data/profileIdentity'
 import {
   getCachedAvatarDataUrl,
@@ -15,7 +14,6 @@ import {
   warmAvatarCacheIfEmpty,
 } from '../../lib/avatar-image-cache.ts'
 import { postSignOut } from '../../lib/auth-api'
-import { flushPersistUserTasteCategories } from '../../lib/persist-user-taste'
 import { api } from '../../lib/trpc'
 import { useAppState } from '../../store/appStore'
 
@@ -32,7 +30,6 @@ export function ProfileTab() {
     setTab,
     subscriptionTier,
     tasteIdentityItems,
-    cycleTasteIdentityTag,
   } = useAppState()
   const { current: buzzTier } = getBuzzTierState(buzzSummary.total)
   const headline =
@@ -48,9 +45,7 @@ export function ProfileTab() {
   const remoteAvatarUrl = userProfile.avatarUrl
   const cachedAvatarSrc = getCachedAvatarDataUrl(remoteAvatarUrl)
   const avatarDisplaySrc = cachedAvatarSrc ?? remoteAvatarUrl
-  const [tasteEditMode, setTasteEditMode] = useState(false)
   const [tooltipBadgeId, setTooltipBadgeId] = useState<string | null>(null)
-  const tasteEditBaselineRef = useRef<TasteIdentityItem[] | null>(null)
   const reputationQuery = api.profile.reputation.useQuery(undefined, {
     enabled: isAuthenticated,
     staleTime: 60_000,
@@ -72,7 +67,7 @@ export function ProfileTab() {
   })
   const badgesPreview =
     (recentEarnedReputationBadges.length > 0 ? recentEarnedReputationBadges : reputationBadges).slice(0, 5)
-  const tasteHighlightedCount = tasteIdentityItems.filter((t) => t.accent).length
+  const tasteCount = tasteIdentityItems.length
   const badgeCount = earnedReputationBadges.length
   const reputationPreviewCopy =
     earnedReputationBadges.length > 0
@@ -187,71 +182,20 @@ export function ProfileTab() {
       </div>
 
       {/* Taste & recommendations */}
-      <section
-        className="profile-section"
-        aria-labelledby="profile-taste-heading"
-        {...(tasteEditMode
-          ? { 'aria-describedby': 'profile-taste-edit-hint' as const }
-          : {})}
-      >
-        <div className="section-title-rule section-title-rule--with-action" id="profile-taste-heading">
+      <section className="profile-section" aria-labelledby="profile-taste-heading">
+        <div className="section-title-rule" id="profile-taste-heading">
           <span className="section-title-rule__text">
             {TASTE_AND_RECOMMENDATIONS_TITLE}{' '}
-            <span className="section-title-count">({tasteHighlightedCount})</span>
+            <span className="section-title-count">({tasteCount})</span>
           </span>
           <span className="section-title-rule__line" aria-hidden />
-          <button
-            type="button"
-            className="section-title-action"
-            onClick={() => {
-              if (tasteEditMode) {
-                void flushPersistUserTasteCategories(
-                  () => useAppState.getState().tasteIdentityItems,
-                  () => useAppState.getState().isAuthenticated,
-                  { baseline: tasteEditBaselineRef.current },
-                ).finally(() => {
-                  tasteEditBaselineRef.current = null
-                  setTasteEditMode(false)
-                })
-              } else {
-                tasteEditBaselineRef.current = useAppState
-                  .getState()
-                  .tasteIdentityItems.map((t) => ({ ...t }))
-                setTasteEditMode(true)
-              }
-            }}
-            aria-expanded={tasteEditMode}
-          >
-            {tasteEditMode ? 'Done' : 'Edit'}
-          </button>
         </div>
-        {tasteEditMode ? (
-          <p id="profile-taste-edit-hint" className="profile-taste-edit-hint">
-            Tap a tag to highlight it on your profile or turn the highlight off.
-          </p>
-        ) : null}
-        <div className={`taste-tags${tasteEditMode ? ' taste-tags--editing' : ''}`}>
-          {tasteTagsShown.map((g) => {
-            const cls = `taste-tag${g.accent ? ' taste-tag--primary' : ''}`
-            if (tasteEditMode) {
-              return (
-                <button
-                  key={g.label}
-                  type="button"
-                  className={cls}
-                  onClick={() => cycleTasteIdentityTag(g.label)}
-                  aria-label={`Update style for ${g.label}`}
-                >
-                  {g.label}
-                </button>
-              )
-            }
-            return (
-              <span key={g.label} className={cls}>
-                {g.label}
-              </span>
-            )
-          })}
+        <div className="taste-tags">
+          {tasteTagsShown.map((g) => (
+            <span key={g.label} className="taste-tag">
+              {g.label}
+            </span>
+          ))}
         </div>
       </section>
 

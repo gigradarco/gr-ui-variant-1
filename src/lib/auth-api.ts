@@ -8,10 +8,10 @@ type ProfileRow = {
   avatar_url?: string | null
   bio?: string | null
   default_city_id?: string | null
-  user_taste_categories?: Array<{ label: string; accent: string }> | null
+  user_taste_categories?: Array<{ label: string }> | null
 } | null
 
-export type TasteCategorySessionRow = { label: string; accent: string }
+export type TasteCategorySessionRow = { label: string }
 
 export async function fetchAuthSession(): Promise<{
   user: AuthUserPayload | null
@@ -54,7 +54,7 @@ export function googleOAuthRedirectUrl(returnTo: string): string {
 }
 
 export async function postProfileTastePreferences(
-  userTasteCategories: Array<{ label: string; accent: 'true' | 'false' }>,
+  userTasteCategories: Array<{ label: string }>,
 ): Promise<void> {
   const token = getAccessToken()
   if (!token) {

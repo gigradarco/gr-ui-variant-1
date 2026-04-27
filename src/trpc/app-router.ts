@@ -48,14 +48,7 @@ export const appRouter = t.router({
           username: z.string().optional(),
           bio: z.string().optional(),
           avatarUrl: z.string().url().optional(),
-          userTasteCategories: z
-            .array(
-              z.object({
-                label: z.string(),
-                accent: z.enum(['true', 'false']),
-              }),
-            )
-            .optional(),
+          userTasteCategories: z.array(z.object({ label: z.string() })).optional(),
         }),
       )
       .mutation(() => ({

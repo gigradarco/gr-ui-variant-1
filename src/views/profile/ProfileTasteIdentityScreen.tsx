@@ -1,19 +1,10 @@
-import { useLayoutEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
-import {
-  TASTE_AND_RECOMMENDATIONS_TITLE,
-  type TasteIdentityItem,
-} from '../../data/profileIdentity'
-import { flushPersistUserTasteCategories } from '../../lib/persist-user-taste'
+import { TASTE_AND_RECOMMENDATIONS_TITLE } from '../../data/profileIdentity'
 import { useAppState } from '../../store/appStore'
 
 export function ProfileTasteIdentityScreen() {
-  const { closeProfileTasteAll, tasteIdentityItems, cycleTasteIdentityTag } = useAppState()
-  const openBaselineRef = useRef<TasteIdentityItem[] | null>(null)
-  useLayoutEffect(() => {
-    openBaselineRef.current = useAppState.getState().tasteIdentityItems.map((t) => ({ ...t }))
-  }, [])
+  const { closeProfileTasteAll, tasteIdentityItems } = useAppState()
 
   return (
     <motion.div
@@ -27,13 +18,7 @@ export function ProfileTasteIdentityScreen() {
         <button
           type="button"
           className="profile-list-screen-back"
-          onClick={() => {
-            void flushPersistUserTasteCategories(
-              () => useAppState.getState().tasteIdentityItems,
-              () => useAppState.getState().isAuthenticated,
-              { baseline: openBaselineRef.current },
-            ).finally(() => closeProfileTasteAll())
-          }}
+          onClick={closeProfileTasteAll}
           aria-label="Back to profile"
         >
           <ArrowLeft size={18} />
@@ -43,20 +28,13 @@ export function ProfileTasteIdentityScreen() {
       </header>
       <div className="profile-list-screen-body">
         <p className="profile-list-screen-intro">
-          Genres and tags that shape your recommendations and discovery. Tap a tag to highlight it
-          or turn the highlight off.
+          Genres and tags that shape your recommendations and discovery.
         </p>
-        <div className="taste-tags profile-taste-tags--full taste-tags--editing">
+        <div className="taste-tags profile-taste-tags--full">
           {tasteIdentityItems.map((g) => (
-            <button
-              key={g.label}
-              type="button"
-              className={`taste-tag${g.accent ? ' taste-tag--primary' : ''}`}
-              onClick={() => cycleTasteIdentityTag(g.label)}
-              aria-label={`Update style for ${g.label}`}
-            >
+            <span key={g.label} className="taste-tag">
               {g.label}
-            </button>
+            </span>
           ))}
         </div>
       </div>

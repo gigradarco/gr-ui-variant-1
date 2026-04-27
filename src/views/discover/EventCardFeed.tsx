@@ -5,7 +5,6 @@ import { CheckCircle, Funnel, Heart, Info, Map, Share2, X } from 'lucide-react'
 import { LocationCityPickerControl, CityPickerSheet } from '../../components/LocationCityPickerControl'
 import { DISCOVER_FEED_CATEGORY_FILTER_OPTIONS } from '../../data/exploreCategories'
 import { useAppState } from '../../store/appStore'
-import { deriveOnboardingGenreIdsFromTastes } from '../../data/onboarding'
 import type { EventItem } from '../../types'
 
 // ─── Category → visual accent mapping (keyed by exploreCategoryId) ───────────
@@ -537,7 +536,6 @@ type EventCardFeedProps = {
 
 export function EventCardFeed({ events, onMoreDetails, onMapView }: EventCardFeedProps) {
   const locationCityId = useAppState((s) => s.feedLocationCityId)
-  const tasteIdentityItems = useAppState((s) => s.tasteIdentityItems)
 
   const initialCategories = useMemo(() => {
     // Prefer localStorage override (set when user changes filter — survives refresh for anon users)
@@ -549,10 +547,8 @@ export function EventCardFeed({ events, onMoreDetails, onMapView }: EventCardFee
         if (Array.isArray(parsed) && parsed.length === 0) return 'All' as const
       }
     } catch { /* ignore */ }
-    const ids = deriveOnboardingGenreIdsFromTastes(tasteIdentityItems)
-    return ids.length > 0 ? ids : ('All' as const)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // intentionally run once on mount only
+    return 'All' as const
+  }, [])
 
   const [filters, setFilters] = useState<EventFeedFilters>(() => ({
     ...DEFAULT_FILTERS,
