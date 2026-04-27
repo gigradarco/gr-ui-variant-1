@@ -80,7 +80,7 @@ export async function warmAvatarCacheIfEmpty(url: string): Promise<boolean> {
   const existing = readEntry()
   if (existing?.url === src && existing.dataUrl) return false
   try {
-    const resp = await fetch(src, { mode: 'cors' })
+    const resp = await fetch(src)
     if (!resp.ok) return false
     const blob = await resp.blob()
     const dataUrl = await new Promise<string>((resolve, reject) => {

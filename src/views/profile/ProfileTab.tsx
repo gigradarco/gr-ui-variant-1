@@ -206,7 +206,6 @@ export function ProfileTab() {
                   decoding="async"
                   fetchPriority="high"
                   loading="eager"
-                  referrerPolicy="no-referrer"
                   onLoad={(e) => {
                     setAvatarLoaded(true)
                     if (remoteAvatarUrl) persistAvatarToLocalCache(remoteAvatarUrl, e.currentTarget)
