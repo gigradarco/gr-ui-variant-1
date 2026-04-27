@@ -631,7 +631,7 @@ export function EventCardFeed({ events, onMoreDetails, onMapView }: EventCardFee
     )
 
   return (
-    <div className="ecf-root">
+    <div className="ecf-root" data-filters-active={activeCount > 0 ? 'true' : undefined}>
       {/* Header */}
       <div className="ecf-header">
         <div className="ecf-header-inner">

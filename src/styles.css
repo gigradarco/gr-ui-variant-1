@@ -69,7 +69,8 @@ body {
   max-width: 100%;
   height: 100%;
   min-height: 0;
-  max-height: 100dvh;
+  /* svh: iOS Safari URL bar visible — avoids layout taller than the visible viewport */
+  max-height: min(100dvh, 100svh);
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -12350,6 +12351,7 @@ button.taste-tag:focus-visible {
 
 .ecf-header-inner {
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 8px;
 }
@@ -12683,6 +12685,11 @@ button.taste-tag:focus-visible {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+/* Extra chip row (Clear all) + count badge — slightly taller header; iOS needs more lift above tab bar */
+.ecf-root[data-filters-active='true'] .ecf-body {
+  bottom: max(52px, calc(22px + env(safe-area-inset-bottom, 0px)));
 }
 
 .ecf-buzz-row {
