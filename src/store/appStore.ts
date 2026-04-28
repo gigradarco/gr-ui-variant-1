@@ -8,7 +8,7 @@ import {
 import { DEFAULT_LOCATION_CITY_ID, getLocationCityById } from '../data/locationRegions'
 import { postProfileDefaultCity } from '../lib/auth-api'
 import { navigateShellToPath } from '../lib/tabRoutes'
-import { persistSignupOnboardingDismissed, readSignupOnboardingDismissed } from '../lib/signup-onboarding-flag'
+import { persistSignupOnboardingDismissed, readSignupOnboardingDismissed, setOnboardingFlagUserId } from '../lib/signup-onboarding-flag'
 import { saveLastUsedAccount, clearLastUsedAccount } from '../lib/last-used-account'
 import type { Tab, Theme } from '../types'
 
@@ -361,6 +361,9 @@ export const useAppState = create<AppState>((set, get) => ({
     const isRealUser = !u.is_anonymous
     const authEmail = isRealUser ? (u.email?.trim() || null) : null
     const isFreshSignIn = options?.isFreshSignIn === true
+
+    // Key the onboarding flag to this specific user so new users always see onboarding
+    setOnboardingFlagUserId(isRealUser ? u.id : null)
     const meta = (u.user_metadata ?? {}) as Record<string, string | undefined>
     const displayName =
       profile?.display_name?.trim() ||
