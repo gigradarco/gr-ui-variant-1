@@ -84,7 +84,40 @@ export const appRouter = t.router({
           cancelUrl: z.string().url(),
         }),
       )
-      .mutation(() => ({})),
+      .mutation(() => ({ sessionId: '' as string, url: null as string | null })),
+
+    cancelSubscription: t.procedure
+      .mutation(() => ({
+        cancel_at_period_end: true,
+        current_period_end: 0,
+      })),
+
+    reactivateSubscription: t.procedure
+      .mutation(() => ({
+        cancel_at_period_end: false,
+        current_period_end: 0,
+      })),
+
+    getBillingInfo: t.procedure
+      .query(() => ({
+        subscription_tier: 'free' as string,
+        subscription_id: null as string | null,
+        subscription_status: null as string | null,
+        current_period_end: null as number | null,
+        cancel_at_period_end: null as boolean | null,
+        invoices: [] as Array<{
+          id: string
+          amount_paid: number
+          currency: string
+          status: string
+          description: string | null
+          period_start: number
+          period_end: number
+          invoice_pdf: string | null
+          hosted_invoice_url: string | null
+          created: number
+        }>,
+      })),
   }),
 })
 

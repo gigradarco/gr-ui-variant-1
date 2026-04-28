@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Check, Lock, LogOut, Settings } from 'lucide-react'
+import { Check, Lock, LogOut, Settings, Sparkles } from 'lucide-react'
 import { BUZO_PRO_UPSELL_CTA } from '../../config/pricing'
 import { buzzSummary, getBuzzTierState } from '../../data/demoData'
 import {
@@ -83,6 +83,7 @@ export function ProfileTab() {
   const [tasteSaveError, setTasteSaveError] = useState<string | null>(null)
   const saveTimerRef = useRef<number | null>(null)
 
+
   const openTasteEdit = useCallback(() => {
     setTasteSelected(new Set(savedTasteLabels))
     setTasteSaveError(null)
@@ -161,11 +162,11 @@ export function ProfileTab() {
     return 0
   })
   const badgesPreview =
-    (recentEarnedReputationBadges.length > 0 ? recentEarnedReputationBadges : reputationBadges).slice(0, 5)
+    (recentEarnedReputationBadges.length > 0 ? recentEarnedReputationBadges : reputationBadges).slice(0, 3)
   const badgeCount = earnedReputationBadges.length
   const reputationPreviewCopy =
     earnedReputationBadges.length > 0
-      ? `Showing latest ${badgesPreview.length} earned badge${badgesPreview.length === 1 ? '' : 's'} (up to 5).`
+      ? `Showing latest ${badgesPreview.length} earned badge${badgesPreview.length === 1 ? '' : 's'} (up to 3).`
       : 'No earned badges yet. Showing starter badges.'
 
   // Redirect guests away from profile — only after session sync so refresh does not flash sign-in.
@@ -237,10 +238,30 @@ export function ProfileTab() {
       </div>
 
       {/* Hero */}
-      <div className="profile-hero-new">
+      <div className={`profile-hero-new${subscriptionTier === 'pro' ? ' profile-hero-new--pro' : ''}`}>
+        {subscriptionTier === 'pro' ? (
+          <span className="profile-pro-stars" aria-hidden>
+            {Array.from({ length: 16 }, (_, i) => (
+              <span key={i} className={`profile-pro-star profile-pro-star--${i + 1}`} />
+            ))}
+          </span>
+        ) : null}
         <div className="profile-avatar-wrap">
+          {subscriptionTier === 'pro' ? (
+            /* Fog */
+            <span className="profile-pro-mist" aria-hidden>
+              <span className="profile-pro-mist__blob profile-pro-mist__blob--1" />
+              <span className="profile-pro-mist__blob profile-pro-mist__blob--2" />
+              <span className="profile-pro-mist__blob profile-pro-mist__blob--3" />
+              <span className="profile-pro-mist__blob profile-pro-mist__blob--4" />
+              <span className="profile-pro-mist__blob profile-pro-mist__blob--5" />
+              <span className="profile-pro-mist__blob profile-pro-mist__blob--6" />
+              <span className="profile-pro-mist__blob profile-pro-mist__blob--7" />
+              <span className="profile-pro-mist__blob profile-pro-mist__blob--8" />
+            </span>
+          ) : null}
           <div
-            className="profile-avatar-ring"
+            className={`profile-avatar-ring${subscriptionTier === 'pro' ? ' profile-avatar-ring--pro' : ''}`}
           >
             <div className={`profile-avatar-inner${avatarLoaded && !avatarFailed ? ' is-loaded' : ''}`}>
               <span className="profile-avatar-placeholder" aria-hidden>
@@ -282,6 +303,12 @@ export function ProfileTab() {
         >
           {headline}
         </h2>
+        {subscriptionTier === 'pro' ? (
+          <span className="profile-pro-badge" aria-label="Buzo Pro member">
+            <Sparkles size={11} strokeWidth={2.5} aria-hidden />
+            Buzo Pro
+          </span>
+        ) : null}
         <span className="profile-handle-pill">@{userProfile.username}</span>
       </div>
 
@@ -412,7 +439,7 @@ export function ProfileTab() {
         <p className="profile-reputation-preview-note">{reputationPreviewCopy}</p>
       </section>
 
-      {subscriptionTier === 'basic' ? (
+      {subscriptionTier === 'free' ? (
         <div className="gopro-card">
           <div className="gopro-lock">
             <Lock size={22} />

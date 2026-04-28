@@ -8,6 +8,7 @@ type ProfileRow = {
   avatar_url?: string | null
   bio?: string | null
   default_city_id?: string | null
+  subscription_tier?: string | null
 } | null
 
 export type TasteCategorySessionRow = { label: string }

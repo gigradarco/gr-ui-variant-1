@@ -138,7 +138,7 @@ export type PendingPlanDetail = {
   returnTab?: Tab
 }
 
-export type SubscriptionTier = 'basic' | 'pro'
+export type SubscriptionTier = 'free' | 'pro'
 export type LocationPreferenceMode = 'precise' | 'city'
 export type LocationPermissionState = 'unknown' | 'granted' | 'denied'
 export type OnboardingSource = 'signup' | 'settings'
@@ -202,6 +202,8 @@ type AppState = {
   signInRedirectError: string | null
   showEditProfile: boolean
   showSubscription: boolean
+  /** True when the subscription screen should open directly on the success view (post-Stripe redirect). */
+  stripeSuccessOverlay: boolean
   /** Quick setup: city + genre picks (matches gr-frontend-new onboarding). */
   showOnboarding: boolean
   onboardingSource: OnboardingSource | null
@@ -225,6 +227,7 @@ type AppState = {
       avatar_url?: string | null
       bio?: string | null
       default_city_id?: string | null
+      subscription_tier?: string | null
     } | null,
     options?: {
       isFreshSignIn?: boolean
@@ -294,7 +297,7 @@ export const useAppState = create<AppState>((set, get) => ({
   authEmail: null,
   tab: 'discover',
   theme: 'dark',
-  subscriptionTier: 'pro',
+  subscriptionTier: 'free',
   activeEventId: null,
   pendingPlanDetail: null,
   favoriteEvents: readPersistedFavoriteEvents(),
@@ -317,6 +320,7 @@ export const useAppState = create<AppState>((set, get) => ({
   signInRedirectError: null,
   showEditProfile: false,
   showSubscription: false,
+  stripeSuccessOverlay: false,
   showOnboarding: false,
   onboardingSource: null,
   onboardingMountKey: 0,
@@ -398,11 +402,14 @@ export const useAppState = create<AppState>((set, get) => ({
     )
     const savedTasteLabels = new Set<string>(tasteSelections)
 
+    const tier = profile?.subscription_tier === 'pro' ? 'pro' : 'free'
+
     const wasAuthenticated = get().isAuthenticated
     const freshSignIn = isFreshSignIn && !wasAuthenticated
     set({
       isAuthenticated: isRealUser,
       authEmail,
+      subscriptionTier: isRealUser ? tier : 'free',
       userProfile: {
         displayName,
         username,
@@ -459,6 +466,7 @@ export const useAppState = create<AppState>((set, get) => ({
       showEmailLogin: false,
       showEditProfile: false,
       showSubscription: false,
+      stripeSuccessOverlay: false,
       showOnboarding: false,
       onboardingSource: null,
       showWelcomeBack: false,
@@ -510,7 +518,7 @@ export const useAppState = create<AppState>((set, get) => ({
   openEditProfile: () => set({ showEditProfile: true }),
   closeEditProfile: () => set({ showEditProfile: false }),
   openSubscription: () => set({ showSubscription: true }),
-  closeSubscription: () => set({ showSubscription: false }),
+  closeSubscription: () => set({ showSubscription: false, stripeSuccessOverlay: false }),
   openOnboarding: (source) =>
     set((s) => ({
       showOnboarding: true,

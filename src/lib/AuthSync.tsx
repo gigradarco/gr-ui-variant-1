@@ -52,6 +52,18 @@ export function AuthSync({ children }: { children: ReactNode }) {
     }
     window.addEventListener('buzo-auth-hash-error', onHashError)
     consumeOAuthHash()
+
+    // Detect Stripe post-checkout redirect (?subscription=success) and strip it
+    // before the rest of the app renders. The session sync below will pick up the
+    // updated subscription_tier from the DB, then we open the success overlay.
+    const searchParams = new URLSearchParams(window.location.search)
+    const isStripeSuccess = searchParams.get('subscription') === 'success'
+    if (isStripeSuccess) {
+      const url = new URL(window.location.href)
+      url.searchParams.delete('subscription')
+      window.history.replaceState(null, '', url.toString())
+    }
+
     /**
      * `peekOAuthReturnPendingWelcome`: true after hash consumed — including across Strict Mode remount
      * (hash is stripped on first mount; latch clears only after session sync succeeds).
@@ -80,6 +92,13 @@ export function AuthSync({ children }: { children: ReactNode }) {
           clearOAuthReturnPendingWelcome()
           queueMicrotask(() =>
             navigateShellToTab(openAskAfterOAuth ? 'ask' : 'discover', { replace: true }),
+          )
+        }
+        // After session is hydrated with the fresh tier, open the subscription
+        // screen in success mode so the user sees the "Welcome to Buzo Pro" overlay.
+        if (isStripeSuccess) {
+          queueMicrotask(() =>
+            useAppState.setState({ showSubscription: true, stripeSuccessOverlay: true }),
           )
         }
       } catch {
